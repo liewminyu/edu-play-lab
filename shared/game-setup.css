@@ -1,0 +1,44 @@
+/* Edu Play Lab — Universal Game Setup v1
+   Shared by all roster-based games. */
+.setup-screen{gap:10px}
+.setup-topbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:14px;min-height:58px}
+.setup-title-wrap{min-width:0;display:flex;align-items:center}.setup-title-wrap h1{margin:0;font-size:clamp(36px,3.25vw,54px);line-height:1}
+.setup-back{width:auto;min-width:50px;padding:0 14px;font-size:clamp(22px,1.8vw,28px)}
+.setup-history{display:flex;align-items:center;gap:7px}.setup-history .icon-btn{font-size:25px}.setup-history .icon-btn:disabled{filter:grayscale(.85) brightness(.7);opacity:.42;cursor:not-allowed;box-shadow:none}
+.setup-grid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(245px,1.16fr) repeat(3,minmax(185px,1fr));grid-template-rows:1fr 1fr;gap:10px}
+.setup-panel{min-width:0;min-height:0;background:linear-gradient(145deg,rgba(32,49,82,.97),rgba(18,30,52,.97));border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:var(--shadow,0 12px 32px rgba(0,0,0,.30));overflow:hidden}
+.player-bank{grid-column:1;grid-row:1 / span 2;display:flex;flex-direction:column;padding:12px;gap:9px}
+.setup-panel-label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:clamp(21px,1.85vw,29px);font-weight:1000;color:var(--gold,#ffd166)}
+.setup-count{font-size:clamp(18px,1.45vw,23px);color:#d7e2f2;background:rgba(255,255,255,.08);padding:6px 10px;border-radius:999px}
+.player-entry{flex:0 0 auto;width:100%;height:52px;min-height:52px;resize:none;overflow:hidden;border:2px solid rgba(255,255,255,.13);outline:none;border-radius:12px;background:#101d33;color:#f7fbff;padding:10px 12px;font:800 clamp(18px,1.45vw,23px)/1.25 "Trebuchet MS",Arial,sans-serif}
+.player-entry:focus{border-color:rgba(255,209,102,.72);box-shadow:0 0 0 3px rgba(255,209,102,.08)}
+.player-entry::placeholder{color:#91a3bb;opacity:1}
+.player-tags{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:2px 4px 4px}
+.player-tag{width:100%;flex:0 0 auto;border:2px solid rgba(255,255,255,.18);border-radius:10px;background:#2b4775;color:#fff;padding:7px 10px;font-size:clamp(17px,1.35vw,22px);line-height:1.12;font-weight:1000;cursor:grab;user-select:none;touch-action:none;box-shadow:0 4px 10px rgba(0,0,0,.16);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.player-tag:active{cursor:grabbing}.player-tag.selected{outline:3px solid var(--gold,#ffd166);outline-offset:2px}.player-tag.assigned{color:#172033}
+.touch-drag-ghost{position:fixed!important;z-index:99999!important;pointer-events:none!important;margin:0!important;opacity:.92;transform:translate(-50%,-50%) scale(1.04);box-shadow:0 16px 32px rgba(0,0,0,.38)!important}
+.player-bank.drag-over{outline:3px solid var(--gold,#ffd166);outline-offset:-3px;background:rgba(255,209,102,.06)}
+.group-card{display:flex;flex-direction:column;padding:10px;gap:8px;transition:border-color .15s ease,background .15s ease}
+.group-card.drag-over{border-color:var(--gold,#ffd166);background:rgba(255,209,102,.08)}
+.group-header{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px;align-items:center}
+.group-name-input{width:100%;min-width:0;border:0;outline:none;border-radius:11px;background:#2b4775;color:#fff;padding:10px 11px;font-weight:1000;font-size:clamp(19px,1.55vw,25px);line-height:1.15;text-align:center}
+.group-name-input:focus{box-shadow:0 0 0 3px rgba(255,209,102,.20)}
+.group-colour{width:48px;height:48px;border:2px solid rgba(255,255,255,.55);border-radius:9px;padding:0;background:transparent;cursor:pointer;overflow:hidden}
+.group-colour::-webkit-color-swatch-wrapper{padding:0}.group-colour::-webkit-color-swatch{border:0;border-radius:6px}.group-colour::-moz-color-swatch{border:0;border-radius:6px}
+.group-drop{flex:1;min-height:0;border:2px dashed rgba(255,255,255,.20);border-radius:13px;padding:7px;display:grid;grid-template-rows:repeat(5,minmax(0,1fr));align-items:stretch;gap:5px;overflow:hidden}
+.group-drop .player-tag{height:100%;min-height:0;display:flex;align-items:center;font-size:clamp(16px,1.2vw,20px);line-height:1.05;padding:4px 9px}
+.group-entry{width:100%;height:100%;min-height:0;resize:none;overflow:hidden;border:2px solid rgba(255,255,255,.14);outline:none;border-radius:9px;background:rgba(255,255,255,.055);color:#fff;padding:5px 8px;font:800 clamp(14px,1.05vw,18px)/1.15 "Trebuchet MS",Arial,sans-serif}
+.group-entry:focus{border-color:rgba(255,209,102,.62);background:rgba(255,255,255,.085)}
+.group-entry::placeholder{color:#8fa1b9;opacity:1}
+.group-player-count{flex:0 0 auto;text-align:center;color:#a9bad1;font-size:clamp(16px,1.25vw,20px);font-weight:1000;line-height:1;padding:3px 0 1px}
+.group-card.full .group-drop{border-color:rgba(85,230,165,.55)}.group-card.full .group-player-count{color:#9ff0c8}
+.setup-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
+.setup-action{border:0;border-radius:12px;min-height:44px;padding:7px 8px;background:#2c4774;color:#fff;font-weight:1000;font-size:clamp(16px,1.25vw,21px);cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.18);white-space:nowrap}
+.setup-action:disabled{filter:grayscale(.8) brightness(.72);opacity:.5;cursor:not-allowed;box-shadow:none}.setup-action.valid{background:linear-gradient(135deg,#65e5a8,#21bd75);color:#0a3825}.setup-action.primary{background:linear-gradient(135deg,#ffd166,#ffb703);color:#172033}
+.setup-toast{position:fixed;left:50%;bottom:72px;z-index:120;max-width:min(760px,calc(100vw - 36px));padding:12px 18px;border-radius:14px;background:rgba(25,39,66,.97);border:2px solid rgba(255,255,255,.16);box-shadow:0 16px 38px rgba(0,0,0,.38);color:#f4f8ff;font-size:clamp(17px,1.35vw,22px);line-height:1.25;font-weight:900;text-align:center;opacity:0;pointer-events:none;transform:translate(-50%,14px) scale(.98);transition:opacity .18s ease,transform .18s ease}
+.setup-toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.setup-toast.good{background:rgba(23,72,58,.97);border-color:rgba(85,230,165,.58);color:#c5f7dd}
+.setup-toast.bad{background:rgba(79,31,43,.98);border-color:rgba(255,114,128,.62);color:#ffd4d8}
+.setup-toast strong{color:#fff}
+.start-disabled{filter:grayscale(.88) brightness(.65);opacity:.52;cursor:not-allowed!important;box-shadow:none!important}
+@media(max-width:1000px){.setup-grid{grid-template-columns:minmax(225px,1.08fr) repeat(3,minmax(155px,1fr));gap:7px}.setup-actions{gap:6px}.setup-action{min-height:42px;padding:7px 5px;font-size:clamp(16px,1.65vw,20px)}.group-card{padding:7px}.player-bank{padding:8px}.player-tag{font-size:clamp(16px,1.8vw,20px);padding:7px 9px}.group-drop .player-tag{font-size:clamp(14px,1.55vw,18px);padding:4px 7px}.group-name-input{font-size:clamp(17px,1.8vw,21px)}.group-player-count{font-size:clamp(14px,1.55vw,18px)}.setup-toast{bottom:64px;font-size:clamp(16px,1.7vw,20px)}}
