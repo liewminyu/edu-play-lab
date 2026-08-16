@@ -1,0 +1,34 @@
+Edu Play Lab — Shared Module Refactor Validation
+================================================
+
+Validated:
+- shared/game-setup.js: JavaScript syntax OK
+- shared/player-scheduler.js: JavaScript syntax OK
+- Inline JavaScript syntax OK in index, 10 game/tool HTML files, Make a Pattern and Shape Architect
+- All 9 roster-based games reference the shared Game Setup CSS/JS and shared scheduler
+- All 9 roster-based games contain the thin renderSetup adapter to EduPlayGameSetup.open(...)
+- No copied Game Setup implementation remains in the roster-based game files
+- No old embedded 2 Empathy roster names remain in those game files
+- All 12 index card target files exist in the package
+- Make a Pattern, Shape Architect and Is a Cube a Cuboid are byte-identical to their source tool files
+
+Question/challenge data exact-match checks:
+- Quick Shape Sort Battle Royale — QUESTIONS exact match
+- 3D Shapes Battle Royale — QUESTIONS exact match
+- Class vs the Pattern Dragon — rounds exact match
+- Class vs the 3D-Shape Dinosaur — rounds exact match
+- Triple Jeopardy — categories exact match
+- Triple Jeopardy Rematch — categories exact match
+- Word Order Race — QUESTIONS exact match
+- Conjunction And Battle Royale — CHALLENGES exact match
+- Future Verb Letter Race — QUESTIONS exact match
+
+Shared scheduler functional checks:
+- Standard format returns 10 rounds × 3 players with 30 unique player turns
+- Fixed-round cooperative variant returns 10 rounds × 3 players with 30 unique player turns
+- Jeopardy returns 10 rounds × 3 players with 30 unique player turns
+- Every Jeopardy group receives one $100, $200, $300, $400 and $500 player opportunity
+- Game_Setup.txt serialize/parse round-trip preserves all player/group data
+
+Browser note:
+A full Chromium UI smoke test could not be completed in this container because the available Chromium process hangs under the environment's browser policy/DBus restrictions. The package was therefore validated through JavaScript syntax, static integration assertions, exact question-bank comparisons and shared-module functional tests.

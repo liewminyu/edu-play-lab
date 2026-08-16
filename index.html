@@ -580,6 +580,18 @@
         font-size: 0.86rem;
       }
     }
+
+    .preview-fallback {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, rgba(224,232,255,.95), rgba(255,242,222,.95));
+      color: #33384a;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: .06em;
+    }
   </style>
 </head>
 
@@ -761,6 +773,26 @@
         type: "Competitive",
         file: "games/Future_Verb_Letter_Race.html",
         preview: "previews/future-verb-letter-race.gif"
+      },
+      {
+        title: "Make a Pattern",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Tool",
+        file: "tools/Make_a_Pattern.html",
+        previewIcon: "◯ △ □"
+      },
+      {
+        title: "Shape Architect",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Tool",
+        file: "tools/Shape_Architect.html",
+        previewIcon: "🧊 🏗️"
       }
     ];
 
@@ -879,12 +911,9 @@
 
         article.innerHTML = `
           <a class="preview-link" href="${item.file}" aria-label="Open ${item.title}">
-            <img
-              class="preview"
-              src="${item.preview}"
-              alt="Animated preview of ${item.title}"
-              loading="lazy"
-            />
+            ${item.preview
+              ? `<img class="preview" src="${item.preview}" alt="Animated preview of ${item.title}" loading="lazy" />`
+              : `<div class="preview-fallback" aria-hidden="true">${item.previewIcon || "✦"}</div>`}
             <span class="preview-label">Preview</span>
           </a>
 
