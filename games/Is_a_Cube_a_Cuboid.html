@@ -1,298 +1,840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<meta name="build-version" content="cube-cuboid-green-count-v4-20260731">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f5f7fb">
-<title>Is a Cube a Cuboid? – Green Count v4</title>
-<style>
-:root{
-  --ink:#24324a;--muted:#667085;--line:#d9dfeb;--page:#f5f7fb;--panel:#fff;
-  --accent:#4e46d7;--accent-soft:#efeeff;--green:#16a34a;--green-dark:#087a35;
-  --green-soft:#dcfce7;--shadow:0 8px 22px rgba(36,50,74,.10)
-}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;min-height:100%;background:var(--page);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-tap-highlight-color:transparent}
-body{overscroll-behavior:none;overflow:auto}button{font:inherit}
-.app{width:min(1220px,100%);min-height:100dvh;margin:0 auto;padding:12px clamp(10px,2vw,22px) 18px;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:8px;flex:0 0 auto}
-h1{margin:0;color:#342eb5;font-size:clamp(28px,3.7vw,42px);line-height:1.05;letter-spacing:-.6px;white-space:nowrap}
-.top-controls{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
-.progress-chip{flex:0 0 auto;min-width:108px;min-height:42px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:center;box-shadow:0 3px 10px rgba(36,50,74,.06);display:grid;place-items:center}
-.progress-chip strong{font-size:16px;white-space:nowrap}
-.top-btn{min-height:42px;padding:8px 14px;border:2px solid #d8deea;border-radius:14px;background:#fff;color:var(--ink);font-weight:900;cursor:pointer;touch-action:manipulation;white-space:nowrap}
-.top-btn.primary{border-color:var(--accent);background:var(--accent);color:#fff}
-.top-btn.fullscreen{border-color:#cfcaf9;background:var(--accent-soft);color:#3730a3}
-.top-btn:disabled{opacity:.42;cursor:default}
-.progress-track{height:8px;border-radius:999px;background:#e3e7ef;overflow:hidden;margin-bottom:10px;flex:0 0 auto}
-.progress-fill{height:100%;width:33.333%;border-radius:inherit;background:var(--accent);transition:width .3s ease}
-.card{position:relative;flex:1;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:clamp(12px,1.7vw,18px);display:flex;flex-direction:column}
-.comparison-grid{flex:1;min-height:320px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.solid-column{min-width:0;min-height:0;display:flex;flex-direction:column}
-.solid-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 7px;flex:0 0 auto}
-.solid-title{font-size:clamp(18px,2vw,23px);font-weight:900;color:var(--ink)}
-.live-count{padding:7px 11px;border:1px solid #cfcaf9;border-radius:999px;background:var(--accent-soft);color:#3730a3;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
-.viewer-shell{position:relative;flex:1;min-height:280px;border:2px solid #d8deea;border-radius:18px;background:#fbfcfe;overflow:hidden;touch-action:none}
-.viewer-shell canvas{display:block;width:100%;height:100%;touch-action:none;user-select:none}
-.viewer-help{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.94);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:800;pointer-events:none;white-space:nowrap}
-.counter-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-top:10px;flex:0 0 auto}
-.counter-card{min-width:0;padding:9px 8px;border:1px solid var(--line);border-radius:15px;background:#fbfcfe;text-align:center;transition:.18s ease}
-.counter-card.active{border-color:#aaa4ef;background:var(--accent-soft);box-shadow:inset 0 0 0 1px #d5d1ff}
-.counter-card.complete{border-color:#bde8d4;background:var(--green-soft)}
-.counter-card span{display:block;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.counter-card strong{display:block;margin-top:3px;color:#342eb5;font-size:24px;font-variant-numeric:tabular-nums}
-.counter-card.complete strong{color:#0e6a45}
-.feedback{min-height:44px;margin-top:9px;padding:9px 13px;border:1px solid #d5d1ff;border-radius:14px;background:var(--accent-soft);color:#3730a3;font-weight:800;line-height:1.3;display:flex;align-items:center;flex:0 0 auto}
-.feedback.empty{visibility:hidden}
-.feedback.good{background:var(--green-soft);color:#0e6a45;border-color:#bde8d4}
-.conclusion{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:20;width:min(620px,calc(100% - 32px));padding:22px;border:2px solid #8fd6b0;border-radius:20px;background:#f0fff6;text-align:center;box-shadow:0 18px 50px rgba(36,50,74,.22)}
-.conclusion.show{display:block}.conclusion h3{margin:0 0 7px;color:#0e6a45;font-size:clamp(22px,3vw,30px)}.conclusion p{margin:0;color:#185f42;font-weight:800;line-height:1.45}
-.confetti{position:fixed;top:-18px;width:10px;height:16px;z-index:1200;pointer-events:none;animation:fall linear forwards}@keyframes fall{to{transform:translate3d(var(--drift),110vh,0) rotate(780deg);opacity:.8}}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#f3f5fb" />
+  <title>Is a Cube a Cuboid?</title>
+  <style>
+    :root {
+      --bg: #eef2f8;
+      --panel: #ffffff;
+      --navy: #23375f;
+      --ink: #344865;
+      --muted: #6d7d96;
+      --line: #d9e1ed;
+      --lilac: #ece7ff;
+      --lilac-strong: #7c62d6;
+      --cube: #ee8a36;
+      --cuboid: #4d86d6;
+      --selected: #ffe16b;
+      --selected-deep: #f0b918;
+      --shadow: 0 10px 26px rgba(35, 55, 95, 0.11);
+    }
 
-html:fullscreen,html:fullscreen body{width:100%;height:100%;overflow:hidden}
-html:fullscreen .app,body.presentation-mode .app{width:100%;max-width:none;height:100dvh;min-height:0;padding:9px 12px;overflow:hidden}
-html:fullscreen .topbar,body.presentation-mode .topbar{margin-bottom:6px}
-html:fullscreen .progress-track,body.presentation-mode .progress-track{margin-bottom:7px}
-html:fullscreen .card,body.presentation-mode .card{min-height:0;padding:11px 12px;border-radius:16px}
-html:fullscreen .comparison-grid,body.presentation-mode .comparison-grid{min-height:0}
-html:fullscreen .viewer-shell,body.presentation-mode .viewer-shell{min-height:0}
-html:fullscreen .counter-grid,body.presentation-mode .counter-grid{margin-top:7px}
-html:fullscreen .feedback,body.presentation-mode .feedback{min-height:39px;margin-top:7px;padding:7px 12px}
-body.presentation-mode{width:100%;height:100dvh;overflow:hidden}
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-@media(max-width:980px){
-  h1{font-size:clamp(26px,3.6vw,34px)}
-  .top-controls{gap:6px}.top-btn{min-height:40px;padding:7px 11px}.progress-chip{min-height:40px;min-width:100px}
-  .comparison-grid{min-height:290px}.counter-grid{gap:7px}.counter-card{padding:8px 6px}
-}
-@media(max-width:820px){
-  .topbar{align-items:flex-start;flex-wrap:wrap}.top-controls{width:100%;justify-content:flex-start}
-  .comparison-grid{min-height:270px}.counter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.feedback{min-height:42px}
-}
-@media(max-width:620px){
-  .app{padding-bottom:14px}.comparison-grid{grid-template-columns:1fr;grid-template-rows:repeat(2,minmax(240px,1fr))}
-  .viewer-shell{min-height:240px}.counter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{border-radius:16px}h1{white-space:normal}
-}
-@media(orientation:portrait){
-  html:fullscreen .comparison-grid,body.presentation-mode .comparison-grid{grid-template-columns:1fr;grid-template-rows:repeat(2,minmax(0,1fr))}
-  html:fullscreen .topbar,body.presentation-mode .topbar{align-items:flex-start;flex-wrap:wrap}
-  html:fullscreen .top-controls,body.presentation-mode .top-controls{width:100%;justify-content:flex-start}
-  html:fullscreen .counter-grid,body.presentation-mode .counter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-@media(max-height:700px) and (orientation:landscape){
-  .app{padding-top:8px;padding-bottom:10px}.topbar{margin-bottom:5px}h1{font-size:29px}.top-btn,.progress-chip{min-height:36px}.top-btn{padding:6px 10px}
-  .progress-track{height:7px;margin-bottom:6px}.card{padding:9px 10px}.solid-head{margin-bottom:5px}.live-count{padding:5px 9px;font-size:14px}
-  .counter-grid{margin-top:6px}.counter-card{padding:6px 5px}.counter-card strong{font-size:21px}.feedback{min-height:36px;margin-top:6px;padding:6px 10px;font-size:14px}
-}
-</style>
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(68, 91, 130, .045) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(rgba(68, 91, 130, .045) 1px, transparent 1px) 0 0 / 34px 34px,
+        var(--bg);
+      color: var(--ink);
+      font-family: ui-rounded, "SF Pro Rounded", "Avenir Next", Avenir, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button { font: inherit; touch-action: manipulation; }
+
+    .app {
+      width: 100%;
+      min-height: 100dvh;
+      padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      display: grid;
+      grid-template-rows: auto minmax(420px, 1fr) auto;
+      gap: 12px;
+    }
+
+    .header {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "title controls"
+        "prompt controls"
+        "tabs tabs";
+      gap: 8px 16px;
+      align-items: center;
+    }
+
+    .title-wrap { grid-area: title; min-width: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: var(--lilac);
+      color: var(--lilac-strong);
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(27px, 3vw, 42px);
+      line-height: 1.04;
+    }
+
+    .prompt {
+      grid-area: prompt;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--ink);
+      font-size: clamp(15px, 1.6vw, 20px);
+      font-weight: 750;
+    }
+
+    .prompt-number {
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--lilac-strong);
+      color: white;
+      font-weight: 950;
+    }
+
+    .controls {
+      grid-area: controls;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .control-btn {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+      color: var(--navy);
+      padding: 0 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .control-btn.primary {
+      background: var(--navy);
+      border-color: transparent;
+      color: white;
+    }
+
+    .control-btn:disabled { opacity: .45; cursor: default; }
+
+    .tabs {
+      grid-area: tabs;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .tab {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f9fbff;
+      color: var(--muted);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--lilac);
+      border-color: transparent;
+      color: var(--lilac-strong);
+      box-shadow: inset 0 0 0 2px rgba(124, 98, 214, .14);
+    }
+
+    .main-area {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .solid-panel {
+      min-width: 0;
+      min-height: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .solid-heading {
+      padding: 13px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .solid-name {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--navy);
+      font-size: clamp(18px, 2vw, 26px);
+      font-weight: 950;
+    }
+
+    .solid-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--solid-color);
+    }
+
+    .live-count {
+      min-width: 90px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--solid-color), white 84%);
+      color: var(--navy);
+      text-align: center;
+      font-size: 14px;
+      font-weight: 950;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .solid-stage {
+      position: relative;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      perspective: 900px;
+      overflow: hidden;
+      touch-action: none;
+      background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--solid-color), white 88%), transparent 38%),
+        linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+    }
+
+    .solid-stage::after {
+      content: "Drag to rotate • Tap the highlighted feature";
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .floor-shadow {
+      position: absolute;
+      left: 50%;
+      top: 66%;
+      width: min(42%, 230px);
+      height: 36px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(35,55,95,.19), rgba(35,55,95,0) 70%);
+      filter: blur(5px);
+      pointer-events: none;
+    }
+
+    .float-wrap {
+      position: relative;
+      width: min(68%, 330px);
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+      animation: float 3.2s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(-5px); }
+      50% { transform: translateY(8px); }
+    }
+
+    .solid-object {
+      position: relative;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .feature {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      outline-offset: 4px;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .face {
+      display: grid;
+      place-items: center;
+      border: 3px solid rgba(35,55,95,.52);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.52), rgba(255,255,255,.04) 48%),
+        color-mix(in srgb, var(--solid-color), white 14%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+      backface-visibility: hidden;
+      opacity: .94;
+    }
+
+    .face::after {
+      content: "";
+      width: 42%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: rgba(255,255,255,.10);
+    }
+
+    .edge {
+      border-radius: 999px;
+      background: rgba(35,55,95,.73);
+      box-shadow: 0 0 0 2px rgba(255,255,255,.28);
+    }
+
+    .vertex {
+      border-radius: 50%;
+      background: rgba(35,55,95,.86);
+      box-shadow: 0 0 0 3px rgba(255,255,255,.62), 0 3px 8px rgba(35,55,95,.25);
+    }
+
+    .feature:not(.active-feature) {
+      pointer-events: none;
+    }
+
+    .face:not(.active-feature) { opacity: .62; }
+    .edge:not(.active-feature) { opacity: .35; }
+    .vertex:not(.active-feature) { opacity: .30; }
+
+    .feature.selected {
+      background: var(--selected) !important;
+      border-color: var(--selected-deep) !important;
+      box-shadow: 0 0 0 3px rgba(255,255,255,.82), 0 0 18px rgba(240,185,24,.72) !important;
+    }
+
+    .face.selected { opacity: .98; }
+
+    .counters-wrap {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .counter {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f9fbff;
+      padding: 10px 8px;
+      text-align: center;
+      transition: .18s ease;
+    }
+
+    .counter.active {
+      background: color-mix(in srgb, var(--counter-color), white 85%);
+      border-color: color-mix(in srgb, var(--counter-color), white 45%);
+      transform: translateY(-2px);
+    }
+
+    .counter-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .counter-value {
+      display: block;
+      margin-top: 4px;
+      color: var(--navy);
+      font-size: clamp(20px, 2.3vw, 32px);
+      line-height: 1;
+      font-weight: 950;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .comparison-message {
+      grid-column: 1 / -1;
+      display: none;
+      margin-top: 2px;
+      border-radius: 15px;
+      background: var(--lilac);
+      color: var(--navy);
+      padding: 10px 12px;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .comparison-message.show { display: block; }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 20;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      border-radius: 3px;
+      animation: confetti-fall 1.4s ease-in forwards;
+    }
+
+    @keyframes confetti-fall {
+      to { transform: translate3d(var(--drift), 110vh, 0) rotate(720deg); opacity: .2; }
+    }
+
+    @media (max-width: 900px) {
+      .app { grid-template-rows: auto minmax(350px, 1fr) auto; }
+      .header {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "title"
+          "prompt"
+          "controls"
+          "tabs";
+      }
+      .controls { justify-content: flex-start; }
+      .counter-label { font-size: 11px; }
+    }
+
+    @media (orientation: portrait) {
+      .app { grid-template-rows: auto auto auto; }
+      .main-area { grid-template-columns: 1fr; }
+      .solid-panel { min-height: 400px; }
+      .counters-wrap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .app { padding-left: 10px; padding-right: 10px; }
+      .header, .solid-panel, .counters-wrap { border-radius: 18px; }
+      .tabs { gap: 5px; }
+      .tab { padding: 0 6px; }
+      .controls { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .control-btn { padding: 0 8px; }
+      .solid-panel { min-height: 340px; }
+      .solid-stage::after { font-size: 10px; }
+    }
+  </style>
 </head>
-<body data-build="green-count-v4-20260731">
-<main class="app">
-  <div class="topbar">
-    <h1>Is a cube a cuboid?</h1>
-    <div class="top-controls" aria-label="Page and navigation controls">
-      <div class="progress-chip"><strong id="progressText">Page 1 / 3</strong></div>
-      <button type="button" class="top-btn" id="backBtn" disabled>Back</button>
-      <button type="button" class="top-btn" id="resetBtn">Reset</button>
-      <button type="button" class="top-btn primary" id="nextBtn" disabled>Next</button>
-      <button type="button" class="top-btn fullscreen" id="fullBtn">Full screen</button>
-    </div>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="title-wrap">
+        <div class="eyebrow">The Great Shapes Carnival</div>
+        <h1>Is a cube a cuboid?</h1>
+      </div>
+
+      <div id="prompt" class="prompt" aria-live="polite">
+        <span id="promptNumber" class="prompt-number">1</span>
+        <span id="promptText">Tap all 6 faces. Drag either solid to rotate it.</span>
+      </div>
+
+      <div class="controls">
+        <button id="pauseBtn" class="control-btn" type="button">Pause rotation</button>
+        <button id="resetPageBtn" class="control-btn" type="button">Reset page</button>
+        <button id="nextBtn" class="control-btn primary" type="button">Next: Edges</button>
+      </div>
+
+      <nav class="tabs" aria-label="Feature pages">
+        <button class="tab active" data-page="0" type="button">1. Faces</button>
+        <button class="tab" data-page="1" type="button">2. Edges</button>
+        <button class="tab" data-page="2" type="button">3. Vertices</button>
+      </nav>
+    </header>
+
+    <main class="main-area">
+      <section class="solid-panel" style="--solid-color: var(--cube);">
+        <div class="solid-heading">
+          <div class="solid-name"><span class="solid-dot"></span>Cube</div>
+          <div id="cubeLiveCount" class="live-count">Faces: 0 / 6</div>
+        </div>
+        <div class="solid-stage" data-solid="cube">
+          <div class="floor-shadow"></div>
+          <div class="float-wrap">
+            <div id="cubeObject" class="solid-object" aria-label="Rotating cube"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="solid-panel" style="--solid-color: var(--cuboid);">
+        <div class="solid-heading">
+          <div class="solid-name"><span class="solid-dot"></span>Cuboid</div>
+          <div id="cuboidLiveCount" class="live-count">Faces: 0 / 6</div>
+        </div>
+        <div class="solid-stage" data-solid="cuboid">
+          <div class="floor-shadow"></div>
+          <div class="float-wrap">
+            <div id="cuboidObject" class="solid-object" aria-label="Rotating cuboid"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section id="counters" class="counters-wrap" aria-label="Cube and cuboid counters">
+      <div class="counter active" data-solid="cube" data-feature="faces" style="--counter-color: var(--cube);">
+        <span class="counter-label">Cube faces</span>
+        <span class="counter-value">0 / 6</span>
+      </div>
+      <div class="counter" data-solid="cube" data-feature="edges" style="--counter-color: var(--cube);">
+        <span class="counter-label">Cube edges</span>
+        <span class="counter-value">0 / 12</span>
+      </div>
+      <div class="counter" data-solid="cube" data-feature="vertices" style="--counter-color: var(--cube);">
+        <span class="counter-label">Cube vertices</span>
+        <span class="counter-value">0 / 8</span>
+      </div>
+      <div class="counter active" data-solid="cuboid" data-feature="faces" style="--counter-color: var(--cuboid);">
+        <span class="counter-label">Cuboid faces</span>
+        <span class="counter-value">0 / 6</span>
+      </div>
+      <div class="counter" data-solid="cuboid" data-feature="edges" style="--counter-color: var(--cuboid);">
+        <span class="counter-label">Cuboid edges</span>
+        <span class="counter-value">0 / 12</span>
+      </div>
+      <div class="counter" data-solid="cuboid" data-feature="vertices" style="--counter-color: var(--cuboid);">
+        <span class="counter-label">Cuboid vertices</span>
+        <span class="counter-value">0 / 8</span>
+      </div>
+      <div id="comparisonMessage" class="comparison-message" aria-live="polite"></div>
+    </section>
   </div>
-  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
 
-  <section class="card">
-    <div class="comparison-grid">
-      <section class="solid-column" aria-label="Cube counting area">
-        <div class="solid-head"><div class="solid-title">Cube</div><div class="live-count" id="cubeLive">0 / 6 faces</div></div>
-        <div class="viewer-shell"><canvas id="cubeCanvas" aria-label="Rotatable cube"></canvas><div class="viewer-help" id="cubeHelp">Drag to rotate · tap each face</div></div>
-      </section>
-      <section class="solid-column" aria-label="Cuboid counting area">
-        <div class="solid-head"><div class="solid-title">Cuboid</div><div class="live-count" id="cuboidLive">0 / 6 faces</div></div>
-        <div class="viewer-shell"><canvas id="cuboidCanvas" aria-label="Rotatable cuboid"></canvas><div class="viewer-help" id="cuboidHelp">Drag to rotate · tap each face</div></div>
-      </section>
-    </div>
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
 
-    <div class="counter-grid" id="counterGrid">
-      <div class="counter-card active" data-solid="cube" data-kind="face"><span>Cube faces</span><strong>0 / 6</strong></div>
-      <div class="counter-card" data-solid="cube" data-kind="edge"><span>Cube edges</span><strong>0 / 12</strong></div>
-      <div class="counter-card" data-solid="cube" data-kind="vertex"><span>Cube vertices</span><strong>0 / 8</strong></div>
-      <div class="counter-card active" data-solid="cuboid" data-kind="face"><span>Cuboid faces</span><strong>0 / 6</strong></div>
-      <div class="counter-card" data-solid="cuboid" data-kind="edge"><span>Cuboid edges</span><strong>0 / 12</strong></div>
-      <div class="counter-card" data-solid="cuboid" data-kind="vertex"><span>Cuboid vertices</span><strong>0 / 8</strong></div>
-    </div>
+  <script>
+    (() => {
+      'use strict';
 
-    <div class="feedback empty" id="feedback" aria-live="polite"></div>
+      const pageData = [
+        { key: 'faces', label: 'Faces', singular: 'face', total: 6, next: 'Edges' },
+        { key: 'edges', label: 'Edges', singular: 'edge', total: 12, next: 'Vertices' },
+        { key: 'vertices', label: 'Vertices', singular: 'vertex', total: 8, next: null }
+      ];
 
-    <div class="conclusion" id="conclusion">
-      <h3>Yes. A cube is a special cuboid.</h3>
-      <p>Both solids have 6 faces, 12 edges and 8 vertices. A cube is a cuboid with all its faces as squares.</p>
-    </div>
-  </section>
-</main>
-<script>
-(() => {
-'use strict';
-const BUILD_VERSION='green-count-v4-20260731';
-console.info('Is a Cube a Cuboid build:', BUILD_VERSION);
-const PAGES=[
-  {kind:'face',plural:'faces',singular:'face',total:6},
-  {kind:'edge',plural:'edges',singular:'edge',total:12},
-  {kind:'vertex',plural:'vertices',singular:'vertex',total:8}
-];
-const V=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
-const EDGES=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-const FACES=[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[0,1,5,4],[3,7,6,2]];
-const EDGE_FACES=EDGES.map(([a,b])=>FACES.map((f,i)=>f.includes(a)&&f.includes(b)?i:-1).filter(i=>i>=0));
-const VERTEX_FACES=V.map((_,vi)=>FACES.map((f,i)=>f.includes(vi)?i:-1).filter(i=>i>=0));
-let pageIndex=0,audioCtx=null,celebrated=false;
-const selected={
-  cube:{face:[],edge:[],vertex:[]},
-  cuboid:{face:[],edge:[],vertex:[]}
-};
-const els={
-  progressText:document.getElementById('progressText'),progressFill:document.getElementById('progressFill'),
-  cubeLive:document.getElementById('cubeLive'),cuboidLive:document.getElementById('cuboidLive'),
-  cubeHelp:document.getElementById('cubeHelp'),cuboidHelp:document.getElementById('cuboidHelp'),counterGrid:document.getElementById('counterGrid'),feedback:document.getElementById('feedback'),
-  backBtn:document.getElementById('backBtn'),resetBtn:document.getElementById('resetBtn'),nextBtn:document.getElementById('nextBtn'),fullBtn:document.getElementById('fullBtn'),conclusion:document.getElementById('conclusion')
-};
-function ensureAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
-function tone(freq=520,dur=.09,type='triangle',vol=.045){ensureAudio();if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur)}
-function goodSound(){tone(523,.09);setTimeout(()=>tone(659,.09),80);setTimeout(()=>tone(784,.13),160)}
-function confetti(count=55){const cs=['#ffd166','#55e6a5','#ff6b7a','#a9c8e8','#cfa7f3','#ffc58f'];for(let i=0;i<count;i++){const p=document.createElement('div');p.className='confetti';p.style.left=Math.random()*100+'vw';p.style.background=cs[Math.floor(Math.random()*cs.length)];p.style.animationDuration=(2.2+Math.random()*2.1)+'s';p.style.animationDelay=(Math.random()*.35)+'s';p.style.setProperty('--drift',(-120+Math.random()*240)+'px');document.body.appendChild(p);setTimeout(()=>p.remove(),4700)}}
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
-function rotatePoint(p,ax,ay){let [x,y,z]=p;const cy=Math.cos(ay),sy=Math.sin(ay);let x1=x*cy+z*sy,z1=-x*sy+z*cy;const cx=Math.cos(ax),sx=Math.sin(ax);return [x1,y*cx-z1*sx,y*sx+z1*cx]}
-function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
-function sub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
-function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
-function pointInPolygon(x,y,pts){let inside=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;const hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi+1e-9)+xi);if(hit)inside=!inside}return inside}
-function pointSegDistance(px,py,a,b){const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;if(!l2)return Math.hypot(px-a.x,py-a.y);let t=((px-a.x)*dx+(py-a.y)*dy)/l2;t=clamp(t,0,1);return Math.hypot(px-(a.x+t*dx),py-(a.y+t*dy))}
-function centroid(pts){return {x:pts.reduce((s,p)=>s+p.x,0)/pts.length,y:pts.reduce((s,p)=>s+p.y,0)/pts.length}}
-function faceVisible(face,tv){const a=tv[face[0]],b=tv[face[1]],c=tv[face[2]],n=cross(sub(b,a),sub(c,a)),ctr=face.reduce((s,i)=>[s[0]+tv[i][0]/face.length,s[1]+tv[i][1]/face.length,s[2]+tv[i][2]/face.length],[0,0,0]);return dot(n,[-ctr[0],-ctr[1],6-ctr[2]])>0}
-class SolidCounter{
-  constructor(canvas,solid,dims,onChange){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.solid=solid;this.dims=dims;this.onChange=onChange;this.kind=PAGES[pageIndex].kind;this.ax=-.42;this.ay=.62;this.drag=false;this.moved=false;this.destroyed=false;this.lastFrame=performance.now();this.pauseUntil=0;this.projected=[];this.rotated=[];this.visibleFaces=[];this.faceOrder=[];this.ro=new ResizeObserver(()=>this.resize());this.ro.observe(canvas);this.bind();this.resize();this.loop()}
-  points(){const [sx,sy,sz]=this.dims;return V.map(([x,y,z])=>[x*sx,y*sy,z*sz])}
-  setKind(kind){this.kind=kind;this.draw(performance.now())}
-  resize(){const r=this.canvas.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);this.canvas.width=Math.max(2,Math.round(r.width*d));this.canvas.height=Math.max(2,Math.round(r.height*d));this.ctx.setTransform(d,0,0,d,0,0);this.w=r.width;this.h=r.height;this.draw(performance.now())}
-  bind(){
-    this.down=e=>{ensureAudio();this.canvas.setPointerCapture?.(e.pointerId);this.drag=true;this.moved=false;this.last={x:e.clientX,y:e.clientY};this.pauseUntil=Infinity};
-    this.move=e=>{if(!this.drag)return;const dx=e.clientX-this.last.x,dy=e.clientY-this.last.y;if(Math.hypot(dx,dy)>2)this.moved=true;this.ay+=dx*.012;this.ax=clamp(this.ax+dy*.012,-1.35,1.35);this.last={x:e.clientX,y:e.clientY};this.draw(performance.now())};
-    this.up=e=>{if(!this.drag)return;this.drag=false;this.pauseUntil=performance.now()+1400;if(!this.moved)this.tap(e)};
-    this.canvas.addEventListener('pointerdown',this.down);this.canvas.addEventListener('pointermove',this.move);this.canvas.addEventListener('pointerup',this.up);this.canvas.addEventListener('pointercancel',this.up)
-  }
-  destroy(){this.destroyed=true;cancelAnimationFrame(this.raf);this.ro.disconnect();this.canvas.removeEventListener('pointerdown',this.down);this.canvas.removeEventListener('pointermove',this.move);this.canvas.removeEventListener('pointerup',this.up);this.canvas.removeEventListener('pointercancel',this.up)}
-  tap(e){const r=this.canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let id=-1,best=Infinity;
-    if(this.kind==='face'){
-      const topToBottom=[...this.faceOrder].reverse();
-      for(const item of topToBottom){if(!this.visibleFaces[item.i])continue;const pts=FACES[item.i].map(j=>this.projected[j]);if(pointInPolygon(x,y,pts)){id=item.i;break}}
-    }else if(this.kind==='edge'){
-      EDGES.forEach((ed,i)=>{const visible=EDGE_FACES[i].some(fi=>this.visibleFaces[fi]);if(!visible)return;const d=pointSegDistance(x,y,this.projected[ed[0]],this.projected[ed[1]]);const depth=(this.rotated[ed[0]][2]+this.rotated[ed[1]][2])/2;const adjusted=d-depth*.35;if(adjusted<best){best=adjusted;id=i}});if(best>24)return;
-    }else{
-      this.projected.forEach((p,i)=>{const visible=VERTEX_FACES[i].some(fi=>this.visibleFaces[fi]);if(!visible)return;const d=Math.hypot(x-p.x,y-p.y)-this.rotated[i][2]*.3;if(d<best){best=d;id=i}});if(best>25)return;
-    }
-    if(id<0)return;const arr=selected[this.solid][this.kind];if(arr.includes(id)){tone(270,.07,'sine',.03);return}arr.push(id);tone(470+arr.length*19,.07);this.pauseUntil=performance.now()+2100;this.onChange(this.solid,this.kind,arr.length);this.draw(performance.now())
-  }
-  resetView(){this.ax=-.42;this.ay=.62;this.pauseUntil=performance.now()+700;this.draw(performance.now())}
-  loop(now=performance.now()){if(this.destroyed)return;const dt=Math.min(40,now-this.lastFrame);this.lastFrame=now;if(!this.drag&&now>this.pauseUntil)this.ay+=dt*.00020;this.draw(now);this.raf=requestAnimationFrame(t=>this.loop(t))}
-  draw(now){if(!this.w||!this.h)return;const c=this.ctx,w=this.w,h=this.h;c.clearRect(0,0,w,h);c.fillStyle='#fbfcfe';c.fillRect(0,0,w,h);
-    c.fillStyle='#e8edf5';for(let x=22;x<w;x+=38)for(let y=22;y<h;y+=38){c.beginPath();c.arc(x,y,1.2,0,Math.PI*2);c.fill()}
-    const raw=this.points();this.rotated=raw.map(p=>rotatePoint(p,this.ax,this.ay));this.visibleFaces=FACES.map(f=>faceVisible(f,this.rotated));const floatY=Math.sin(now/900)*4;const dist=5.2,base=Math.min(w,h)*(this.solid==='cube'?.245:.22);
-    this.projected=this.rotated.map(q=>{const f=dist/(dist-q[2]);return {x:w/2+q[0]*base*f,y:h/2-q[1]*base*f+floatY,z:q[2],f}});
-    this.faceOrder=FACES.map((f,i)=>({i,z:f.reduce((s,j)=>s+this.rotated[j][2],0)/f.length})).sort((a,b)=>a.z-b.z);
-    this.drawFaces(c);if(this.kind==='face')this.drawFaceNumbers(c);if(this.kind==='edge')this.drawEdges(c);else if(this.kind==='vertex')this.drawVertices(c);else this.drawOutline(c)
-  }
-  drawFaces(c){this.faceOrder.forEach(({i,z})=>{if(!this.visibleFaces[i])return;const pts=FACES[i].map(j=>this.projected[j]),num=selected[this.solid].face.indexOf(i)+1;c.beginPath();pts.forEach((p,k)=>k?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();if(this.kind==='face'&&num){c.fillStyle='#dcfce7';c.strokeStyle='#16a34a';c.lineWidth=3.5}else{const alpha=.48+Math.max(-.1,Math.min(.18,z*.055));c.fillStyle=i%2?`rgba(217,215,255,${alpha})`:`rgba(239,238,255,${alpha+.08})`;c.strokeStyle='#536178';c.lineWidth=2}c.fill();c.stroke()})}
-  drawOutline(c){EDGES.forEach((ed,i)=>{const a=this.projected[ed[0]],b=this.projected[ed[1]],visible=EDGE_FACES[i].some(fi=>this.visibleFaces[fi]);c.save();c.lineCap='round';c.lineWidth=visible?3:2;c.strokeStyle=visible?'rgba(83,97,120,.78)':'rgba(83,97,120,.24)';if(!visible)c.setLineDash([6,5]);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();c.restore()})}
-  drawFaceNumbers(c){selected[this.solid].face.forEach((id,index)=>{if(!this.visibleFaces[id])return;const spot=centroid(FACES[id].map(j=>this.projected[j]));this.numberBubble(c,spot.x,spot.y,index+1,'face')})}
-  drawEdges(c){const order=EDGES.map((ed,i)=>({ed,i,z:(this.rotated[ed[0]][2]+this.rotated[ed[1]][2])/2})).sort((a,b)=>a.z-b.z);order.forEach(({ed,i})=>{const a=this.projected[ed[0]],b=this.projected[ed[1]],visible=EDGE_FACES[i].some(fi=>this.visibleFaces[fi]),num=selected[this.solid].edge.indexOf(i)+1;c.save();c.lineCap='round';c.lineWidth=num?9:visible?6:4;c.strokeStyle=num?'#16a34a':visible?'#536178':'rgba(83,97,120,.30)';if(!visible&&!num)c.setLineDash([7,6]);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();c.restore();if(num&&visible)this.numberBubble(c,(a.x+b.x)/2,(a.y+b.y)/2,num,'edge')})}
-  drawVertices(c){this.drawOutline(c);const order=this.projected.map((p,i)=>({p,i,z:this.rotated[i][2]})).sort((a,b)=>a.z-b.z);order.forEach(({p,i})=>{const visible=VERTEX_FACES[i].some(fi=>this.visibleFaces[fi]),num=selected[this.solid].vertex.indexOf(i)+1;c.beginPath();c.arc(p.x,p.y,num?15:visible?10:8,0,Math.PI*2);c.fillStyle=num?'#16a34a':visible?'#536178':'rgba(83,97,120,.38)';c.fill();c.lineWidth=3;c.strokeStyle=num?'#087a35':'#fff';c.stroke();if(num&&visible){c.fillStyle='#fff';c.font='bold 13px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(num,p.x,p.y)}})}
-  numberBubble(c,x,y,num,kind){if(kind==='face'){c.fillStyle='#087a35';c.font='900 18px Arial';c.textAlign='center';c.textBaseline='middle';c.lineWidth=6;c.strokeStyle='#fff';c.strokeText(num,x,y);c.fillText(num,x,y);return}c.beginPath();c.arc(x,y,14,0,Math.PI*2);c.fillStyle='#dcfce7';c.fill();c.lineWidth=2;c.strokeStyle='#087a35';c.stroke();c.fillStyle='#075d2b';c.font='bold 13px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(num,x,y)}
-}
-const cubeScene=new SolidCounter(document.getElementById('cubeCanvas'),'cube',[1,1,1],onFeatureChange);
-const cuboidScene=new SolidCounter(document.getElementById('cuboidCanvas'),'cuboid',[1.42,.82,.70],onFeatureChange);
-function onFeatureChange(){
-  const p=PAGES[pageIndex];
-  updateUI();
-  const isComplete=selected.cube[p.kind].length===p.total&&selected.cuboid[p.kind].length===p.total;
-  if(isComplete){goodSound();if(pageIndex===2&&!celebrated){celebrated=true;confetti(62)}}
-}
-function updateUI(){
-  const p=PAGES[pageIndex];
-  const cubeCount=selected.cube[p.kind].length;
-  const cuboidCount=selected.cuboid[p.kind].length;
-  const complete=cubeCount===p.total&&cuboidCount===p.total;
-  const started=cubeCount+cuboidCount>0;
-  els.progressText.textContent=`Page ${pageIndex+1} / 3`;
-  els.progressFill.style.width=`${(pageIndex+1)/3*100}%`;
-  els.cubeLive.textContent=`${cubeCount} / ${p.total} ${p.plural}`;
-  els.cuboidLive.textContent=`${cuboidCount} / ${p.total} ${p.plural}`;
-  els.cubeHelp.textContent=`Drag to rotate · tap each ${p.singular}`;
-  els.cuboidHelp.textContent=`Drag to rotate · tap each ${p.singular}`;
-  els.backBtn.disabled=pageIndex===0;
-  els.nextBtn.textContent='Next';
-  els.nextBtn.disabled=!complete;
-  els.conclusion.classList.remove('show');
-  els.counterGrid.querySelectorAll('.counter-card').forEach(card=>{
-    const solid=card.dataset.solid,kind=card.dataset.kind,total=PAGES.find(pg=>pg.kind===kind).total,count=selected[solid][kind].length;
-    card.querySelector('strong').textContent=`${count} / ${total}`;
-    card.classList.toggle('active',kind===p.kind);
-    card.classList.toggle('complete',count===total)
-  });
-  cubeScene.setKind(p.kind);cuboidScene.setKind(p.kind);
-  if(complete){
-    els.feedback.className='feedback good';
-    els.feedback.textContent=`Excellent! Both the cube and cuboid have ${p.total} ${p.plural}.`;
-  }else if(started){
-    els.feedback.className='feedback';
-    els.feedback.textContent='Counting...';
-  }else{
-    els.feedback.className='feedback empty';
-    els.feedback.textContent='';
-  }
-}
-els.backBtn.addEventListener('click',()=>{if(pageIndex>0){pageIndex--;updateUI()}});
-els.nextBtn.addEventListener('click',()=>{if(els.nextBtn.disabled)return;if(pageIndex<2){pageIndex++;updateUI()}else{els.conclusion.classList.add('show')}});
-els.resetBtn.addEventListener('click',()=>{const p=PAGES[pageIndex];selected.cube[p.kind]=[];selected.cuboid[p.kind]=[];celebrated=false;cubeScene.resetView();cuboidScene.resetView();updateUI();tone(330,.08,'sine',.03)});
-function nativeFullscreenElement(){return document.fullscreenElement||document.webkitFullscreenElement||null}
-function resizeScenesSoon(){setTimeout(()=>{cubeScene.resize();cuboidScene.resize()},80);setTimeout(()=>{cubeScene.resize();cuboidScene.resize()},320)}
-function syncFullscreenUI(){
-  const active=Boolean(nativeFullscreenElement()||document.body.classList.contains('presentation-mode'));
-  els.fullBtn.textContent=active?'Exit full screen':'Full screen';
-  resizeScenesSoon();
-}
-async function toggleFullscreen(){
-  const native=nativeFullscreenElement();
-  const fallback=document.body.classList.contains('presentation-mode');
-  if(native){
-    const exit=document.exitFullscreen||document.webkitExitFullscreen;
-    if(exit){try{const result=exit.call(document);if(result&&typeof result.then==='function')await result}catch(_){}}
-  }else if(fallback){
-    document.body.classList.remove('presentation-mode');
-  }else{
-    const target=document.documentElement;
-    const request=target.requestFullscreen||target.webkitRequestFullscreen;
-    if(request){
-      try{
-        const result=request.call(target,{navigationUI:'hide'});
-        if(result&&typeof result.then==='function')await result;
-      }catch(_){document.body.classList.add('presentation-mode')}
-    }else{
-      document.body.classList.add('presentation-mode');
-    }
-  }
-  syncFullscreenUI();
-}
-els.fullBtn.addEventListener('click',toggleFullscreen);
-document.addEventListener('fullscreenchange',syncFullscreenUI);
-document.addEventListener('webkitfullscreenchange',syncFullscreenUI);
-window.addEventListener('resize',resizeScenesSoon);
-window.addEventListener('pagehide',()=>{cubeScene.destroy();cuboidScene.destroy()});
-updateUI();
-})();
-</script>
+      const dimensions = {
+        cube: { w: 190, h: 190, d: 190 },
+        cuboid: { w: 250, h: 155, d: 135 }
+      };
+
+      const selected = {
+        cube: { faces: new Set(), edges: new Set(), vertices: new Set() },
+        cuboid: { faces: new Set(), edges: new Set(), vertices: new Set() }
+      };
+
+      const rotations = {
+        cube: { x: -18, y: 28, dragging: false, lastX: 0, lastY: 0, moved: false },
+        cuboid: { x: -16, y: -24, dragging: false, lastX: 0, lastY: 0, moved: false }
+      };
+
+      let currentPage = 0;
+      let autoRotate = true;
+      let lastFrame = performance.now();
+
+      const promptNumber = document.getElementById('promptNumber');
+      const promptText = document.getElementById('promptText');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const resetPageBtn = document.getElementById('resetPageBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const comparisonMessage = document.getElementById('comparisonMessage');
+      const confetti = document.getElementById('confetti');
+
+      function px(n) { return `${n}px`; }
+
+      function addFeature(el, solid, type, index) {
+        el.classList.add('feature', type.slice(0, -1));
+        el.dataset.solid = solid;
+        el.dataset.feature = type;
+        el.dataset.index = index;
+        el.type = 'button';
+        el.setAttribute('aria-label', `${solid} ${type.slice(0, -1)} ${index + 1}`);
+        el.addEventListener('click', event => {
+          event.stopPropagation();
+          if (rotations[solid].moved || type !== pageData[currentPage].key) return;
+          selectFeature(el);
+        });
+      }
+
+      function createSolid(solid, container) {
+        const { w, h, d } = dimensions[solid];
+        const t = 13;
+        const v = 18;
+
+        const faces = [
+          { width: w, height: h, transform: `translate(-50%, -50%) translateZ(${d / 2}px)` },
+          { width: w, height: h, transform: `translate(-50%, -50%) rotateY(180deg) translateZ(${d / 2}px)` },
+          { width: d, height: h, transform: `translate(-50%, -50%) rotateY(90deg) translateZ(${w / 2}px)` },
+          { width: d, height: h, transform: `translate(-50%, -50%) rotateY(-90deg) translateZ(${w / 2}px)` },
+          { width: w, height: d, transform: `translate(-50%, -50%) rotateX(90deg) translateZ(${h / 2}px)` },
+          { width: w, height: d, transform: `translate(-50%, -50%) rotateX(-90deg) translateZ(${h / 2}px)` }
+        ];
+
+        faces.forEach((cfg, index) => {
+          const el = document.createElement('button');
+          addFeature(el, solid, 'faces', index);
+          el.style.width = px(cfg.width);
+          el.style.height = px(cfg.height);
+          el.style.transform = cfg.transform;
+          container.appendChild(el);
+        });
+
+        const edgeDefs = [];
+        [-1, 1].forEach(ySign => {
+          [-1, 1].forEach(zSign => {
+            edgeDefs.push({ len: w, axis: 'x', x: 0, y: ySign * h / 2, z: zSign * d / 2 });
+          });
+        });
+        [-1, 1].forEach(xSign => {
+          [-1, 1].forEach(zSign => {
+            edgeDefs.push({ len: h, axis: 'y', x: xSign * w / 2, y: 0, z: zSign * d / 2 });
+          });
+        });
+        [-1, 1].forEach(xSign => {
+          [-1, 1].forEach(ySign => {
+            edgeDefs.push({ len: d, axis: 'z', x: xSign * w / 2, y: ySign * h / 2, z: 0 });
+          });
+        });
+
+        edgeDefs.forEach((cfg, index) => {
+          const el = document.createElement('button');
+          addFeature(el, solid, 'edges', index);
+          if (cfg.axis === 'x') {
+            el.style.width = px(cfg.len);
+            el.style.height = px(t);
+            el.style.transform = `translate(-50%, -50%) translate3d(${cfg.x}px, ${cfg.y}px, ${cfg.z}px)`;
+          } else if (cfg.axis === 'y') {
+            el.style.width = px(t);
+            el.style.height = px(cfg.len);
+            el.style.transform = `translate(-50%, -50%) translate3d(${cfg.x}px, ${cfg.y}px, ${cfg.z}px)`;
+          } else {
+            el.style.width = px(cfg.len);
+            el.style.height = px(t);
+            el.style.transform = `translate(-50%, -50%) translate3d(${cfg.x}px, ${cfg.y}px, ${cfg.z}px) rotateY(90deg)`;
+          }
+          container.appendChild(el);
+        });
+
+        let vertexIndex = 0;
+        [-1, 1].forEach(xSign => {
+          [-1, 1].forEach(ySign => {
+            [-1, 1].forEach(zSign => {
+              const el = document.createElement('button');
+              addFeature(el, solid, 'vertices', vertexIndex++);
+              el.style.width = px(v);
+              el.style.height = px(v);
+              el.style.transform = `translate(-50%, -50%) translate3d(${xSign * w / 2}px, ${ySign * h / 2}px, ${zSign * d / 2}px)`;
+              container.appendChild(el);
+            });
+          });
+        });
+      }
+
+      createSolid('cube', document.getElementById('cubeObject'));
+      createSolid('cuboid', document.getElementById('cuboidObject'));
+
+      function selectFeature(el) {
+        const solid = el.dataset.solid;
+        const type = el.dataset.feature;
+        const index = Number(el.dataset.index);
+        if (selected[solid][type].has(index)) return;
+        selected[solid][type].add(index);
+        el.classList.add('selected');
+        if (el.animate) {
+          el.animate(
+            [{ transform: `${el.style.transform} scale(1)` }, { transform: `${el.style.transform} scale(1.18)` }, { transform: `${el.style.transform} scale(1)` }],
+            { duration: 250, easing: 'ease-out' }
+          );
+        }
+        updateUI();
+      }
+
+      function bindDrag(stage) {
+        const solid = stage.dataset.solid;
+        const state = rotations[solid];
+
+        stage.addEventListener('pointerdown', event => {
+          state.dragging = true;
+          state.moved = false;
+          state.lastX = event.clientX;
+          state.lastY = event.clientY;
+          stage.setPointerCapture?.(event.pointerId);
+        });
+
+        stage.addEventListener('pointermove', event => {
+          if (!state.dragging) return;
+          const dx = event.clientX - state.lastX;
+          const dy = event.clientY - state.lastY;
+          if (Math.abs(dx) + Math.abs(dy) > 2) state.moved = true;
+          state.y += dx * .45;
+          state.x -= dy * .35;
+          state.x = Math.max(-75, Math.min(75, state.x));
+          state.lastX = event.clientX;
+          state.lastY = event.clientY;
+        });
+
+        const endDrag = event => {
+          state.dragging = false;
+          try { stage.releasePointerCapture?.(event.pointerId); } catch (_) { }
+          setTimeout(() => { state.moved = false; }, 0);
+        };
+
+        stage.addEventListener('pointerup', endDrag);
+        stage.addEventListener('pointercancel', endDrag);
+      }
+
+      document.querySelectorAll('.solid-stage').forEach(bindDrag);
+
+      function animate(now) {
+        const dt = Math.min(40, now - lastFrame);
+        lastFrame = now;
+        ['cube', 'cuboid'].forEach(solid => {
+          const state = rotations[solid];
+          if (autoRotate && !state.dragging) state.y += dt * .012;
+          const object = document.getElementById(`${solid}Object`);
+          object.style.transform = `rotateX(${state.x}deg) rotateY(${state.y}deg)`;
+        });
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+
+      function updateFeatureVisibility() {
+        const activeKey = pageData[currentPage].key;
+        document.querySelectorAll('.feature').forEach(el => {
+          el.classList.toggle('active-feature', el.dataset.feature === activeKey);
+        });
+      }
+
+      function updateUI() {
+        const page = pageData[currentPage];
+        promptNumber.textContent = currentPage + 1;
+        promptText.textContent = `Tap all ${page.total} ${page.label.toLowerCase()}. Drag either solid to rotate it.`;
+
+        document.querySelectorAll('.tab').forEach((tab, index) => {
+          tab.classList.toggle('active', index === currentPage);
+        });
+
+        ['cube', 'cuboid'].forEach(solid => {
+          const count = selected[solid][page.key].size;
+          document.getElementById(`${solid}LiveCount`).textContent = `${page.label}: ${count} / ${page.total}`;
+        });
+
+        document.querySelectorAll('.counter').forEach(counter => {
+          const solid = counter.dataset.solid;
+          const feature = counter.dataset.feature;
+          const total = pageData.find(item => item.key === feature).total;
+          counter.querySelector('.counter-value').textContent = `${selected[solid][feature].size} / ${total}`;
+          counter.classList.toggle('active', feature === page.key);
+        });
+
+        nextBtn.textContent = page.next ? `Next: ${page.next}` : 'Back to Faces';
+        updateFeatureVisibility();
+        updateCompletionMessage();
+      }
+
+      function updateCompletionMessage() {
+        const page = pageData[currentPage];
+        const cubeDone = selected.cube[page.key].size === page.total;
+        const cuboidDone = selected.cuboid[page.key].size === page.total;
+
+        if (cubeDone && cuboidDone) {
+          const verb = page.key === 'vertices' ? 'have' : 'have';
+          comparisonMessage.textContent = `Both shapes ${verb} ${page.total} ${page.label.toLowerCase()}. What do you notice?`;
+          comparisonMessage.classList.add('show');
+          if (!comparisonMessage.dataset.celebrated || comparisonMessage.dataset.celebrated !== page.key) {
+            comparisonMessage.dataset.celebrated = page.key;
+            celebrate();
+          }
+        } else {
+          comparisonMessage.classList.remove('show');
+        }
+      }
+
+      function setPage(index) {
+        currentPage = Math.max(0, Math.min(2, index));
+        updateUI();
+      }
+
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => setPage(Number(tab.dataset.page)));
+      });
+
+      nextBtn.addEventListener('click', () => {
+        setPage(currentPage === 2 ? 0 : currentPage + 1);
+      });
+
+      pauseBtn.addEventListener('click', () => {
+        autoRotate = !autoRotate;
+        pauseBtn.textContent = autoRotate ? 'Pause rotation' : 'Resume rotation';
+      });
+
+      resetPageBtn.addEventListener('click', () => {
+        const page = pageData[currentPage];
+        ['cube', 'cuboid'].forEach(solid => {
+          selected[solid][page.key].clear();
+          document.querySelectorAll(`.feature[data-solid="${solid}"][data-feature="${page.key}"]`).forEach(el => el.classList.remove('selected'));
+        });
+        comparisonMessage.dataset.celebrated = '';
+        updateUI();
+      });
+
+      function celebrate() {
+        confetti.innerHTML = '';
+        const colors = ['#ee8a36', '#4d86d6', '#8a61cc', '#4da56b', '#e1b637'];
+        for (let i = 0; i < 28; i++) {
+          const piece = document.createElement('span');
+          piece.className = 'confetti-piece';
+          piece.style.left = `${Math.random() * 100}%`;
+          piece.style.background = colors[i % colors.length];
+          piece.style.setProperty('--drift', `${(Math.random() - .5) * 180}px`);
+          piece.style.animationDelay = `${Math.random() * .18}s`;
+          confetti.appendChild(piece);
+        }
+        setTimeout(() => { confetti.innerHTML = ''; }, 1800);
+      }
+
+      updateUI();
+    })();
+  </script>
 </body>
 </html>
