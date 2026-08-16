@@ -116,6 +116,38 @@
       line-height: 1.65;
     }
 
+    .section-switcher {
+      width: 100%;
+      max-width: 210px;
+      margin: 26px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.38);
+      border: 1px solid rgba(255,255,255,0.52);
+    }
+
+    .section-btn {
+      min-height: 42px;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: #596074;
+      cursor: pointer;
+      font-weight: 900;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+    .section-btn:hover { transform: translateY(-1px); }
+
+    .section-btn.active {
+      background: rgba(255,255,255,0.88);
+      color: #333b4e;
+      box-shadow: 0 6px 16px rgba(61,67,92,0.10);
+    }
+
     .sidebar-footer {
       position: relative;
       z-index: 1;
@@ -336,6 +368,32 @@
       height: 100%;
       object-fit: cover;
       transition: transform 0.35s ease;
+    }
+
+    .preview-placeholder {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,.74), transparent 9rem),
+        linear-gradient(135deg, var(--blue), var(--lavender) 52%, var(--mint));
+      color: #4e566a;
+    }
+
+    .preview-placeholder-inner {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    .preview-placeholder-icon { font-size: 2rem; }
+    .preview-placeholder strong { font-size: .95rem; }
+    .preview-placeholder span {
+      font-size: .76rem;
+      color: #697184;
     }
 
     .card:hover .preview {
@@ -580,18 +638,6 @@
         font-size: 0.86rem;
       }
     }
-
-    .preview-fallback {
-      width: 100%;
-      aspect-ratio: 16 / 10;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(145deg, rgba(224,232,255,.95), rgba(255,242,222,.95));
-      color: #33384a;
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 900;
-      letter-spacing: .06em;
-    }
   </style>
 </head>
 
@@ -601,6 +647,11 @@
       <div class="brand">
         <h1>Edu Play Lab</h1>
         <p>Interactive classroom games, activities and tools for primary school educators.</p>
+
+        <nav class="section-switcher" aria-label="Choose resource type">
+          <button class="section-btn active" type="button" data-section="Games">Games</button>
+          <button class="section-btn" type="button" data-section="Tools">Tools</button>
+        </nav>
       </div>
 
       <footer class="sidebar-footer">
@@ -674,158 +725,52 @@
 
   <script>
     const interactives = [
-      {
-        title: "Quick Shape Sort Battle Royale",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Competitive",
-        file: "games/Quick_Shape_Sort_Battle_Royale.html",
-        preview: "previews/quick-shape-sort-battle-royale.gif"
-      },
-      {
-        title: "3D Shapes Battle Royale",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Competitive",
-        file: "games/3D_Shapes_Battle_Royale.html",
-        preview: "previews/3d-shapes-battle-royale.gif"
-      },
-      {
-        title: "Class vs the Pattern Dragon",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Cooperative",
-        file: "games/Class_vs_the_Pattern_Dragon.html",
-        preview: "previews/class-vs-the-pattern-dragon.gif"
-      },
-      {
-        title: "Class vs the 3D-Shape Dinosaur",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Cooperative",
-        file: "games/Class_vs_the_3D-Shape_Dinosaur.html",
-        preview: "previews/class-vs-the-3d-shape-dinosaur.gif"
-      },
-      {
-        title: "Triple Jeopardy",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Competitive",
-        file: "games/Triple_Jeopardy.html",
-        preview: "previews/triple-jeopardy.gif"
-      },
-      {
-        title: "Triple Jeopardy Rematch",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Competitive",
-        file: "games/Triple_Jeopardy_Rematch.html",
-        preview: "previews/triple-jeopardy-rematch.gif"
-      },
-      {
-        title: "Is a Cube a Cuboid?",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Tool",
-        file: "games/Is_a_Cube_a_Cuboid.html",
-        preview: "previews/is-a-cube-a-cuboid.gif"
-      },
-      {
-        title: "Word Order Race",
-        level: "P2",
-        subject: "English",
-        unitNumber: "Unit 11",
-        unitName: "The Feast",
-        type: "Competitive",
-        file: "games/Word_Order_Race.html",
-        preview: "previews/word-order-race.gif"
-      },
-      {
-        title: "Conjunction And Battle Royale",
-        level: "P2",
-        subject: "English",
-        unitNumber: "Unit 10",
-        unitName: "Magnetic Max",
-        type: "Competitive",
-        file: "games/Conjunction_And_Battle_Royale.html",
-        preview: "previews/conjunction-and-battle-royale.gif"
-      },
-      {
-        title: "Future Verb Letter Race",
-        level: "P2",
-        subject: "English",
-        unitNumber: "Unit 11",
-        unitName: "The Feast",
-        type: "Competitive",
-        file: "games/Future_Verb_Letter_Race.html",
-        preview: "previews/future-verb-letter-race.gif"
-      },
-      {
-        title: "Make a Pattern",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Tool",
-        file: "tools/Make_a_Pattern.html",
-        previewIcon: "◯ △ □"
-      },
-      {
-        title: "Shape Architect",
-        level: "P2",
-        subject: "Maths",
-        unitNumber: "Chapter 14",
-        unitName: "Shapes",
-        type: "Tool",
-        file: "tools/Shape_Architect.html",
-        previewIcon: "🧊 🏗️"
-      }
+      { title:"Quick Shape Sort Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Quick_Shape_Sort_Battle_Royale.html", preview:"previews/quick-shape-sort-battle-royale.gif" },
+      { title:"3D Shapes Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/3D_Shapes_Battle_Royale.html", preview:"previews/3d-shapes-battle-royale.gif" },
+      { title:"Class vs the Pattern Dragon", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Cooperative", file:"games/Class_vs_the_Pattern_Dragon.html", preview:"previews/class-vs-the-pattern-dragon.gif" },
+      { title:"Class vs the 3D-Shape Dinosaur", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Cooperative", file:"games/Class_vs_the_3D-Shape_Dinosaur.html", preview:"previews/class-vs-the-3d-shape-dinosaur.gif" },
+      { title:"Triple Jeopardy", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Triple_Jeopardy.html", preview:"previews/triple-jeopardy.gif" },
+      { title:"Triple Jeopardy Rematch", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Triple_Jeopardy_Rematch.html", preview:"previews/triple-jeopardy-rematch.gif" },
+      { title:"Word Order Race", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/Word_Order_Race.html", preview:"previews/word-order-race.gif" },
+      { title:"Conjunction And Battle Royale", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 10", unitName:"Magnetic Max", type:"Competitive", file:"games/Conjunction_And_Battle_Royale.html", preview:"previews/conjunction-and-battle-royale.gif" },
+      { title:"Future Verb Letter Race", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/Future_Verb_Letter_Race.html", preview:"previews/future-verb-letter-race.gif" },
+
+      { title:"Is a Cube a Cuboid?", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Is_a_Cube_a_Cuboid.html", preview:"previews/is-a-cube-a-cuboid.gif" },
+      { title:"Make a Pattern", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Make_a_Pattern.html", preview:"" },
+      { title:"Shape Architect", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Shape_Architect.html", preview:"" }
     ];
 
-    const subjectColours = {
-      Maths: "#dceaff",
-      English: "#e9e0ff"
-    };
-
+    const subjectColours = { Maths:"#dceaff", English:"#e9e0ff" };
     const filterConfig = [
-      { key: "level", label: "LEVEL" },
-      { key: "subject", label: "SUBJECT" },
-      { key: "type", label: "TYPE" }
+      { key:"level", label:"LEVEL" },
+      { key:"subject", label:"SUBJECT" },
+      { key:"type", label:"TYPE" }
     ];
 
-    const activeFilters = {
-      level: "All",
-      subject: "All",
-      type: "All"
-    };
+    const activeFilters = { level:"All", subject:"All", type:"All" };
+    let activeSection = "Games";
 
     const cardsEl = document.getElementById("cards");
     const filtersEl = document.getElementById("filters");
     const filterToggle = document.getElementById("filterToggle");
     const searchInput = document.getElementById("searchInput");
+    const sectionButtons = [...document.querySelectorAll(".section-btn")];
+    const gameSetupBar = document.querySelector(".game-setup-bar");
+
+    function currentSectionItems() {
+      return interactives.filter(item => item.section === activeSection);
+    }
 
     function uniqueValues(key) {
-      return [...new Set(interactives.map(item => item[key]))];
+      return [...new Set(currentSectionItems().map(item => item[key]))];
     }
 
     function renderFilters() {
       filtersEl.innerHTML = "";
-
       filterConfig.forEach(config => {
+        const values = uniqueValues(config.key);
+        if (!values.length) return;
+
         const row = document.createElement("div");
         row.className = "filter-row";
 
@@ -836,19 +781,16 @@
         const buttons = document.createElement("div");
         buttons.className = "filter-buttons";
 
-        ["All", ...uniqueValues(config.key)].forEach(value => {
+        ["All", ...values].forEach(value => {
           const button = document.createElement("button");
           button.type = "button";
-          button.className =
-            "filter-btn" + (activeFilters[config.key] === value ? " active" : "");
+          button.className = "filter-btn" + (activeFilters[config.key] === value ? " active" : "");
           button.textContent = value;
-
           button.addEventListener("click", () => {
             activeFilters[config.key] = value;
             renderFilters();
             renderCards();
           });
-
           buttons.appendChild(button);
         });
 
@@ -858,29 +800,16 @@
     }
 
     function searchableText(item) {
-      return [
-        item.title,
-        item.level,
-        item.subject,
-        item.unitNumber,
-        item.unitName,
-        item.type
-      ].join(" ").toLowerCase();
+      return [item.title, item.section, item.level, item.subject, item.unitNumber, item.unitName, item.type].join(" ").toLowerCase();
     }
 
     function getFilteredItems() {
-      const query = searchInput.value.trim().toLowerCase();
-
-      return interactives.filter(item => {
-        const matchesSearch = !query || searchableText(item).includes(query);
-        const matchesLevel =
-          activeFilters.level === "All" || item.level === activeFilters.level;
-        const matchesSubject =
-          activeFilters.subject === "All" || item.subject === activeFilters.subject;
-        const matchesType =
-          activeFilters.type === "All" || item.type === activeFilters.type;
-
-        return matchesSearch && matchesLevel && matchesSubject && matchesType;
+      const q = searchInput.value.trim().toLowerCase();
+      return currentSectionItems().filter(item => {
+        return (!q || searchableText(item).includes(q)) &&
+          (activeFilters.level === "All" || item.level === activeFilters.level) &&
+          (activeFilters.subject === "All" || item.subject === activeFilters.subject) &&
+          (activeFilters.type === "All" || item.type === activeFilters.type);
       });
     }
 
@@ -888,54 +817,82 @@
       return "type-" + type.toLowerCase();
     }
 
+    function previewMarkup(item) {
+      if (item.preview) {
+        return `
+          <img class="preview" src="${item.preview}" alt="Animated preview of ${item.title}" loading="lazy" />
+          <span class="preview-label">Preview</span>
+        `;
+      }
+      return `
+        <div class="preview-placeholder" aria-label="Preview coming soon">
+          <div class="preview-placeholder-inner">
+            <div class="preview-placeholder-icon" aria-hidden="true">✦</div>
+            <strong>${item.title}</strong>
+            <span>Animated preview coming soon</span>
+          </div>
+        </div>
+      `;
+    }
+
     function renderCards() {
       const items = getFilteredItems();
       cardsEl.innerHTML = "";
 
       if (!items.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.innerHTML =
-          "<strong>No matches found</strong>Try another search term or change the filters.";
-        cardsEl.appendChild(empty);
+        cardsEl.innerHTML = '<div class="empty-state"><strong>No matches found</strong>Try another search term or change the filters.</div>';
         return;
       }
 
       items.forEach(item => {
         const article = document.createElement("article");
         article.className = "card";
-        article.style.setProperty(
-          "--accent",
-          subjectColours[item.subject] || "#e9e0ff"
-        );
-
+        article.style.setProperty("--accent", subjectColours[item.subject] || "#e9e0ff");
         article.innerHTML = `
           <a class="preview-link" href="${item.file}" aria-label="Open ${item.title}">
-            ${item.preview
-              ? `<img class="preview" src="${item.preview}" alt="Animated preview of ${item.title}" loading="lazy" />`
-              : `<div class="preview-fallback" aria-hidden="true">${item.previewIcon || "✦"}</div>`}
-            <span class="preview-label">Preview</span>
+            ${previewMarkup(item)}
           </a>
-
           <div class="card-body">
             <h2>${item.title}</h2>
             <p class="curriculum">${item.unitNumber} · ${item.unitName}</p>
-
             <div class="tags" aria-label="Tags">
               <span class="tag">${item.level}</span>
               <span class="tag subject">${item.subject}</span>
               <span class="tag ${typeClass(item.type)}">${item.type}</span>
             </div>
-
             <a class="play-btn" href="${item.file}">
-              Play <span aria-hidden="true">→</span>
+              ${activeSection === "Tools" ? "Open Tool" : "Play"} <span aria-hidden="true">→</span>
             </a>
           </div>
         `;
-
         cardsEl.appendChild(article);
       });
     }
+
+    function switchSection(section) {
+      activeSection = section;
+      sectionButtons.forEach(button => {
+        const on = button.dataset.section === section;
+        button.classList.toggle("active", on);
+        button.setAttribute("aria-pressed", String(on));
+      });
+
+      activeFilters.level = "All";
+      activeFilters.subject = "All";
+      activeFilters.type = "All";
+      searchInput.value = "";
+
+      renderFilters();
+      renderCards();
+
+      if (gameSetupBar) {
+        gameSetupBar.hidden = section !== "Games";
+      }
+    }
+
+    sectionButtons.forEach(button => {
+      button.addEventListener("click", () => switchSection(button.dataset.section));
+    });
 
     filterToggle.addEventListener("click", () => {
       const isOpen = filterToggle.getAttribute("aria-expanded") === "true";
@@ -945,10 +902,7 @@
     });
 
     document.addEventListener("keydown", event => {
-      if (
-        event.key === "Escape" &&
-        filterToggle.getAttribute("aria-expanded") === "true"
-      ) {
+      if (event.key === "Escape" && filterToggle.getAttribute("aria-expanded") === "true") {
         filterToggle.setAttribute("aria-expanded", "false");
         filterToggle.setAttribute("aria-label", "Show filters");
         filtersEl.classList.remove("open");
@@ -958,8 +912,7 @@
 
     searchInput.addEventListener("input", renderCards);
 
-    renderFilters();
-    renderCards();
+    switchSection("Games");
   </script>
 </body>
 </html>
