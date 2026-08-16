@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Edu Play Lab — interactive classroom games, activities and tools for primary school educators." />
+  <title>Edu Play Lab</title>
+
+  <style>
+    :root {
+      --ink: #253047;
+      --muted: #667085;
+      --paper: #fffdfb;
+      --line: #e7e9f2;
+
+      --pink: #ffdce8;
+      --pink-strong: #f7a9c4;
+      --peach: #ffe5cf;
+      --yellow: #fff1b8;
+      --mint: #d9f3e5;
+      --aqua: #d9f3f4;
+      --blue: #dceaff;
+      --lavender: #e7defb;
+      --lavender-strong: #b8a3ee;
+
+      --maths: #dceaff;
+      --english: #eadffd;
+
+      --shadow: 0 12px 34px rgba(54, 63, 93, 0.10);
+      --shadow-hover: 0 16px 42px rgba(54, 63, 93, 0.16);
+      --radius-lg: 26px;
+      --radius-md: 18px;
+      --radius-sm: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 4%, rgba(255, 220, 232, 0.72), transparent 26rem),
+        radial-gradient(circle at 93% 10%, rgba(220, 234, 255, 0.74), transparent 28rem),
+        radial-gradient(circle at 20% 88%, rgba(217, 243, 229, 0.64), transparent 28rem),
+        linear-gradient(180deg, #fffdfb 0%, #fbfbff 100%);
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page-shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 54px 0 30px;
+      text-align: center;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(37,48,71,0.08);
+      box-shadow: 0 7px 22px rgba(72, 78, 108, 0.08);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      font-size: 0.9rem;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink-strong), var(--lavender-strong));
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(2.7rem, 7vw, 5.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.6;
+    }
+
+    .control-panel {
+      margin: 28px auto 34px;
+      padding: 22px;
+      background: rgba(255,255,255,0.84);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(37,48,71,0.08);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .search-wrap {
+      position: relative;
+      max-width: 760px;
+      margin: 0 auto 20px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 16px 18px 16px 50px;
+      border-radius: 18px;
+      border: 1px solid #dfe3ee;
+      background: white;
+      color: var(--ink);
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    #searchInput:focus {
+      border-color: #b7a5eb;
+      box-shadow: 0 0 0 4px rgba(184, 163, 238, 0.18);
+    }
+
+    .filters {
+      display: grid;
+      gap: 15px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .filter-label {
+      text-align: left;
+      font-weight: 900;
+      font-size: 0.76rem;
+      letter-spacing: 0.1em;
+      color: #667085;
+    }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .filter-btn {
+      border: 1px solid #dde1eb;
+      background: #fff;
+      color: #4b5565;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(49,57,87,0.08);
+    }
+
+    .filter-btn.active {
+      color: #2d2842;
+      background: linear-gradient(135deg, var(--pink), var(--lavender));
+      border-color: transparent;
+      box-shadow: 0 7px 16px rgba(142, 122, 202, 0.16);
+    }
+
+    .results-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 2px 18px;
+    }
+
+    .results-count {
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .results-note {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(37,48,71,0.08);
+      box-shadow: var(--shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .preview-link {
+      display: block;
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #eef1f7;
+      text-decoration: none;
+    }
+
+    .preview-link::after {
+      content: "Preview";
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.90);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .card:hover .preview {
+      transform: scale(1.018);
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      flex: 1;
+      padding: 19px;
+      border-top: 8px solid var(--accent, var(--lavender));
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.28rem;
+      line-height: 1.25;
+      letter-spacing: -0.025em;
+    }
+
+    .curriculum {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 6px 9px;
+      border-radius: var(--radius-sm);
+      background: #f4f6fa;
+      border: 1px solid #e7eaf0;
+      font-size: 0.76rem;
+      font-weight: 900;
+      color: #596173;
+    }
+
+    .tag.subject {
+      background: var(--accent, var(--lavender));
+      border-color: transparent;
+      color: #3c4051;
+    }
+
+    .tag.type-competitive {
+      background: var(--peach);
+      border-color: transparent;
+    }
+
+    .tag.type-cooperative {
+      background: var(--mint);
+      border-color: transparent;
+    }
+
+    .tag.type-tool {
+      background: var(--yellow);
+      border-color: transparent;
+    }
+
+    .play-btn {
+      margin-top: auto;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 11px 16px;
+      border-radius: 15px;
+      background: #27314a;
+      color: white;
+      text-decoration: none;
+      font-weight: 900;
+      box-shadow: 0 8px 16px rgba(37,48,71,0.14);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .play-btn:hover {
+      transform: translateY(-1px);
+      background: #192237;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 52px 24px;
+      background: rgba(255,255,255,0.78);
+      border: 1px dashed #d8dce7;
+      border-radius: var(--radius-lg);
+    }
+
+    .empty-state h3 {
+      margin: 0 0 8px;
+    }
+
+    .privacy {
+      margin: 48px 0 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 24px;
+      align-items: center;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(217,243,229,0.90), rgba(231,222,251,0.90));
+      border: 1px solid rgba(37,48,71,0.07);
+      box-shadow: var(--shadow);
+    }
+
+    .privacy-preview {
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 10px 26px rgba(56,63,91,0.11);
+    }
+
+    .privacy-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .privacy-copy h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      letter-spacing: -0.035em;
+    }
+
+    .privacy-copy p {
+      margin: 0;
+      color: #4f596d;
+      line-height: 1.65;
+    }
+
+    .privacy-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 11px;
+      padding: 7px 11px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.68);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    footer {
+      padding: 16px 0 44px;
+      text-align: center;
+      color: #7b8495;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 980px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .privacy {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .page-shell {
+        width: min(100% - 20px, 1240px);
+      }
+
+      .hero {
+        padding-top: 38px;
+      }
+
+      .control-panel {
+        padding: 16px;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .results-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-shell">
+    <section class="hero" aria-labelledby="pageTitle">
+      <div class="brand-badge"><span class="brand-dot"></span> Classroom-ready interactives</div>
+      <h1 id="pageTitle">Edu Play Lab</h1>
+      <p>Interactive classroom games, activities and tools for primary school educators.</p>
+    </section>
+
+    <section class="control-panel" aria-label="Search and filter interactives">
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <label for="searchInput" class="sr-only" style="position:absolute;left:-9999px;">Search interactives</label>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search by title, level, subject, unit, chapter or type..."
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="filters" id="filters"></div>
+    </section>
+
+    <div class="results-row">
+      <div class="results-count" id="resultsCount">10 interactives</div>
+      <div class="results-note">Choose an activity to open it in your browser.</div>
+    </div>
+
+    <section class="cards" id="cards" aria-live="polite"></section>
+
+    <section class="privacy">
+      <div class="privacy-preview">
+        <img src="previews/game-setup.gif" alt="Animated preview of the Game Setup interface" loading="lazy" />
+      </div>
+
+      <div class="privacy-copy">
+        <div class="privacy-chip">🔒 Local-first Game Setup</div>
+        <h2>Student data stays on the teacher's device.</h2>
+        <p>
+          Game Setup files are read locally in the browser. Student names and group information are not uploaded to
+          Edu Play Lab or stored in an online database. Teachers remain in control of their own local setup file.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      Edu Play Lab · Built for playful, purposeful classroom learning
+    </footer>
+  </main>
+
+  <script>
+    const interactives = [
+      {
+        title: "Quick Shape Sort Battle Royale",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Competitive",
+        file: "games/Quick_Shape_Sort_Battle_Royale.html",
+        preview: "previews/quick-shape-sort-battle-royale.gif"
+      },
+      {
+        title: "3D Shapes Battle Royale",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Competitive",
+        file: "games/3D_Shapes_Battle_Royale.html",
+        preview: "previews/3d-shapes-battle-royale.gif"
+      },
+      {
+        title: "Class vs the Pattern Dragon",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Cooperative",
+        file: "games/Class_vs_the_Pattern_Dragon.html",
+        preview: "previews/class-vs-the-pattern-dragon.gif"
+      },
+      {
+        title: "Class vs the 3D-Shape Dinosaur",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Cooperative",
+        file: "games/Class_vs_the_3D-Shape_Dinosaur.html",
+        preview: "previews/class-vs-the-3d-shape-dinosaur.gif"
+      },
+      {
+        title: "Triple Jeopardy",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Competitive",
+        file: "games/Triple_Jeopardy.html",
+        preview: "previews/triple-jeopardy.gif"
+      },
+      {
+        title: "Triple Jeopardy Rematch",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Competitive",
+        file: "games/Triple_Jeopardy_Rematch.html",
+        preview: "previews/triple-jeopardy-rematch.gif"
+      },
+      {
+        title: "Is a Cube a Cuboid?",
+        level: "P2",
+        subject: "Maths",
+        unitNumber: "Chapter 14",
+        unitName: "Shapes",
+        type: "Tool",
+        file: "games/Is_a_Cube_a_Cuboid.html",
+        preview: "previews/is-a-cube-a-cuboid.gif"
+      },
+      {
+        title: "Word Order Race",
+        level: "P2",
+        subject: "English",
+        unitNumber: "Unit 11",
+        unitName: "The Feast",
+        type: "Competitive",
+        file: "games/Word_Order_Race.html",
+        preview: "previews/word-order-race.gif"
+      },
+      {
+        title: "Conjunction And Battle Royale",
+        level: "P2",
+        subject: "English",
+        unitNumber: "Unit 10",
+        unitName: "Magnetic Max",
+        type: "Competitive",
+        file: "games/Conjunction_And_Battle_Royale.html",
+        preview: "previews/conjunction-and-battle-royale.gif"
+      },
+      {
+        title: "Future Verb Letter Race",
+        level: "P2",
+        subject: "English",
+        unitNumber: "Unit 11",
+        unitName: "The Feast",
+        type: "Competitive",
+        file: "games/Future_Verb_Letter_Race.html",
+        preview: "previews/future-verb-letter-race.gif"
+      }
+    ];
+
+    const subjectColours = {
+      Maths: "#dceaff",
+      English: "#eadffd"
+    };
+
+    const filterConfig = [
+      { key: "level", label: "LEVEL" },
+      { key: "subject", label: "SUBJECT" },
+      { key: "type", label: "TYPE" }
+    ];
+
+    const activeFilters = {
+      level: "All",
+      subject: "All",
+      type: "All"
+    };
+
+    const cardsEl = document.getElementById("cards");
+    const filtersEl = document.getElementById("filters");
+    const searchInput = document.getElementById("searchInput");
+    const resultsCount = document.getElementById("resultsCount");
+
+    function uniqueValues(key) {
+      return [...new Set(interactives.map(item => item[key]))];
+    }
+
+    function renderFilters() {
+      filtersEl.innerHTML = "";
+
+      filterConfig.forEach(config => {
+        const row = document.createElement("div");
+        row.className = "filter-row";
+
+        const label = document.createElement("div");
+        label.className = "filter-label";
+        label.textContent = config.label;
+
+        const buttons = document.createElement("div");
+        buttons.className = "filter-buttons";
+
+        ["All", ...uniqueValues(config.key)].forEach(value => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "filter-btn" + (activeFilters[config.key] === value ? " active" : "");
+          button.textContent = value;
+          button.dataset.filterKey = config.key;
+          button.dataset.filterValue = value;
+
+          button.addEventListener("click", () => {
+            activeFilters[config.key] = value;
+            renderFilters();
+            renderCards();
+          });
+
+          buttons.appendChild(button);
+        });
+
+        row.append(label, buttons);
+        filtersEl.appendChild(row);
+      });
+    }
+
+    function searchableText(item) {
+      return [
+        item.title,
+        item.level,
+        item.subject,
+        item.unitNumber,
+        item.unitName,
+        item.type
+      ].join(" ").toLowerCase();
+    }
+
+    function getFilteredItems() {
+      const query = searchInput.value.trim().toLowerCase();
+
+      return interactives.filter(item => {
+        const matchesSearch = !query || searchableText(item).includes(query);
+        const matchesLevel = activeFilters.level === "All" || item.level === activeFilters.level;
+        const matchesSubject = activeFilters.subject === "All" || item.subject === activeFilters.subject;
+        const matchesType = activeFilters.type === "All" || item.type === activeFilters.type;
+
+        return matchesSearch && matchesLevel && matchesSubject && matchesType;
+      });
+    }
+
+    function typeClass(type) {
+      return "type-" + type.toLowerCase();
+    }
+
+    function renderCards() {
+      const items = getFilteredItems();
+      cardsEl.innerHTML = "";
+
+      resultsCount.textContent = `${items.length} ${items.length === 1 ? "interactive" : "interactives"}`;
+
+      if (!items.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.innerHTML = `
+          <h3>No matches found</h3>
+          <div>Try a different search term or change one of the filters.</div>
+        `;
+        cardsEl.appendChild(empty);
+        return;
+      }
+
+      items.forEach(item => {
+        const article = document.createElement("article");
+        article.className = "card";
+        article.style.setProperty("--accent", subjectColours[item.subject] || "#e7defb");
+
+        article.innerHTML = `
+          <a class="preview-link" href="${item.file}" aria-label="Open ${item.title}">
+            <img
+              class="preview"
+              src="${item.preview}"
+              alt="Animated preview of ${item.title}"
+              loading="lazy"
+            />
+          </a>
+
+          <div class="card-body">
+            <h2>${item.title}</h2>
+
+            <p class="curriculum">${item.unitNumber} · ${item.unitName}</p>
+
+            <div class="tags" aria-label="Tags">
+              <span class="tag">${item.level}</span>
+              <span class="tag subject">${item.subject}</span>
+              <span class="tag ${typeClass(item.type)}">${item.type}</span>
+            </div>
+
+            <a class="play-btn" href="${item.file}">
+              Play <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        `;
+
+        cardsEl.appendChild(article);
+      });
+    }
+
+    searchInput.addEventListener("input", renderCards);
+
+    renderFilters();
+    renderCards();
+  </script>
+</body>
+</html>
