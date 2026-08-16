@@ -110,19 +110,67 @@
 
     .control-panel {
       margin: 28px auto 34px;
-      padding: 22px;
+      padding: 14px;
       background: rgba(255,255,255,0.84);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(37,48,71,0.08);
-      border-radius: var(--radius-lg);
+      border-radius: 22px;
       box-shadow: var(--shadow);
+    }
+
+    .search-filter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-toggle {
+      flex: 0 0 auto;
+      min-height: 52px;
+      padding: 0 15px;
+      border: 1px solid #dfe3ee;
+      border-radius: 16px;
+      background: #fff;
+      color: #4b5565;
+      cursor: pointer;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .filter-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(49,57,87,0.08);
+    }
+
+    .filter-toggle[aria-expanded="true"] {
+      background: linear-gradient(135deg, var(--pink), var(--lavender));
+      border-color: transparent;
+      color: #2d2842;
+    }
+
+    .filter-toggle-icon {
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    .filter-toggle-chevron {
+      font-size: 0.7rem;
+      transition: transform 0.2s ease;
+    }
+
+    .filter-toggle[aria-expanded="true"] .filter-toggle-chevron {
+      transform: rotate(180deg);
     }
 
     .search-wrap {
       position: relative;
-      max-width: 760px;
-      margin: 0 auto 20px;
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     .search-icon {
@@ -137,8 +185,9 @@
 
     #searchInput {
       width: 100%;
-      padding: 16px 18px 16px 50px;
-      border-radius: 18px;
+      min-height: 52px;
+      padding: 14px 18px 14px 50px;
+      border-radius: 16px;
       border: 1px solid #dfe3ee;
       background: white;
       color: var(--ink);
@@ -155,6 +204,25 @@
     .filters {
       display: grid;
       gap: 15px;
+      max-height: 0;
+      margin-top: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateY(-5px);
+      transition:
+        max-height 0.28s ease,
+        margin-top 0.28s ease,
+        opacity 0.18s ease,
+        transform 0.28s ease;
+    }
+
+    .filters.open {
+      max-height: 260px;
+      margin-top: 18px;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
     }
 
     .filter-row {
@@ -456,7 +524,16 @@
       }
 
       .control-panel {
-        padding: 16px;
+        padding: 10px;
+      }
+
+      .filter-toggle {
+        min-height: 50px;
+        padding: 0 12px;
+      }
+
+      .filter-toggle > span:nth-child(2) {
+        display: none;
       }
 
       .filter-row {
@@ -486,15 +563,29 @@
     </section>
 
     <section class="control-panel" aria-label="Search and filter interactives">
-      <div class="search-wrap">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <label for="searchInput" class="sr-only" style="position:absolute;left:-9999px;">Search interactives</label>
-        <input
-          id="searchInput"
-          type="search"
-          placeholder="Search by title, level, subject, unit, chapter or type..."
-          autocomplete="off"
-        />
+      <div class="search-filter-row">
+        <button
+          class="filter-toggle"
+          id="filterToggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="filters"
+        >
+          <span class="filter-toggle-icon" aria-hidden="true">☷</span>
+          <span>Filters</span>
+          <span class="filter-toggle-chevron" aria-hidden="true">▼</span>
+        </button>
+
+        <div class="search-wrap">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <label for="searchInput" class="sr-only" style="position:absolute;left:-9999px;">Search interactives</label>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Search by title, level, subject, unit, chapter or type..."
+            autocomplete="off"
+          />
+        </div>
       </div>
 
       <div class="filters" id="filters"></div>
@@ -650,8 +741,23 @@
 
     const cardsEl = document.getElementById("cards");
     const filtersEl = document.getElementById("filters");
+    const filterToggle = document.getElementById("filterToggle");
     const searchInput = document.getElementById("searchInput");
     const resultsCount = document.getElementById("resultsCount");
+
+    filterToggle.addEventListener("click", () => {
+      const isOpen = filterToggle.getAttribute("aria-expanded") === "true";
+      filterToggle.setAttribute("aria-expanded", String(!isOpen));
+      filtersEl.classList.toggle("open", !isOpen);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && filterToggle.getAttribute("aria-expanded") === "true") {
+        filterToggle.setAttribute("aria-expanded", "false");
+        filtersEl.classList.remove("open");
+        filterToggle.focus();
+      }
+    });
 
     function uniqueValues(key) {
       return [...new Set(interactives.map(item => item[key]))];
