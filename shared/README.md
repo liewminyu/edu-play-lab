@@ -1,1 +1,0 @@
-Shared resources for games
