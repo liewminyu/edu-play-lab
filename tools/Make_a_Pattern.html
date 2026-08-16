@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>Make a Pattern</title>
+  <style>
+    :root {
+      --ink: #24324a;
+      --muted: #697386;
+      --line: #d9deea;
+      --panel: #ffffff;
+      --page: #f7f8fc;
+      --accent: #5146e5;
+      --accent-soft: #eeedff;
+      --danger: #c83532;
+      --shadow: 0 8px 22px rgba(34, 48, 74, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--page);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+
+    button { font: inherit; }
+
+    button, .slot, .shape-bank-btn, .colour-btn {
+      touch-action: manipulation;
+    }
+
+    .app {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 16px clamp(10px, 2vw, 24px) 28px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #342eb5;
+      font-size: clamp(27px, 4vw, 42px);
+      line-height: 1.05;
+      letter-spacing: -0.7px;
+    }
+
+    .instructions {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: clamp(14px, 2vw, 17px);
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .count-picker {
+      flex: 0 0 auto;
+      display: flex;
+      padding: 4px;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 3px 10px rgba(34, 48, 74, 0.06);
+    }
+
+    .count-btn {
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #475467;
+      min-width: 86px;
+      min-height: 42px;
+      padding: 8px 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .count-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 10px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(34, 48, 74, 0.06);
+      margin-bottom: 14px;
+    }
+
+    .tool-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 8px 13px;
+      border: 1px solid #cfd5e2;
+      border-radius: 11px;
+      background: white;
+      color: #344054;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .tool-btn.primary {
+      margin-left: auto;
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+    .tool-btn.danger { color: var(--danger); }
+
+    .tool-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .tool-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .workspace {
+      background: white;
+      border: 2px solid #e2e6ef;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 18px 14px 15px;
+      overflow: hidden;
+    }
+
+    .workspace-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin: 0 3px 12px;
+      color: #475467;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .selected-label {
+      color: var(--accent);
+      min-height: 18px;
+    }
+
+    .pattern-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 35px 36px 35px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .pattern-grid {
+      --slot-count: 6;
+      display: grid;
+      grid-template-columns: repeat(var(--slot-count), minmax(94px, 1fr));
+      gap: 10px;
+      min-width: calc(var(--slot-count) * 94px + (var(--slot-count) - 1) * 10px);
+    }
+
+    .slot {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      min-height: 94px;
+      border: 2px dashed #c8cfdd;
+      border-radius: 16px;
+      background: #fbfcfe;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .slot.target {
+      border-color: var(--accent);
+      background: #f8f7ff;
+      box-shadow: inset 0 0 0 2px rgba(81,70,229,0.10);
+    }
+
+    .slot.selected {
+      border-style: solid;
+      border-color: var(--accent);
+      background: #faf9ff;
+      z-index: 3;
+    }
+
+    .slot.drag-over {
+      border-color: #1d9b61;
+      background: #effcf6;
+    }
+
+    .slot-number {
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      font-size: 12px;
+      color: #98a2b3;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .empty-hint {
+      color: #98a2b3;
+      font-size: 12px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .shape-wrap {
+      width: 70%;
+      height: 70%;
+      display: grid;
+      place-items: center;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .shape-wrap:active { cursor: grabbing; }
+
+    .shape-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 2px 1px rgba(35, 48, 74, 0.12));
+      transition: transform 0.12s ease;
+      pointer-events: none;
+    }
+
+    .context-btn {
+      position: absolute;
+      z-index: 6;
+      width: 31px;
+      height: 31px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px rgba(34, 48, 74, 0.25);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .context-btn:hover { filter: brightness(1.05); }
+    .context-btn:active { transform: scale(0.94); }
+    .context-btn.up { top: -31px; left: 50%; transform: translateX(-50%); }
+    .context-btn.down { bottom: -31px; left: 50%; transform: translateX(-50%); }
+    .context-btn.left { left: -31px; top: 50%; transform: translateY(-50%); }
+    .context-btn.right { right: -31px; top: 50%; transform: translateY(-50%); }
+    .context-btn.up:active { transform: translateX(-50%) scale(0.94); }
+    .context-btn.down:active { transform: translateX(-50%) scale(0.94); }
+    .context-btn.left:active { transform: translateY(-50%) scale(0.94); }
+    .context-btn.right:active { transform: translateY(-50%) scale(0.94); }
+
+    .edit-panel {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(34, 48, 74, 0.05);
+    }
+
+    .edit-panel.hidden { display: none; }
+
+    .edit-heading, .bank-heading {
+      margin: 0;
+      padding: 11px 14px;
+      color: #344054;
+      font-size: 15px;
+      font-weight: 800;
+      border-bottom: 1px solid #eaecf0;
+    }
+
+    .colour-palette {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(48px, 1fr));
+      gap: 10px;
+      padding: 12px 14px 14px;
+    }
+
+    .colour-btn {
+      min-height: 48px;
+      border: 3px solid transparent;
+      border-radius: 13px;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+    }
+
+    .colour-btn.active {
+      border-color: #1f2937;
+      box-shadow: inset 0 0 0 3px white, 0 0 0 2px #1f2937;
+    }
+
+    .shape-bank {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(34, 48, 74, 0.05);
+    }
+
+    .shape-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(90px, 1fr));
+      gap: 10px;
+      padding: 13px 14px 15px;
+    }
+
+    .shape-bank-btn {
+      min-height: 82px;
+      border: 2px solid #d9deea;
+      border-radius: 14px;
+      background: #fbfcfe;
+      color: #344054;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      flex-direction: column;
+      font-weight: 800;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .shape-bank-btn:active { cursor: grabbing; }
+    .shape-bank-btn:hover { border-color: var(--accent); background: #f8f7ff; }
+
+    .bank-icon {
+      width: 40px;
+      height: 40px;
+      color: var(--accent);
+      pointer-events: none;
+    }
+
+    .bank-icon svg { width: 100%; height: 100%; }
+
+    .message {
+      min-height: 24px;
+      margin: 11px 4px 0;
+      text-align: center;
+      color: #475467;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .message.success { color: #137a49; }
+    .message.warning { color: #ad4f00; }
+
+    .drag-ghost {
+      position: fixed;
+      z-index: 9999;
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      opacity: 0.88;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,0.22));
+    }
+
+    .save-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(23, 31, 48, 0.72);
+    }
+
+    .save-modal.hidden { display: none; }
+
+    .modal-card {
+      width: min(900px, 96vw);
+      max-height: 92vh;
+      overflow: auto;
+      background: white;
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .modal-card h2 { margin: 0 0 8px; font-size: 21px; }
+    .modal-card p { margin: 0 0 12px; color: #667085; font-weight: 700; }
+    .modal-card img { width: 100%; height: auto; border: 1px solid #d9deea; border-radius: 12px; }
+    .modal-actions { display: flex; gap: 9px; justify-content: center; flex-wrap: wrap; margin-top: 13px; }
+
+    @media (max-width: 760px) {
+      header { flex-direction: column; }
+      .count-picker { width: 100%; }
+      .count-btn { flex: 1; }
+      .tool-btn.primary { margin-left: 0; width: 100%; }
+      .shape-buttons { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
+      .colour-palette { grid-template-columns: repeat(3, minmax(58px, 1fr)); }
+      .context-btn { width: 29px; height: 29px; }
+      .context-btn.up { top: -29px; }
+      .context-btn.down { bottom: -29px; }
+      .context-btn.left { left: -29px; }
+      .context-btn.right { right: -29px; }
+    }
+
+    @media (max-width: 430px) {
+      .tool-btn span.label-text { display: none; }
+      .tool-btn { min-width: 43px; padding: 7px 10px; }
+      .tool-btn.primary span.label-text { display: inline; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>Make a Pattern</h1>
+        <p class="instructions">Choose 6 or 9 blanks. Tap or drag a shape into the pattern. Tap a shape to change its colour, size or orientation.</p>
+      </div>
+      <div class="count-picker" aria-label="Choose number of blanks">
+        <button class="count-btn active" type="button" data-count="6">6 blanks</button>
+        <button class="count-btn" type="button" data-count="9">9 blanks</button>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="Pattern tools">
+      <button class="tool-btn" id="undoBtn" type="button" disabled aria-label="Undo">
+        <span class="tool-icon">↶</span><span class="label-text">Undo</span>
+      </button>
+      <button class="tool-btn" id="redoBtn" type="button" disabled aria-label="Redo">
+        <span class="tool-icon">↷</span><span class="label-text">Redo</span>
+      </button>
+      <button class="tool-btn" id="duplicateBtn" type="button" disabled aria-label="Duplicate selected shape">
+        <span class="tool-icon">⧉</span><span class="label-text">Duplicate</span>
+      </button>
+      <button class="tool-btn danger" id="deleteBtn" type="button" disabled aria-label="Delete selected shape">
+        <span class="tool-icon">✕</span><span class="label-text">Delete</span>
+      </button>
+      <button class="tool-btn primary" id="saveBtn" type="button">
+        <span class="tool-icon">⇩</span><span class="label-text">Save as image</span>
+      </button>
+    </section>
+
+    <section class="workspace" aria-label="Pattern workspace">
+      <div class="workspace-label">
+        <span>Build your repeating pattern</span>
+        <span class="selected-label" id="selectedLabel" aria-live="polite">Tap a blank, then choose a shape.</span>
+      </div>
+      <div class="pattern-scroll">
+        <div class="pattern-grid" id="patternGrid" style="--slot-count:6"></div>
+      </div>
+    </section>
+
+    <section class="edit-panel hidden" id="editPanel" aria-label="Colour palette">
+      <h2 class="edit-heading">Choose a colour for the selected shape</h2>
+      <div class="colour-palette" id="colourPalette"></div>
+    </section>
+
+    <section class="shape-bank" aria-label="Shape choices">
+      <h2 class="bank-heading">Choose a shape</h2>
+      <div class="shape-buttons" id="shapeButtons"></div>
+    </section>
+
+    <div class="message" id="message" aria-live="polite"></div>
+  </main>
+
+  <div class="save-modal hidden" id="saveModal" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
+    <div class="modal-card">
+      <h2 id="saveModalTitle">Your pattern image</h2>
+      <p>On iPad, touch and hold the image, then choose <strong>Save to Photos</strong>.</p>
+      <img id="savedImage" alt="Saved pattern preview">
+      <div class="modal-actions">
+        <button class="tool-btn primary" id="downloadAgainBtn" type="button">Download image</button>
+        <button class="tool-btn" id="closeModalBtn" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const COLOURS = [
+        { name: 'Red', value: '#e53935' },
+        { name: 'Yellow', value: '#f4c430' },
+        { name: 'Blue', value: '#2878d0' },
+        { name: 'Green', value: '#2f9e57' },
+        { name: 'Orange', value: '#f28c28' },
+        { name: 'Purple', value: '#8b4fc9' }
+      ];
+
+      const SHAPES = [
+        { id: 'circle', label: 'Circle' },
+        { id: 'triangle', label: 'Triangle' },
+        { id: 'square', label: 'Square' },
+        { id: 'rectangle', label: 'Rectangle' }
+      ];
+
+      const SIZE_SCALES = [0.56, 0.76, 0.96];
+      const state = {
+        count: 6,
+        items: Array(6).fill(null),
+        selected: null,
+        undo: [],
+        redo: []
+      };
+
+      const patternGrid = document.getElementById('patternGrid');
+      const selectedLabel = document.getElementById('selectedLabel');
+      const editPanel = document.getElementById('editPanel');
+      const colourPalette = document.getElementById('colourPalette');
+      const shapeButtons = document.getElementById('shapeButtons');
+      const message = document.getElementById('message');
+      const undoBtn = document.getElementById('undoBtn');
+      const redoBtn = document.getElementById('redoBtn');
+      const duplicateBtn = document.getElementById('duplicateBtn');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const saveModal = document.getElementById('saveModal');
+      const savedImage = document.getElementById('savedImage');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const downloadAgainBtn = document.getElementById('downloadAgainBtn');
+
+      let lastSavedUrl = '';
+      let drag = null;
+      let suppressClickUntil = 0;
+      let messageTimer = null;
+
+      function cloneItems(items) {
+        return items.map(item => item ? { ...item } : null);
+      }
+
+      function snapshot() {
+        return {
+          count: state.count,
+          items: cloneItems(state.items),
+          selected: state.selected
+        };
+      }
+
+      function restore(snap) {
+        state.count = snap.count;
+        state.items = cloneItems(snap.items);
+        state.selected = snap.selected;
+        render();
+      }
+
+      function commit(change) {
+        state.undo.push(snapshot());
+        if (state.undo.length > 60) state.undo.shift();
+        state.redo.length = 0;
+        change();
+        render();
+      }
+
+      function announce(text, kind = '') {
+        clearTimeout(messageTimer);
+        message.textContent = text;
+        message.className = `message ${kind}`.trim();
+        messageTimer = setTimeout(() => {
+          message.textContent = '';
+          message.className = 'message';
+        }, 3000);
+      }
+
+      function makeItem(shape) {
+        return {
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          shape,
+          colour: COLOURS[2].value,
+          size: 1,
+          rotation: 0
+        };
+      }
+
+      function shapeSVG(shape, colour, extraClass = '') {
+        let mark = '';
+        if (shape === 'circle') {
+          mark = `<circle cx="50" cy="50" r="35" fill="${colour}" stroke="rgba(0,0,0,.16)" stroke-width="2"/>`;
+        } else if (shape === 'triangle') {
+          mark = `<polygon points="50,12 88,84 12,84" fill="${colour}" stroke="rgba(0,0,0,.16)" stroke-width="2" stroke-linejoin="round"/>`;
+        } else if (shape === 'rectangle') {
+          mark = `<rect x="10" y="28" width="80" height="44" fill="${colour}" stroke="rgba(0,0,0,.16)" stroke-width="2"/>`;
+        } else {
+          mark = `<rect x="17" y="17" width="66" height="66" fill="${colour}" stroke="rgba(0,0,0,.16)" stroke-width="2"/>`;
+        }
+        return `<svg class="${extraClass}" viewBox="0 0 100 100" aria-hidden="true">${mark}</svg>`;
+      }
+
+      function renderShapeButtons() {
+        shapeButtons.innerHTML = SHAPES.map(shape => `
+          <button class="shape-bank-btn" type="button" data-shape="${shape.id}" aria-label="Add ${shape.label}">
+            <span class="bank-icon">${shapeSVG(shape.id, '#5146e5')}</span>
+            <span>${shape.label}</span>
+          </button>
+        `).join('');
+
+        shapeButtons.querySelectorAll('.shape-bank-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (Date.now() < suppressClickUntil) return;
+            addOrReplaceShape(btn.dataset.shape);
+          });
+          btn.addEventListener('pointerdown', event => beginDrag(event, { type: 'new', shape: btn.dataset.shape }));
+        });
+      }
+
+      function renderColours() {
+        const selectedItem = state.selected !== null ? state.items[state.selected] : null;
+        colourPalette.innerHTML = COLOURS.map(colour => `
+          <button
+            class="colour-btn ${selectedItem && selectedItem.colour === colour.value ? 'active' : ''}"
+            type="button"
+            data-colour="${colour.value}"
+            aria-label="${colour.name}"
+            title="${colour.name}"
+            style="background:${colour.value}">
+          </button>
+        `).join('');
+
+        colourPalette.querySelectorAll('.colour-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.selected === null || !state.items[state.selected]) return;
+            const next = btn.dataset.colour;
+            if (state.items[state.selected].colour === next) return;
+            commit(() => { state.items[state.selected].colour = next; });
+          });
+        });
+      }
+
+      function render() {
+        patternGrid.style.setProperty('--slot-count', state.count);
+        patternGrid.innerHTML = '';
+
+        for (let index = 0; index < state.count; index += 1) {
+          const item = state.items[index];
+          const slot = document.createElement('div');
+          slot.className = 'slot';
+          if (state.selected === index) slot.classList.add(item ? 'selected' : 'target');
+          slot.dataset.index = String(index);
+          slot.setAttribute('role', 'button');
+          slot.setAttribute('aria-label', item ? `Pattern position ${index + 1}, ${item.shape}` : `Empty pattern position ${index + 1}`);
+
+          slot.innerHTML = `<span class="slot-number">${index + 1}</span>`;
+
+          if (item) {
+            const wrap = document.createElement('div');
+            wrap.className = 'shape-wrap';
+            wrap.dataset.index = String(index);
+            wrap.innerHTML = shapeSVG(item.shape, item.colour, 'shape-svg');
+            const svg = wrap.querySelector('.shape-svg');
+            svg.style.transform = `rotate(${item.rotation}deg) scale(${SIZE_SCALES[item.size]})`;
+            wrap.addEventListener('pointerdown', event => beginDrag(event, { type: 'existing', index }));
+            slot.appendChild(wrap);
+
+            if (state.selected === index) {
+              slot.appendChild(contextButton('up', '+', 'Increase size', () => resizeSelected(1)));
+              slot.appendChild(contextButton('down', '−', 'Decrease size', () => resizeSelected(-1)));
+              slot.appendChild(contextButton('left', '↶', 'Rotate 90 degrees counterclockwise', () => rotateSelected(-90)));
+              slot.appendChild(contextButton('right', '↷', 'Rotate 90 degrees clockwise', () => rotateSelected(90)));
+            }
+          } else {
+            slot.insertAdjacentHTML('beforeend', '<span class="empty-hint">Tap here</span>');
+          }
+
+          slot.addEventListener('click', () => {
+            if (Date.now() < suppressClickUntil) return;
+            state.selected = index;
+            render();
+          });
+
+          patternGrid.appendChild(slot);
+        }
+
+        document.querySelectorAll('.count-btn').forEach(btn => {
+          btn.classList.toggle('active', Number(btn.dataset.count) === state.count);
+        });
+
+        const selectedItem = state.selected !== null ? state.items[state.selected] : null;
+        selectedLabel.textContent = state.selected === null
+          ? 'Tap a blank, then choose a shape.'
+          : selectedItem
+            ? `Editing shape ${state.selected + 1}`
+            : `Position ${state.selected + 1} selected`;
+
+        editPanel.classList.toggle('hidden', !selectedItem);
+        renderColours();
+
+        undoBtn.disabled = state.undo.length === 0;
+        redoBtn.disabled = state.redo.length === 0;
+        duplicateBtn.disabled = !selectedItem;
+        deleteBtn.disabled = !selectedItem;
+      }
+
+      function contextButton(position, text, label, handler) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `context-btn ${position}`;
+        button.textContent = text;
+        button.setAttribute('aria-label', label);
+        button.title = label;
+        button.addEventListener('pointerdown', event => event.stopPropagation());
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          handler();
+        });
+        return button;
+      }
+
+      function addOrReplaceShape(shape, preferredIndex = null) {
+        let index = preferredIndex;
+        if (index === null) {
+          if (state.selected !== null) index = state.selected;
+          else index = state.items.findIndex(item => !item);
+        }
+
+        if (index < 0 || index >= state.count) {
+          announce('All blanks are full. Delete a shape or choose 9 blanks.', 'warning');
+          return;
+        }
+
+        const existing = state.items[index];
+        commit(() => {
+          if (existing) {
+            state.items[index] = { ...existing, shape, id: `${Date.now()}-${Math.random()}` };
+          } else {
+            state.items[index] = makeItem(shape);
+          }
+          state.selected = index;
+        });
+        announce(existing ? `Shape ${index + 1} exchanged.` : `${shape[0].toUpperCase() + shape.slice(1)} added to position ${index + 1}.`, 'success');
+      }
+
+      function resizeSelected(direction) {
+        if (state.selected === null || !state.items[state.selected]) return;
+        const item = state.items[state.selected];
+        const next = Math.max(0, Math.min(SIZE_SCALES.length - 1, item.size + direction));
+        if (next === item.size) {
+          announce(direction > 0 ? 'This shape is already at the largest size.' : 'This shape is already at the smallest size.', 'warning');
+          return;
+        }
+        commit(() => { state.items[state.selected].size = next; });
+      }
+
+      function rotateSelected(degrees) {
+        if (state.selected === null || !state.items[state.selected]) return;
+        commit(() => {
+          const item = state.items[state.selected];
+          item.rotation = ((item.rotation + degrees) % 360 + 360) % 360;
+        });
+      }
+
+      function duplicateSelected() {
+        if (state.selected === null || !state.items[state.selected]) return;
+        const empty = state.items.findIndex(item => !item);
+        if (empty === -1) {
+          announce('All blanks are full. Delete a shape before duplicating.', 'warning');
+          return;
+        }
+        const source = state.items[state.selected];
+        commit(() => {
+          state.items[empty] = { ...source, id: `${Date.now()}-${Math.random()}` };
+          state.selected = empty;
+        });
+        announce(`Shape duplicated into position ${empty + 1}.`, 'success');
+      }
+
+      function deleteSelected() {
+        if (state.selected === null || !state.items[state.selected]) return;
+        const deletedIndex = state.selected;
+        commit(() => {
+          state.items[deletedIndex] = null;
+          state.selected = deletedIndex;
+        });
+        announce(`Shape ${deletedIndex + 1} deleted.`);
+      }
+
+      function setCount(nextCount) {
+        if (nextCount === state.count) return;
+        commit(() => {
+          if (nextCount > state.count) {
+            state.items = [...state.items, ...Array(nextCount - state.count).fill(null)];
+          } else {
+            state.items = state.items.slice(0, nextCount);
+          }
+          state.count = nextCount;
+          if (state.selected !== null && state.selected >= nextCount) state.selected = null;
+        });
+        announce(`Changed to ${nextCount} blanks.`, 'success');
+      }
+
+      function beginDrag(event, payload) {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const sourceItem = payload.type === 'existing' ? state.items[payload.index] : makeItem(payload.shape);
+        if (!sourceItem) return;
+
+        drag = {
+          payload,
+          pointerId: event.pointerId,
+          startX,
+          startY,
+          x: startX,
+          y: startY,
+          active: false,
+          sourceItem: { ...sourceItem },
+          ghost: null
+        };
+
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+        window.addEventListener('pointermove', onDragMove, { passive: false });
+        window.addEventListener('pointerup', endDrag, { passive: false, once: true });
+        window.addEventListener('pointercancel', cancelDrag, { passive: false, once: true });
+      }
+
+      function onDragMove(event) {
+        if (!drag || event.pointerId !== drag.pointerId) return;
+        drag.x = event.clientX;
+        drag.y = event.clientY;
+        const distance = Math.hypot(drag.x - drag.startX, drag.y - drag.startY);
+        if (!drag.active && distance > 8) {
+          drag.active = true;
+          drag.ghost = document.createElement('div');
+          drag.ghost.className = 'drag-ghost';
+          drag.ghost.innerHTML = shapeSVG(drag.sourceItem.shape, drag.sourceItem.colour, 'shape-svg');
+          const svg = drag.ghost.querySelector('.shape-svg');
+          svg.style.transform = `rotate(${drag.sourceItem.rotation}deg) scale(${SIZE_SCALES[drag.sourceItem.size]})`;
+          document.body.appendChild(drag.ghost);
+        }
+        if (!drag.active) return;
+        event.preventDefault();
+        drag.ghost.style.left = `${drag.x}px`;
+        drag.ghost.style.top = `${drag.y}px`;
+        highlightDropTarget(drag.x, drag.y);
+      }
+
+      function highlightDropTarget(x, y) {
+        document.querySelectorAll('.slot.drag-over').forEach(slot => slot.classList.remove('drag-over'));
+        const element = document.elementFromPoint(x, y);
+        const slot = element?.closest?.('.slot');
+        if (slot) slot.classList.add('drag-over');
+      }
+
+      function endDrag(event) {
+        if (!drag || event.pointerId !== drag.pointerId) return;
+        window.removeEventListener('pointermove', onDragMove);
+        document.querySelectorAll('.slot.drag-over').forEach(slot => slot.classList.remove('drag-over'));
+
+        if (drag.active) {
+          event.preventDefault();
+          suppressClickUntil = Date.now() + 450;
+          const targetElement = document.elementFromPoint(event.clientX, event.clientY);
+          const targetSlot = targetElement?.closest?.('.slot');
+          if (targetSlot) {
+            const targetIndex = Number(targetSlot.dataset.index);
+            if (drag.payload.type === 'new') {
+              addOrReplaceShape(drag.payload.shape, targetIndex);
+            } else {
+              moveOrSwap(drag.payload.index, targetIndex);
+            }
+          }
+        }
+        cleanupDrag();
+      }
+
+      function cancelDrag() {
+        window.removeEventListener('pointermove', onDragMove);
+        document.querySelectorAll('.slot.drag-over').forEach(slot => slot.classList.remove('drag-over'));
+        cleanupDrag();
+      }
+
+      function cleanupDrag() {
+        if (drag?.ghost) drag.ghost.remove();
+        drag = null;
+      }
+
+      function moveOrSwap(fromIndex, toIndex) {
+        if (fromIndex === toIndex) {
+          state.selected = fromIndex;
+          render();
+          return;
+        }
+        commit(() => {
+          const temp = state.items[toIndex];
+          state.items[toIndex] = state.items[fromIndex];
+          state.items[fromIndex] = temp;
+          state.selected = toIndex;
+        });
+        announce(state.items[fromIndex] ? 'Shapes swapped.' : `Shape moved to position ${toIndex + 1}.`, 'success');
+      }
+
+      function undo() {
+        if (!state.undo.length) return;
+        state.redo.push(snapshot());
+        const snap = state.undo.pop();
+        restore(snap);
+        announce('Undone.');
+      }
+
+      function redo() {
+        if (!state.redo.length) return;
+        state.undo.push(snapshot());
+        const snap = state.redo.pop();
+        restore(snap);
+        announce('Redone.');
+      }
+
+      function drawItem(ctx, item, cx, cy, boxSize) {
+        if (!item) return;
+        const scale = SIZE_SCALES[item.size];
+        const base = boxSize * 0.68 * scale;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(item.rotation * Math.PI / 180);
+        ctx.fillStyle = item.colour;
+        ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+
+        if (item.shape === 'circle') {
+          ctx.arc(0, 0, base * 0.48, 0, Math.PI * 2);
+        } else if (item.shape === 'triangle') {
+          ctx.moveTo(0, -base * 0.52);
+          ctx.lineTo(base * 0.52, base * 0.45);
+          ctx.lineTo(-base * 0.52, base * 0.45);
+          ctx.closePath();
+        } else if (item.shape === 'rectangle') {
+          ctx.rect(-base * 0.62, -base * 0.32, base * 1.24, base * 0.64);
+        } else {
+          ctx.rect(-base * 0.5, -base * 0.5, base, base);
+        }
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function roundedRectPath(ctx, x, y, width, height, radius) {
+        const r = Math.min(radius, width / 2, height / 2);
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + width, y, x + width, y + height, r);
+        ctx.arcTo(x + width, y + height, x, y + height, r);
+        ctx.arcTo(x, y + height, x, y, r);
+        ctx.arcTo(x, y, x + width, y, r);
+        ctx.closePath();
+      }
+
+      function makePatternCanvas() {
+        const dpr = 2;
+        const slotSize = 128;
+        const gap = 18;
+        const side = 44;
+        const top = 88;
+        const bottom = 42;
+        const width = side * 2 + state.count * slotSize + (state.count - 1) * gap;
+        const height = top + slotSize + bottom;
+        const canvas = document.createElement('canvas');
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#342eb5';
+        ctx.font = 'bold 30px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('My Repeating Pattern', width / 2, 44);
+
+        for (let i = 0; i < state.count; i += 1) {
+          const x = side + i * (slotSize + gap);
+          const y = top;
+          ctx.save();
+          ctx.strokeStyle = '#c9d0de';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([7, 6]);
+          roundedRectPath(ctx, x, y, slotSize, slotSize, 14);
+          ctx.stroke();
+          ctx.restore();
+
+          ctx.fillStyle = '#8791a4';
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'left';
+          ctx.fillText(String(i + 1), x + 9, y + 19);
+          drawItem(ctx, state.items[i], x + slotSize / 2, y + slotSize / 2 + 4, slotSize);
+        }
+
+        return canvas;
+      }
+
+      function canvasToBlob(canvas) {
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
+      }
+
+      async function saveImage() {
+        const canvas = makePatternCanvas();
+        const blob = await canvasToBlob(canvas);
+        if (!blob) {
+          announce('The image could not be created.', 'warning');
+          return;
+        }
+
+        const file = new File([blob], 'pattern-sabotage.png', { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: 'My Repeating Pattern' });
+            announce('Image shared. Choose Save to Photos on iPad.', 'success');
+            return;
+          } catch (error) {
+            if (error && error.name === 'AbortError') return;
+          }
+        }
+
+        if (lastSavedUrl) URL.revokeObjectURL(lastSavedUrl);
+        lastSavedUrl = URL.createObjectURL(blob);
+        savedImage.src = lastSavedUrl;
+        triggerDownload(lastSavedUrl);
+        saveModal.classList.remove('hidden');
+      }
+
+      function triggerDownload(url) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'pattern-sabotage.png';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+
+      document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.addEventListener('click', () => setCount(Number(btn.dataset.count)));
+      });
+
+      undoBtn.addEventListener('click', undo);
+      redoBtn.addEventListener('click', redo);
+      duplicateBtn.addEventListener('click', duplicateSelected);
+      deleteBtn.addEventListener('click', deleteSelected);
+      saveBtn.addEventListener('click', saveImage);
+      closeModalBtn.addEventListener('click', () => saveModal.classList.add('hidden'));
+      downloadAgainBtn.addEventListener('click', () => { if (lastSavedUrl) triggerDownload(lastSavedUrl); });
+      saveModal.addEventListener('click', event => {
+        if (event.target === saveModal) saveModal.classList.add('hidden');
+      });
+
+      renderShapeButtons();
+      render();
+    })();
+  </script>
+</body>
+</html>

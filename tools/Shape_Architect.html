@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f7f8fc">
+<title>Shape Architect Challenge</title>
+<style>
+:root{
+  --ink:#24324a;--muted:#697386;--line:#d9deea;--panel:#fff;--page:#f7f8fc;
+  --accent:#5146e5;--accent-soft:#eeedff;--green:#16875b;--green-soft:#eaf8f1;
+  --danger:#c83532;--danger-soft:#fff0ef;--shadow:0 8px 22px rgba(34,48,74,.10)
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--page);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button{font:inherit}
+button,.solid-btn,.colour-btn{touch-action:manipulation}
+.app{width:min(1420px,100%);margin:0 auto;padding:16px clamp(10px,2vw,24px) 28px}
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+h1{margin:0;color:#342eb5;font-size:clamp(27px,4vw,42px);line-height:1.05;letter-spacing:-.7px}
+.goal-chip{flex:0 0 auto;min-width:126px;padding:9px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:center;box-shadow:0 3px 10px rgba(34,48,74,.06)}
+.goal-chip span{display:block;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.goal-chip strong{display:block;margin-top:3px;font-size:19px;color:#342eb5}.goal-chip.met{background:var(--green-soft);border-color:#bde8d4}.goal-chip.met strong{color:#0e6a45}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 12px rgba(34,48,74,.06);margin-bottom:12px}
+.bank{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.toolbar-label{color:var(--muted);font-size:13px;font-weight:900;margin-right:2px}
+.solid-btn{display:flex;align-items:center;gap:7px;min-height:46px;padding:7px 11px;border:2px solid #d8deea;border-radius:13px;background:#fff;color:var(--ink);font-weight:800;cursor:pointer}
+.solid-btn:hover,.solid-btn:focus-visible{border-color:#aaa4ef;background:#faf9ff}.solid-btn svg{width:34px;height:30px;overflow:visible}.solid-btn:active{transform:scale(.98)}
+.permanent-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.tool-btn{min-height:46px;padding:8px 13px;border:2px solid #d8deea;border-radius:13px;background:#fff;color:var(--ink);font-weight:850;cursor:pointer}
+.tool-btn.primary{border-color:var(--accent);background:var(--accent);color:#fff}.tool-btn.danger{color:var(--danger)}.tool-btn:disabled{opacity:.4;cursor:default}
+.workspace-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:12px}
+.canvas-wrap{position:relative;width:100%;height:clamp(520px,68vh,780px);min-height:520px;border:2px solid #d8deea;border-radius:18px;overflow:hidden;background:#fcfdff;touch-action:none}
+#buildCanvas{display:block;width:100%;height:100%;touch-action:none;user-select:none}
+.canvas-hint{position:absolute;left:50%;top:11px;transform:translateX(-50%);padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.94);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:800;pointer-events:none;white-space:nowrap}
+.inspector{display:none;grid-template-columns:auto auto auto 1fr;gap:12px;align-items:center;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:16px;background:#fbfcfe}.inspector.show{display:grid}
+.control-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.control-title{color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.45px;margin-right:2px}.control-btn{min-width:44px;min-height:44px;padding:7px 10px;border:2px solid #d8deea;border-radius:12px;background:#fff;color:var(--ink);font-weight:900;cursor:pointer}.control-btn:disabled{opacity:.35}.size-readout{min-width:74px;text-align:center;padding:8px 10px;border-radius:12px;background:var(--accent-soft);color:#3730a3;font-size:13px;font-weight:900}
+.palette{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.colour-btn{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #cfd5e1;cursor:pointer}.colour-btn.active{box-shadow:0 0 0 3px var(--accent),0 0 0 6px #fff}
+.inventory{display:grid;grid-template-columns:auto repeat(4,minmax(100px,1fr));gap:8px;align-items:stretch;margin-top:12px}.inventory-title{display:flex;align-items:center;padding:10px 13px;border-radius:14px;background:#342eb5;color:#fff;font-weight:900;white-space:nowrap}.inventory-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fbfcfe;font-weight:800}.inventory-item strong{font-size:20px;color:#342eb5}.inventory-item.used{background:var(--green-soft);border-color:#bde8d4}.inventory-item.used strong{color:#0e6a45}
+.status{margin-top:10px;min-height:45px;padding:11px 13px;border-radius:14px;background:var(--accent-soft);color:#3730a3;font-size:14px;font-weight:800;line-height:1.4}.status.good{background:var(--green-soft);color:#0e6a45}.status.warn{background:#fff7e0;color:#7b5a12}
+.modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(21,30,49,.72)}.modal.show{display:flex}.modal-card{width:min(900px,100%);max-height:92vh;overflow:auto;border-radius:20px;background:#fff;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.28)}.modal-card h2{margin:0 0 6px;color:#342eb5}.modal-card p{margin:0 0 12px;color:var(--muted);font-weight:700;line-height:1.4}.preview{display:block;width:100%;border:1px solid var(--line);border-radius:14px;background:#fff}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap}
+@media(max-width:1050px){.inspector{grid-template-columns:1fr 1fr}.inventory{grid-template-columns:repeat(3,1fr)}.inventory-title{grid-column:1/-1;justify-content:center}}
+@media(max-width:720px){header{align-items:center}.goal-chip{min-width:106px}.solid-btn span{display:none}.solid-btn{padding:7px 10px}.canvas-wrap{height:62vh;min-height:480px}.inspector{grid-template-columns:1fr}.inventory{grid-template-columns:1fr 1fr}.inventory-title{grid-column:1/-1}.toolbar{align-items:stretch}.permanent-actions{width:100%;display:grid;grid-template-columns:1fr 1fr 1.4fr}.tool-btn{padding:7px 8px}.canvas-hint{font-size:11px}}
+@media(max-width:470px){.app{padding:12px 8px 22px}.canvas-wrap{min-height:430px}.inventory{grid-template-columns:1fr}.inventory-title{grid-column:auto}.permanent-actions{grid-template-columns:1fr}.goal-chip{display:none}}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+  <div>
+    <h1>Shape Architect Challenge</h1>
+  </div>
+  <div class="goal-chip" id="goalChip"><span>Kinds used</span><strong id="kindCount">0 / 3</strong></div>
+</header>
+
+<section class="toolbar" aria-label="Shape tools">
+  <div class="bank">
+    <span class="toolbar-label">Add a solid</span>
+    <button class="solid-btn" data-shape="cube" title="Add cube">
+      <svg viewBox="0 0 44 36" aria-hidden="true"><path d="M8 10 24 4 37 11 21 17Z" fill="#e8e6ff" stroke="#516078" stroke-width="1.8"/><path d="M8 10 21 17 21 31 8 24Z" fill="#d5d2ff" stroke="#516078" stroke-width="1.8"/><path d="M21 17 37 11 37 25 21 31Z" fill="#aaa5f4" stroke="#516078" stroke-width="1.8"/></svg><span>Cube</span>
+    </button>
+    <button class="solid-btn" data-shape="cuboid" title="Add cuboid">
+      <svg viewBox="0 0 50 36" aria-hidden="true"><path d="M5 12 29 5 45 11 21 18Z" fill="#e8e6ff" stroke="#516078" stroke-width="1.8"/><path d="M5 12 21 18 21 30 5 24Z" fill="#d5d2ff" stroke="#516078" stroke-width="1.8"/><path d="M21 18 45 11 45 23 21 30Z" fill="#aaa5f4" stroke="#516078" stroke-width="1.8"/></svg><span>Cuboid</span>
+    </button>
+    <button class="solid-btn" data-shape="cylinder" title="Add cylinder">
+      <svg viewBox="0 0 44 36" aria-hidden="true"><path d="M10 8v19c0 4 24 4 24 0V8" fill="#d5d2ff" stroke="#516078" stroke-width="1.8"/><ellipse cx="22" cy="8" rx="12" ry="5" fill="#eeedff" stroke="#516078" stroke-width="1.8"/><path d="M10 27c0 4 24 4 24 0" fill="none" stroke="#516078" stroke-width="1.8"/></svg><span>Cylinder</span>
+    </button>
+    <button class="solid-btn" data-shape="cone" title="Add cone">
+      <svg viewBox="0 0 44 36" aria-hidden="true"><path d="M22 3 8 28c1 6 27 6 28 0Z" fill="#d5d2ff" stroke="#516078" stroke-width="1.8"/><ellipse cx="22" cy="28" rx="14" ry="5" fill="#aaa5f4" stroke="#516078" stroke-width="1.8"/></svg><span>Cone</span>
+    </button>
+  </div>
+  <div class="permanent-actions">
+    <button class="tool-btn danger" id="deleteBtn" disabled>Delete</button>
+    <button class="tool-btn" id="duplicateBtn" disabled>Duplicate</button>
+    <button class="tool-btn primary" id="saveBtn" disabled>Save as Image</button>
+  </div>
+</section>
+
+<section class="workspace-card">
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="buildCanvas" aria-label="Open building canvas"></canvas>
+    <div class="canvas-hint">Tap a solid to add it · Drag placed solids</div>
+  </div>
+
+  <section class="inspector" id="inspector" aria-label="Selected solid controls">
+    <div class="control-group">
+      <span class="control-title">Size</span>
+      <button class="control-btn" id="sizeDown" aria-label="Decrease size">−</button>
+      <span class="size-readout" id="sizeReadout">Medium</span>
+      <button class="control-btn" id="sizeUp" aria-label="Increase size">+</button>
+    </div>
+    <div class="palette" id="palette"><span class="control-title">Colour</span></div>
+  </section>
+
+  <section class="inventory" id="inventory" aria-label="Shape inventory"></section>
+  <div class="status" id="status" aria-live="polite">Add a solid to begin your design.</div>
+</section>
+</main>
+
+<div class="modal" id="imageModal" role="dialog" aria-modal="true" aria-labelledby="imageTitle">
+  <div class="modal-card">
+    <h2 id="imageTitle">Your Shape Architect design</h2>
+    <p>On an iPad, touch and hold the image and choose <strong>Save to Photos</strong>. You may also use the button below.</p>
+    <img class="preview" id="imagePreview" alt="Saved Shape Architect design preview">
+    <div class="modal-actions">
+      <button class="tool-btn" id="closeModal">Close</button>
+      <button class="tool-btn primary" id="downloadPreview">Save Image</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const SHAPES={
+  cube:{name:'Cube',baseW:88,baseH:88},cuboid:{name:'Cuboid',baseW:132,baseH:76},
+  cylinder:{name:'Cylinder',baseW:82,baseH:108},cone:{name:'Cone',baseW:92,baseH:108}
+};
+const SHAPE_ORDER=['cube','cuboid','cylinder','cone'];
+const SIZES=[{name:'Extra Small',scale:.50},{name:'Small',scale:.72},{name:'Medium',scale:1},{name:'Large',scale:1.32},{name:'Extra Large',scale:1.66}];
+const COLOURS={red:'#e84f4f',yellow:'#f4c84a',blue:'#4b8ee8',green:'#48a96b',purple:'#8b67d5',orange:'#ed8a3d'};
+let objects=[],selectedId=null,nextId=1,drag=null,snapPreview=null,imageUrl=null,imageBlob=null;
+const canvas=document.getElementById('buildCanvas'),ctx=canvas.getContext('2d'),wrap=document.getElementById('canvasWrap');
+const els={goal:document.getElementById('goalChip'),kindCount:document.getElementById('kindCount'),delete:document.getElementById('deleteBtn'),duplicate:document.getElementById('duplicateBtn'),save:document.getElementById('saveBtn'),inspector:document.getElementById('inspector'),sizeDown:document.getElementById('sizeDown'),sizeUp:document.getElementById('sizeUp'),sizeReadout:document.getElementById('sizeReadout'),palette:document.getElementById('palette'),inventory:document.getElementById('inventory'),status:document.getElementById('status'),modal:document.getElementById('imageModal'),preview:document.getElementById('imagePreview'),closeModal:document.getElementById('closeModal'),downloadPreview:document.getElementById('downloadPreview')};
+let cw=1000,ch=650,dpr=1;
+
+function shade(hex,amount){const n=parseInt(hex.slice(1),16),r=Math.max(0,Math.min(255,(n>>16)+amount)),g=Math.max(0,Math.min(255,((n>>8)&255)+amount)),b=Math.max(0,Math.min(255,(n&255)+amount));return `rgb(${r},${g},${b})`}
+function selected(){return objects.find(o=>o.id===selectedId)||null}
+function dims(o){const s=SHAPES[o.type],m=SIZES[o.size].scale;return {w:s.baseW*m,h:s.baseH*m}}
+function depthFor(o){const {w,h}=dims(o);return (o.type==='cube'||o.type==='cuboid')?Math.min(w,h)*.18:0}
+function geometry(o,x=o.x,y=o.y){
+  const {w,h}=dims(o),depth=depthFor(o);
+  const left=x-w/2,right=x+w/2+depth,top=y-h,bottom=y;
+  let supportTop=y-h;
+  if(o.type==='cube'||o.type==='cuboid')supportTop=y-h+depth;
+  if(o.type==='cylinder'){const e=Math.max(7,w*.13);supportTop=y-h+2*e;}
+  const supportsAbove=['cube','cuboid','cylinder'].includes(o.type);
+  return {w,h,depth,left,right,top,bottom,width:right-left,height:h,cx:(left+right)/2,cy:(top+bottom)/2,supportTop,supportBottom:y,supportsAbove};
+}
+function bounds(o,x=o.x,y=o.y){return geometry(o,x,y)}
+function clampObject(o){const b=geometry(o);if(b.left<8)o.x+=8-b.left;if(b.right>cw-8)o.x-=b.right-(cw-8);if(b.top<35)o.y+=35-b.top;if(b.bottom>ch-8)o.y-=b.bottom-(ch-8)}
+function gridSnap(v){return Math.round(v/10)*10}
+function addShape(type){const offset=(objects.length%6)*20;const o={id:nextId++,type,x:cw*.5+offset-50,y:ch*.68-offset*.25,size:2,colour:'blue'};objects.push(o);selectedId=o.id;clampObject(o);updateUI();draw();setStatus(`${SHAPES[type].name} added. Drag it into position.`)}
+function deleteSelected(){if(selectedId===null)return;objects=objects.filter(o=>o.id!==selectedId);selectedId=null;updateUI();draw();setStatus(objects.length?'Solid deleted. Tap another solid to edit it.':'Canvas cleared. Add a solid to begin.','warn')}
+function duplicateSelected(){const o=selected();if(!o)return;const copy={...o,id:nextId++,x:o.x+28,y:o.y-18};objects.push(copy);selectedId=copy.id;clampObject(copy);const snap=computeSnap(copy);if(snap){copy.x=snap.x;copy.y=snap.y}updateUI();draw();setStatus(`${SHAPES[o.type].name} duplicated.`)}
+function setStatus(message,kind=''){els.status.className=`status${kind?' '+kind:''}`;els.status.textContent=message}
+
+function renderPalette(){els.palette.querySelectorAll('.colour-btn').forEach(b=>b.remove());Object.entries(COLOURS).forEach(([name,hex])=>{const b=document.createElement('button');b.className='colour-btn';b.dataset.colour=name;b.title=name[0].toUpperCase()+name.slice(1);b.style.background=hex;b.onclick=()=>{const o=selected();if(!o)return;o.colour=name;updateInspector();draw()};els.palette.appendChild(b)})}
+function updateInspector(){const o=selected();els.inspector.classList.toggle('show',!!o);els.delete.disabled=!o;els.duplicate.disabled=!o;els.save.disabled=!objects.length;if(!o)return;els.sizeReadout.textContent=SIZES[o.size].name;els.sizeDown.disabled=o.size===0;els.sizeUp.disabled=o.size===SIZES.length-1;els.palette.querySelectorAll('.colour-btn').forEach(b=>b.classList.toggle('active',b.dataset.colour===o.colour))}
+function updateInventory(){const counts=Object.fromEntries(SHAPE_ORDER.map(k=>[k,0]));objects.forEach(o=>counts[o.type]++);const kinds=SHAPE_ORDER.filter(k=>counts[k]>0).length;els.kindCount.textContent=`${kinds} / 3`;els.goal.classList.toggle('met',kinds>=3);els.inventory.innerHTML=`<div class="inventory-title">Shape inventory</div>`+SHAPE_ORDER.map(k=>`<div class="inventory-item ${counts[k]?'used':''}"><span>${SHAPES[k].name}</span><strong>${counts[k]}</strong></div>`).join('');if(kinds>=3&&objects.length){setStatus(`Great! You have used ${kinds} kinds of 3D shapes. Prepare your shape inventory.`, 'good')}}
+function updateUI(){updateInspector();updateInventory()}
+
+function resize(){const r=canvas.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);cw=r.width;ch=r.height;canvas.width=Math.max(2,Math.round(cw*dpr));canvas.height=Math.max(2,Math.round(ch*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);objects.forEach(clampObject);draw()}
+new ResizeObserver(resize).observe(canvas);
+
+function drawGrid(c,w,h){c.fillStyle='#fcfdff';c.fillRect(0,0,w,h);c.strokeStyle='rgba(81,70,229,.07)';c.lineWidth=1;for(let x=0;x<w;x+=30){c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke()}for(let y=0;y<h;y+=30){c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke()}}
+function draw(){if(!cw||!ch)return;ctx.clearRect(0,0,cw,ch);drawGrid(ctx,cw,ch);const ordered=[...objects].sort((a,b)=>b.y-a.y||a.id-b.id);ordered.forEach(o=>drawObject(ctx,o,o.id===selectedId));if(snapPreview){ctx.save();ctx.setLineDash([8,6]);ctx.lineWidth=3;ctx.strokeStyle='#16a34a';ctx.fillStyle='rgba(22,163,74,.07)';const b=bounds(drag.obj,snapPreview.x,snapPreview.y);ctx.fillRect(b.left,b.top,b.width,b.height);ctx.strokeRect(b.left,b.top,b.width,b.height);ctx.restore()}}
+function drawObject(c,o,isSelected=false){const {w,h}=dims(o),colour=COLOURS[o.colour];c.save();c.translate(o.x,o.y);if(o.type==='cube'||o.type==='cuboid')drawBox(c,w,h,colour);if(o.type==='cylinder')drawCylinder(c,w,h,colour);if(o.type==='cone')drawCone(c,w,h,colour);c.restore();if(isSelected){const b=geometry(o);c.save();c.setLineDash([7,5]);c.lineWidth=3;c.strokeStyle='#5146e5';c.strokeRect(b.left-5,b.top-5,b.width+10,b.height+10);c.fillStyle='#5146e5';c.beginPath();c.arc(b.right+5,b.top-5,5,0,Math.PI*2);c.fill();c.restore()}}
+function drawBox(c,w,h,colour){
+  const d=Math.min(w,h)*.18,frontTop=-h+d,left=-w/2,right=w/2;
+  c.lineJoin='round';c.strokeStyle='#41516b';c.lineWidth=Math.max(1.8,Math.min(w,h)*.025);
+  c.fillStyle=colour;c.beginPath();c.rect(left,frontTop,w,h-d);c.fill();c.stroke();
+  c.fillStyle=shade(colour,30);c.beginPath();c.moveTo(left,frontTop);c.lineTo(left+d,-h);c.lineTo(right+d,-h);c.lineTo(right,frontTop);c.closePath();c.fill();c.stroke();
+  c.fillStyle=shade(colour,-28);c.beginPath();c.moveTo(right,frontTop);c.lineTo(right+d,-h);c.lineTo(right+d,-d);c.lineTo(right,0);c.closePath();c.fill();c.stroke();
+}
+function drawCylinder(c,w,h,colour){
+  const e=Math.max(7,w*.13),topY=-h+e,bottomY=-e;
+  c.lineWidth=Math.max(1.8,w*.025);c.strokeStyle='#41516b';
+  const g=c.createLinearGradient(-w/2,0,w/2,0);g.addColorStop(0,shade(colour,-18));g.addColorStop(.46,shade(colour,24));g.addColorStop(1,shade(colour,-28));
+  c.fillStyle=g;c.fillRect(-w/2,topY,w,h-2*e);c.strokeRect(-w/2,topY,w,h-2*e);
+  c.fillStyle=shade(colour,35);c.beginPath();c.ellipse(0,topY,w/2,e,0,0,Math.PI*2);c.fill();c.stroke();
+  c.fillStyle=shade(colour,-12);c.beginPath();c.ellipse(0,bottomY,w/2,e,0,0,Math.PI);c.fill();c.stroke();
+}
+function drawCone(c,w,h,colour){
+  const e=Math.max(7,w*.12),baseY=-e,apexY=-h;
+  c.lineWidth=Math.max(1.8,w*.025);c.strokeStyle='#41516b';
+  const grad=c.createLinearGradient(-w/2,0,w/2,0);grad.addColorStop(0,shade(colour,-20));grad.addColorStop(.52,shade(colour,28));grad.addColorStop(1,shade(colour,-25));
+  c.fillStyle=grad;c.beginPath();c.moveTo(0,apexY);c.lineTo(-w/2,baseY);c.quadraticCurveTo(0,0,w/2,baseY);c.closePath();c.fill();c.stroke();
+  c.fillStyle=shade(colour,24);c.beginPath();c.ellipse(0,baseY,w/2,e,0,0,Math.PI*2);c.fill();c.stroke();
+}
+function drawSphere(c,w,h,colour){const r=Math.min(w,h)/2;const g=c.createRadialGradient(-r*.32,-r*.35,r*.08,0,0,r);g.addColorStop(0,'#ffffff');g.addColorStop(.22,shade(colour,38));g.addColorStop(1,shade(colour,-32));c.fillStyle=g;c.strokeStyle='#41516b';c.lineWidth=Math.max(1.8,r*.05);c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();c.stroke();c.strokeStyle='rgba(255,255,255,.62)';c.beginPath();c.arc(-r*.15,-r*.2,r*.55,3.5,5.08);c.stroke()}
+
+function pointInObject(x,y,o){const b=bounds(o);return x>=b.left-7&&x<=b.right+7&&y>=b.top-7&&y<=b.bottom+7}
+function pointerPos(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function computeSnap(o){
+  const a=geometry(o),threshold=52;let best=null;
+  function consider(x,y,score,label,target){if(score<threshold&&(best===null||score<best.score))best={x,y,score,label,target}}
+  objects.forEach(other=>{
+    if(other.id===o.id)return;
+    const b=geometry(other);
+
+    // Stack by matching the moving solid's visible base to the supporting
+    // solid's visible top edge. A slight overlap hides doubled outlines and
+    // makes the shapes read as one stable tower.
+    if(b.supportsAbove){
+      // A cylinder has a symmetrical footprint. When it is placed on a
+      // perspective box, align it with the centre of the visible top face
+      // rather than the centre of the front face.
+      const targetX=(o.type==='cylinder'&&(other.type==='cube'||other.type==='cuboid'))?b.cx:other.x;
+      const targetY=b.supportTop+1;
+      const vertical=Math.abs(a.supportBottom-b.supportTop);
+      const horizontal=Math.abs(o.x-targetX);
+      const footprintOverlap=Math.min(a.right,b.right)-Math.max(a.left,b.left);
+      const enoughOverlap=footprintOverlap>Math.min(a.w,b.w)*.22;
+      const centredEnough=horizontal<Math.max(66,(a.w+b.w)*.34);
+      if(enoughOverlap&&centredEnough){
+        consider(targetX,targetY,vertical+horizontal*.14,'stack',other.id);
+      }
+    }
+
+    // Side-by-side alignment uses the visible ground line of both solids.
+    const baseline=Math.abs(a.supportBottom-b.supportBottom);
+    const rightTargetX=other.x+b.w/2+b.depth+4+a.w/2;
+    const rightGap=Math.abs(o.x-rightTargetX);
+    if(baseline<threshold&&rightGap<threshold)consider(rightTargetX,b.supportBottom,rightGap+baseline*.24,'right',other.id);
+    const leftTargetX=other.x-b.w/2-4-a.w/2-a.depth;
+    const leftGap=Math.abs(o.x-leftTargetX);
+    if(baseline<threshold&&leftGap<threshold)consider(leftTargetX,b.supportBottom,leftGap+baseline*.24,'left',other.id);
+  });
+  return best;
+}
+canvas.addEventListener('pointerdown',e=>{const p=pointerPos(e),hit=[...objects].sort((a,b)=>a.y-b.y||b.id-a.id).find(o=>pointInObject(p.x,p.y,o));if(!hit){selectedId=null;drag=null;snapPreview=null;updateInspector();draw();return}selectedId=hit.id;drag={obj:hit,offsetX:p.x-hit.x,offsetY:p.y-hit.y,startX:p.x,startY:p.y,moved:false};canvas.setPointerCapture?.(e.pointerId);updateInspector();draw()});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;const p=pointerPos(e);if(Math.hypot(p.x-drag.startX,p.y-drag.startY)>4)drag.moved=true;drag.obj.x=p.x-drag.offsetX;drag.obj.y=p.y-drag.offsetY;clampObject(drag.obj);snapPreview=computeSnap(drag.obj);draw();e.preventDefault()});
+function endDrag(){if(!drag)return;if(drag.moved){if(snapPreview){drag.obj.x=snapPreview.x;drag.obj.y=snapPreview.y;setStatus('Snapped into place.','good')}else{drag.obj.x=gridSnap(drag.obj.x);drag.obj.y=gridSnap(drag.obj.y);clampObject(drag.obj);setStatus('Solid placed. Drag it near another solid to align it.')}}drag=null;snapPreview=null;updateUI();draw()}
+canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);
+
+document.querySelectorAll('.solid-btn').forEach(b=>b.onclick=()=>addShape(b.dataset.shape));
+els.delete.onclick=deleteSelected;els.duplicate.onclick=duplicateSelected;
+els.sizeDown.onclick=()=>{const o=selected();if(o&&o.size>0){o.size--;clampObject(o);updateInspector();draw()}};
+els.sizeUp.onclick=()=>{const o=selected();if(o&&o.size<SIZES.length-1){o.size++;clampObject(o);updateInspector();draw()}};
+
+function inventoryText(){const counts=Object.fromEntries(SHAPE_ORDER.map(k=>[k,0]));objects.forEach(o=>counts[o.type]++);return SHAPE_ORDER.filter(k=>counts[k]).map(k=>`${SHAPES[k].name}: ${counts[k]}`).join('   •   ')}
+function buildImageCanvas(){const out=document.createElement('canvas');out.width=1800;out.height=1200;const c=out.getContext('2d');c.fillStyle='#ffffff';c.fillRect(0,0,out.width,out.height);c.fillStyle='#5146e5';c.fillRect(0,0,out.width,115);c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';c.font='bold 54px Arial';c.fillText('Shape Architect Challenge',out.width/2,58);c.fillStyle='#475467';c.font='bold 27px Arial';c.fillText('My 3D shape creation',out.width/2,158);const margin=70,top=200,areaW=out.width-margin*2,areaH=820,scale=Math.min(areaW/cw,areaH/ch);c.save();c.translate(margin+(areaW-cw*scale)/2,top+(areaH-ch*scale)/2);c.scale(scale,scale);drawGrid(c,cw,ch);[...objects].sort((a,b)=>b.y-a.y||a.id-b.id).forEach(o=>drawObject(c,o,false));c.restore();c.fillStyle='#342eb5';c.font='bold 28px Arial';c.fillText('Shape inventory',out.width/2,1060);c.fillStyle='#475467';c.font='bold 25px Arial';c.fillText(inventoryText()||'No shapes added',out.width/2,1103);c.fillStyle='#98a2b3';c.font='22px Arial';c.fillText('Created with Shape Architect Challenge',out.width/2,1150);return out}
+function canvasToBlob(c){return new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(new Error('Unable to create image.')),'image/png',1))}
+async function saveImage(){if(!objects.length)return;try{const out=buildImageCanvas(),blob=await canvasToBlob(out);imageBlob=blob;if(imageUrl)URL.revokeObjectURL(imageUrl);imageUrl=URL.createObjectURL(blob);els.preview.src=imageUrl;const file=new File([blob],'shape-architect-challenge.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){try{await navigator.share({files:[file],title:'Shape Architect Challenge',text:'Our 3D shape creation'});setStatus('Image shared. Choose Save Image or Save to Photos in the share sheet.','good');return}catch(err){if(err&&err.name!=='AbortError')console.warn(err)}}downloadBlob();els.modal.classList.add('show');setStatus('Image created. On an iPad, touch and hold the preview to save it.','good')}catch(err){console.error(err);setStatus('The image could not be created. Try taking a screenshot instead.','warn')}}
+function downloadBlob(){if(!imageUrl)return;const a=document.createElement('a');a.href=imageUrl;a.download='shape-architect-challenge.png';document.body.appendChild(a);a.click();a.remove()}
+els.save.onclick=saveImage;els.closeModal.onclick=()=>els.modal.classList.remove('show');els.downloadPreview.onclick=downloadBlob;els.modal.addEventListener('click',e=>{if(e.target===els.modal)els.modal.classList.remove('show')});
+
+renderPalette();updateUI();resize();
+})();
+</script>
+</body>
+</html>
