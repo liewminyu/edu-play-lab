@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Class vs the Pattern Dragon — Community v17</title>
+<style>
+  :root{
+    --bg1:#09111f;--bg2:#111d34;--panel:#17233c;--panel2:#1d2c4a;
+    --text:#f7fbff;--muted:#b9c6dc;--gold:#ffd166;--good:#55e6a5;--bad:#ff6b7a;
+    --shadow:0 12px 34px rgba(0,0,0,.32);
+    --red:#ff7f88;--yellow:#ffe29a;--green:#bfdda8;--orange:#ffc58f;--purple:#cfa7f3;--blue:#a9c8e8;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg1);color:var(--text);font-family:"Trebuchet MS",Arial,sans-serif}
+  button{font:inherit}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;background:
+      radial-gradient(circle at 14% 15%,rgba(66,153,225,.18),transparent 30%),
+      radial-gradient(circle at 86% 18%,rgba(255,209,102,.13),transparent 30%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));}
+  #app{position:relative;width:100%;height:100%;z-index:1}
+  .screen{width:100%;height:100%;padding:clamp(10px,1.2vw,20px);display:flex;flex-direction:column;gap:clamp(8px,.9vh,14px)}
+  .hidden{display:none!important}
+  .topbar{display:grid;grid-template-columns:minmax(280px,1fr) auto auto;align-items:center;gap:12px;min-height:48px}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand-badge{font-size:clamp(28px,3vw,46px);filter:drop-shadow(0 5px 8px rgba(0,0,0,.35))}
+  .brand h1{margin:0;font-size:clamp(23px,2.35vw,40px);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand p{margin:5px 0 0;color:var(--muted);font-size:clamp(12px,1.05vw,17px)}
+  .control-wrap{display:flex;justify-content:center}
+  .toolbar{display:flex;gap:8px;justify-content:flex-end}
+  .icon-btn,.primary-btn,.secondary-btn,.option-btn,.shape-option,.small-chip{border:0;border-radius:14px;cursor:pointer;font-weight:900;box-shadow:var(--shadow);transition:transform .12s ease,filter .12s ease,opacity .12s ease,background .12s ease,border-color .12s ease}
+  .icon-btn:active,.primary-btn:active,.secondary-btn:active,.option-btn:active,.shape-option:active,.ready-btn:active{transform:scale(.97)}
+  .icon-btn{width:46px;height:46px;background:#223253;color:#fff;font-size:21px}
+  .primary-btn{padding:14px 24px;background:linear-gradient(135deg,#ffd166,#ffb703);color:#1d2433;font-size:clamp(17px,1.45vw,24px)}
+  .secondary-btn{padding:13px 20px;background:#2b4169;color:#fff;font-size:clamp(15px,1.2vw,20px)}
+  .primary-btn.waiting{filter:grayscale(.76) brightness(.62);opacity:.66;cursor:not-allowed;box-shadow:none}
+  .primary-btn.ready-to-show,.primary-btn.ready-to-go{animation:startGlow .8s ease-in-out infinite alternate}
+  .primary-btn.live{background:linear-gradient(135deg,#55e6a5,#31bf7b);color:#173425}
+  @keyframes startGlow{to{filter:brightness(1.16);box-shadow:0 0 24px rgba(255,209,102,.75),var(--shadow)}}
+
+
+  .intro-center{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+  .cover-card{position:relative;width:min(1160px,100%);height:100%;background:linear-gradient(145deg,rgba(31,47,79,.96),rgba(18,30,52,.96));border:1px solid rgba(255,255,255,.12);border-radius:28px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:clamp(28px,4vw,54px)}
+  .cover-card::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 20%,rgba(88,166,255,.10),transparent 28%),radial-gradient(circle at 82% 18%,rgba(255,209,102,.08),transparent 24%),radial-gradient(circle at 50% 100%,rgba(85,230,165,.08),transparent 36%)}
+  .cover-inner{position:relative;z-index:2;max-width:860px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .cover-chip{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;background:rgba(255,209,102,.13);border:1px solid rgba(255,209,102,.45);color:var(--gold);font-weight:900;font-size:clamp(12px,1.02vw,17px);letter-spacing:.04em;text-transform:uppercase}
+  .cover-title{font-size:clamp(42px,5.7vw,88px);line-height:.95;margin:20px 0 14px;max-width:920px;text-shadow:0 8px 25px rgba(0,0,0,.35)}
+  .cover-title em{color:var(--gold);font-style:normal}
+  .cover-subtitle{font-size:clamp(18px,1.62vw,28px);color:#dbe7fb;max-width:760px;line-height:1.3;margin:0}
+  .cover-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:26px;position:relative;z-index:2}
+  .cover-actions .primary-btn,.cover-actions .secondary-btn{min-width:min(340px,80vw)}
+  .cover-mini-steps{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:24px;position:relative;z-index:2}
+  .cover-step{padding:10px 16px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);color:#e6eefb;font-size:clamp(14px,1.15vw,19px);font-weight:1000;box-shadow:0 8px 18px rgba(0,0,0,.16)}
+  .cover-step strong{color:var(--gold)}
+  .cover-arrow{font-size:clamp(18px,1.4vw,24px);color:rgba(255,209,102,.92);font-weight:1000}
+  .cover-note{margin-top:18px;color:#cdd9ec;font-size:clamp(14px,1.1vw,18px);font-weight:900}
+  .cover-note strong{color:#ffb4be}
+  .cover-animation{position:absolute;left:0;right:0;bottom:8px;height:136px;pointer-events:none;z-index:1}
+  .float-shape{position:absolute;bottom:0;opacity:.95;filter:drop-shadow(0 10px 16px rgba(0,0,0,.28));animation:coverFloat 4s ease-in-out infinite alternate}
+  .float-shape svg{display:block}
+  .float-shape.shape-1{left:8%;animation-duration:4.2s;transform:rotate(-8deg)}
+  .float-shape.shape-2{left:23%;bottom:18px;animation-duration:3.5s;animation-delay:.4s;transform:scale(.94)}
+  .float-shape.shape-3{left:40%;bottom:-2px;animation-duration:4.6s;animation-delay:.2s}
+  .float-shape.shape-4{left:58%;bottom:17px;animation-duration:3.9s;animation-delay:.7s;transform:scale(.96) rotate(7deg)}
+  .float-shape.shape-5{left:74%;bottom:0;animation-duration:4.4s;animation-delay:.3s;transform:rotate(-6deg)}
+  .cover-dragon{position:absolute;right:4%;bottom:2px;font-size:clamp(62px,6.2vw,100px);opacity:.88;filter:drop-shadow(0 10px 14px rgba(0,0,0,.28));animation:dragonBob 3s ease-in-out infinite alternate}
+  .cover-shield{position:absolute;left:3%;bottom:16px;font-size:clamp(40px,4vw,66px);opacity:.88;filter:drop-shadow(0 8px 12px rgba(0,0,0,.25));animation:shieldBob 3.4s ease-in-out infinite alternate}
+  @keyframes coverFloat{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-14px) scale(1.04)}}
+  @keyframes dragonBob{0%{transform:translateY(0) rotate(-2deg)}100%{transform:translateY(-10px) rotate(3deg)}}
+  @keyframes shieldBob{0%{transform:translateY(0)}100%{transform:translateY(-12px)}}
+
+
+/* Universal Game Setup — streamlined v6 */
+.setup-screen{gap:10px}
+.setup-topbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:14px;min-height:58px}
+.setup-title-wrap{min-width:0;display:flex;align-items:center}.setup-title-wrap h1{margin:0;font-size:clamp(36px,3.25vw,54px);line-height:1}
+.setup-back{width:auto;min-width:50px;padding:0 14px;font-size:clamp(22px,1.8vw,28px)}
+.setup-history{display:flex;align-items:center;gap:7px}.setup-history .icon-btn{font-size:25px}.setup-history .icon-btn:disabled{filter:grayscale(.85) brightness(.7);opacity:.42;cursor:not-allowed;box-shadow:none}
+.setup-grid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(245px,1.16fr) repeat(3,minmax(185px,1fr));grid-template-rows:1fr 1fr;gap:10px}
+.setup-panel{min-width:0;min-height:0;background:linear-gradient(145deg,rgba(32,49,82,.97),rgba(18,30,52,.97));border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.player-bank{grid-column:1;grid-row:1 / span 2;display:flex;flex-direction:column;padding:12px;gap:9px}
+.setup-panel-label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:clamp(21px,1.85vw,29px);font-weight:1000;color:var(--gold)}
+.setup-count{font-size:clamp(18px,1.45vw,23px);color:#d7e2f2;background:rgba(255,255,255,.08);padding:6px 10px;border-radius:999px}
+.player-entry{flex:0 0 auto;width:100%;height:52px;min-height:52px;resize:none;overflow:hidden;border:2px solid rgba(255,255,255,.13);outline:none;border-radius:12px;background:#101d33;color:#f7fbff;padding:10px 12px;font:800 clamp(18px,1.45vw,23px)/1.25 "Trebuchet MS",Arial,sans-serif}
+.player-entry:focus{border-color:rgba(255,209,102,.72);box-shadow:0 0 0 3px rgba(255,209,102,.08)}
+.player-entry::placeholder{color:#91a3bb;opacity:1}
+.player-tags{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:2px 4px 4px}
+.player-tag{width:100%;flex:0 0 auto;border:2px solid rgba(255,255,255,.18);border-radius:10px;background:#2b4775;color:#fff;padding:7px 10px;font-size:clamp(17px,1.35vw,22px);line-height:1.12;font-weight:1000;cursor:grab;user-select:none;touch-action:none;box-shadow:0 4px 10px rgba(0,0,0,.16);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.player-tag:active{cursor:grabbing}.player-tag.selected{outline:3px solid var(--gold);outline-offset:2px}.player-tag.assigned{color:#172033}
+.touch-drag-ghost{position:fixed!important;z-index:99999!important;pointer-events:none!important;margin:0!important;opacity:.92;transform:translate(-50%,-50%) scale(1.04);box-shadow:0 16px 32px rgba(0,0,0,.38)!important}.player-bank.drag-over{outline:3px solid var(--gold);outline-offset:-3px;background:rgba(255,209,102,.06)}
+.group-card{display:flex;flex-direction:column;padding:10px;gap:8px;transition:border-color .15s ease,background .15s ease}
+.group-card.drag-over{border-color:var(--gold);background:rgba(255,209,102,.08)}
+.group-header{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px;align-items:center}
+.group-name-input{width:100%;min-width:0;border:0;outline:none;border-radius:11px;background:#2b4775;color:#fff;padding:10px 11px;font-weight:1000;font-size:clamp(19px,1.55vw,25px);line-height:1.15;text-align:center}
+.group-name-input:focus{box-shadow:0 0 0 3px rgba(255,209,102,.20)}
+.group-colour{width:48px;height:48px;border:2px solid rgba(255,255,255,.55);border-radius:9px;padding:0;background:transparent;cursor:pointer;overflow:hidden}
+.group-colour::-webkit-color-swatch-wrapper{padding:0}.group-colour::-webkit-color-swatch{border:0;border-radius:6px}.group-colour::-moz-color-swatch{border:0;border-radius:6px}
+.group-drop{flex:1;min-height:0;border:2px dashed rgba(255,255,255,.20);border-radius:13px;padding:7px;display:grid;grid-template-rows:repeat(5,minmax(0,1fr));align-items:stretch;gap:5px;overflow:hidden}
+.group-drop .player-tag{height:100%;min-height:0;display:flex;align-items:center;font-size:clamp(16px,1.2vw,20px);line-height:1.05;padding:4px 9px}
+.group-entry{width:100%;height:100%;min-height:0;resize:none;overflow:hidden;border:2px solid rgba(255,255,255,.14);outline:none;border-radius:9px;background:rgba(255,255,255,.055);color:#fff;padding:5px 8px;font:800 clamp(14px,1.05vw,18px)/1.15 "Trebuchet MS",Arial,sans-serif}
+.group-entry:focus{border-color:rgba(255,209,102,.62);background:rgba(255,255,255,.085)}
+.group-entry::placeholder{color:#8fa1b9;opacity:1}
+.group-player-count{flex:0 0 auto;text-align:center;color:#a9bad1;font-size:clamp(16px,1.25vw,20px);font-weight:1000;line-height:1;padding:3px 0 1px}
+.group-card.full .group-drop{border-color:rgba(85,230,165,.55)}.group-card.full .group-player-count{color:#9ff0c8}
+.setup-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
+.setup-action{border:0;border-radius:12px;min-height:44px;padding:7px 8px;background:#2c4774;color:#fff;font-weight:1000;font-size:clamp(16px,1.25vw,21px);cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,.18);white-space:nowrap}
+.setup-action:disabled{filter:grayscale(.8) brightness(.72);opacity:.5;cursor:not-allowed;box-shadow:none}.setup-action.valid{background:linear-gradient(135deg,#65e5a8,#21bd75);color:#0a3825}.setup-action.primary{background:linear-gradient(135deg,#ffd166,#ffb703);color:#172033}
+.setup-toast{position:fixed;left:50%;bottom:72px;z-index:120;max-width:min(760px,calc(100vw - 36px));padding:12px 18px;border-radius:14px;background:rgba(25,39,66,.97);border:2px solid rgba(255,255,255,.16);box-shadow:0 16px 38px rgba(0,0,0,.38);color:#f4f8ff;font-size:clamp(17px,1.35vw,22px);line-height:1.25;font-weight:900;text-align:center;opacity:0;pointer-events:none;transform:translate(-50%,14px) scale(.98);transition:opacity .18s ease,transform .18s ease}
+.setup-toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.setup-toast.good{background:rgba(23,72,58,.97);border-color:rgba(85,230,165,.58);color:#c5f7dd}
+.setup-toast.bad{background:rgba(79,31,43,.98);border-color:rgba(255,114,128,.62);color:#ffd4d8}
+.setup-toast strong{color:#fff}
+.start-disabled{filter:grayscale(.88) brightness(.65);opacity:.52;cursor:not-allowed!important;box-shadow:none!important}
+@media(max-width:1000px){.setup-grid{grid-template-columns:minmax(225px,1.08fr) repeat(3,minmax(155px,1fr));gap:7px}.setup-actions{gap:6px}.setup-action{min-height:42px;padding:7px 5px;font-size:clamp(16px,1.65vw,20px)}.group-card{padding:7px}.player-bank{padding:8px}.player-tag{font-size:clamp(16px,1.8vw,20px);padding:7px 9px}.group-drop .player-tag{font-size:clamp(14px,1.55vw,18px);padding:4px 7px}.group-name-input{font-size:clamp(17px,1.8vw,21px)}.group-player-count{font-size:clamp(14px,1.55vw,18px)}.setup-toast{bottom:64px;font-size:clamp(16px,1.7vw,20px)}}
+
+.status-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(190px,.4fr);gap:10px}
+  .status-card{background:linear-gradient(145deg,rgba(31,47,79,.96),rgba(18,30,52,.96));border:1px solid rgba(255,255,255,.11);border-radius:18px;padding:9px 14px;box-shadow:var(--shadow);min-height:72px;display:flex;flex-direction:column;justify-content:center}
+  .status-card.quest-card{padding:8px 12px}
+  .status-card h3{margin:0 0 5px;font-size:clamp(13px,.92vw,16px);color:var(--gold);letter-spacing:.03em;text-transform:uppercase}
+  .hearts{display:flex;gap:3px;flex-wrap:nowrap;align-items:center;font-size:clamp(20px,1.55vw,28px);white-space:nowrap}
+  .heart{filter:drop-shadow(0 3px 4px rgba(0,0,0,.22));transition:opacity .15s ease,transform .15s ease}
+  .heart.lost{opacity:.2;filter:grayscale(.9)}
+  .dragon-wrap{display:flex;align-items:center;gap:12px}
+  .dragon-avatar{font-size:clamp(40px,4vw,72px);filter:drop-shadow(0 8px 14px rgba(0,0,0,.25))}
+  .dragon-meta{flex:1;min-width:0}
+  .dragon-label{font-size:clamp(18px,1.4vw,24px);font-weight:1000}
+  .hp-bar{height:18px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+  .hp-fill{height:100%;background:linear-gradient(90deg,#ff6b7a,#ff9d5c);transition:width .35s ease}
+  .hp-text{margin-top:5px;font-weight:900;color:#d6e2f4;font-size:clamp(13px,1vw,16px)}
+  .round-big{font-size:clamp(27px,2.2vw,42px);font-weight:1000;line-height:1}
+  .round-small{color:#d6e2f4;font-size:clamp(11px,.86vw,14px);font-weight:900;white-space:nowrap}
+
+  .game-main{flex:1;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px;min-height:0}
+  .arena{min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px}
+  .challenge-panel{min-height:0;background:linear-gradient(145deg,rgba(32,49,82,.97),rgba(18,30,52,.97));border-radius:22px;border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);padding:clamp(12px,1.55vw,24px);display:flex;flex-direction:column;gap:10px;overflow:hidden}
+  .pre-question{display:grid;place-items:center;min-height:100%;font-size:clamp(28px,2.9vw,52px);font-weight:1000;color:var(--gold);text-align:center}
+  .challenge-live{display:flex;flex-direction:column;gap:10px;min-height:0;height:100%}
+  .instruction{text-align:center;font-size:clamp(18px,1.45vw,25px);font-weight:1000;color:var(--gold)}
+  .question-sub{text-align:center;color:#d6e2f4;font-size:clamp(14px,1.08vw,17px);font-weight:900}
+  .pattern-line{display:flex;justify-content:center;align-items:flex-start;gap:8px;flex-wrap:wrap;padding:8px 0;min-height:104px}
+  .pattern-blank-wrap{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .pattern-slot,.pattern-shape{width:72px;height:72px;border-radius:18px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+  .pattern-slot.blank{border:3px dashed rgba(255,209,102,.45);background:rgba(255,255,255,.03)}
+  .pattern-slot.filled{border-color:rgba(85,230,165,.55);background:rgba(85,230,165,.08)}
+  .shield-tracker,.sword-tracker{display:flex;justify-content:center;align-items:center;gap:5px;position:relative;z-index:2}
+  .shield,.sword{display:inline-block;font-size:clamp(18px,1.45vw,25px);opacity:.18;filter:grayscale(1);transform:scale(.92);transition:opacity .2s ease,filter .2s ease,transform .2s ease,text-shadow .2s ease}
+  .shield.lit{opacity:1;filter:none;transform:scale(1.06);text-shadow:0 0 10px rgba(85,230,165,.75)}
+  .sword.lit{opacity:1;filter:none;transform:scale(1.08);text-shadow:0 0 10px rgba(255,209,102,.8)}
+  .identify-board{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+  .mini-patterns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:0}
+  .mini-card{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:0}
+  .mini-card.active{border-color:rgba(255,209,102,.55);box-shadow:0 0 0 2px rgba(255,209,102,.08), inset 0 0 0 1px rgba(255,209,102,.12)}
+  .mini-card.done{border-color:rgba(85,230,165,.55);background:rgba(85,230,165,.08)}
+  .mini-title{text-align:center;font-size:clamp(12px,1vw,15px);font-weight:1000;color:#dce6f6}
+  .mini-shapes{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;min-height:78px}
+
+  .players{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:clamp(150px,22vh,240px)}
+  .player-card{border:0;border-radius:20px;padding:10px 12px;color:#172033;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:9px;position:relative;overflow:hidden;text-align:center;transition:filter .15s ease,transform .12s ease,opacity .18s ease,box-shadow .2s ease}
+  .player-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.16),transparent 65%);transform:translateX(-120%)}
+  .player-card.readying{filter:brightness(1.03)}
+  .player-card.readying::after,.player-card.live::after{animation:sweep 1.15s infinite}
+  @keyframes sweep{to{transform:translateX(120%)}}
+  .player-card.checked{border:0}
+  .player-card.correct-hero{box-shadow:0 0 20px rgba(85,230,165,.48),0 0 36px rgba(85,230,165,.22),var(--shadow)}
+  .player-card.finished{filter:brightness(1.04);box-shadow:0 0 18px rgba(85,230,165,.4),0 0 32px rgba(85,230,165,.18),var(--shadow)}
+  .finished-message{min-height:76px;border:2px solid rgba(23,32,51,.18);border-radius:14px;background:rgba(255,255,255,.48);display:grid;place-items:center;padding:10px;color:#173425;font-size:clamp(15px,1.25vw,21px);font-weight:1000}
+  .player-card.wrong-hit{box-shadow:0 0 18px rgba(255,107,122,.55),0 0 32px rgba(255,107,122,.2),var(--shadow);animation:shake .28s ease}
+  @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+  .player-head{display:flex;align-items:center;justify-content:center;gap:10px;position:relative;z-index:2;width:100%}
+  .player-name{display:block;width:100%;font-size:clamp(20px,1.9vw,34px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+  .player-score{display:none}
+  .ready-btn{align-self:center;min-width:145px;border:2px solid rgba(23,32,51,.25);border-radius:13px;padding:10px 18px;background:rgba(255,255,255,.42);color:#172033;font-size:clamp(17px,1.45vw,24px);font-weight:1000;cursor:pointer;position:relative;z-index:2}
+  .answer-zone{display:grid;gap:8px;position:relative;z-index:2}
+  .answer-zone.dimmed{opacity:.48;filter:saturate(.85)}
+  .shape-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .shape-option{min-height:76px;background:rgba(255,255,255,.55);border:2px solid rgba(23,32,51,.22);padding:6px;display:grid;place-items:center}
+  .shape-option.correct-flash{background:rgba(85,230,165,.7);border-color:rgba(11,61,42,.35)}
+  .shape-option.wrong-flash,.option-btn.wrong-flash{background:rgba(255,107,122,.82)!important;color:#fff!important;border-color:rgba(120,28,41,.45)!important}
+  .option-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .option-btn{min-height:58px;border:2px solid rgba(23,32,51,.22);background:rgba(255,255,255,.55);color:#172033;padding:8px;font-size:clamp(14px,1.2vw,21px)}
+  .answer-zone button:disabled{cursor:default;opacity:.62}
+
+  .controls{display:flex;align-items:center;justify-content:center;gap:10px;min-height:45px}
+  .status{color:#d6e2f4;font-size:clamp(13px,1.1vw,18px);font-weight:900;text-align:center}
+  .status strong{color:var(--gold)}
+
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(4,8,16,.76);backdrop-filter:blur(5px);display:grid;place-items:center;padding:24px}
+  .result-card{width:min(920px,92vw);background:linear-gradient(145deg,#243a60,#14233d);border:2px solid rgba(255,255,255,.15);border-radius:28px;padding:clamp(22px,2.7vw,40px);text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.55)}
+  .result-icon{font-size:clamp(60px,6.5vw,108px)}
+  .result-card h2{font-size:clamp(32px,3.7vw,60px);margin:4px 0 8px}
+  .result-card p{font-size:clamp(16px,1.4vw,23px);line-height:1.35;margin:8px 0;color:#dbe7f8}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+  .hero-stat{padding:12px;border-radius:14px;color:#172033;font-weight:1000;font-size:clamp(15px,1.2vw,20px)}
+  .hero-stat b{display:block;font-size:clamp(24px,2.3vw,38px)}
+  .result-swords{display:flex;justify-content:center;gap:6px;margin-top:7px}
+  .result-swords .sword{font-size:clamp(22px,2vw,31px)}
+  .overlay-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+  .end-wrap{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;min-height:0}
+  .winner-panel,.summary-panel{background:linear-gradient(145deg,rgba(31,48,80,.97),rgba(18,30,52,.97));border:1px solid rgba(255,255,255,.12);border-radius:26px;box-shadow:var(--shadow);padding:clamp(21px,2.4vw,38px);min-height:0}
+  .winner-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .trophy{font-size:clamp(82px,10vw,165px);filter:drop-shadow(0 12px 25px rgba(0,0,0,.35))}
+  .winner-panel h2{font-size:clamp(34px,4.2vw,68px);line-height:1;margin:8px 0}
+  .winner-panel p{font-size:clamp(16px,1.4vw,23px);color:#d6e2f4;margin:8px 0}
+  .winner-chip{margin:13px 0;padding:13px 27px;border-radius:18px;color:#172033;font-size:clamp(25px,2.8vw,45px);font-weight:1000;box-shadow:var(--shadow)}
+  .summary-panel{overflow:auto}
+  .summary-panel h3{margin:0 0 14px;font-size:clamp(24px,2.2vw,37px)}
+  .summary-row{display:grid;grid-template-columns:52px 1fr 82px;gap:11px;align-items:center;padding:9px;border-radius:14px;background:rgba(255,255,255,.06);margin:7px 0}
+  .summary-num{font-size:clamp(22px,1.9vw,32px);font-weight:1000;color:var(--gold);text-align:center}
+  .summary-name{padding:9px 11px;border-radius:10px;color:#172033;font-weight:1000;font-size:clamp(15px,1.25vw,21px)}
+  .summary-score{font-size:clamp(22px,1.9vw,32px);font-weight:1000;text-align:center}
+
+  .confetti{position:fixed;top:-20px;width:12px;height:20px;z-index:70;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translate3d(var(--drift),110vh,0) rotate(840deg);opacity:.8}}
+
+  @media(max-aspect-ratio:4/3){.intro-center{grid-template-columns:1fr}.rules-card{display:none}.end-wrap{grid-template-columns:1fr}.summary-panel{max-height:42vh}.status-row{grid-template-columns:1fr}.players{min-height:190px}.mini-patterns{grid-template-columns:1fr}.topbar{grid-template-columns:1fr auto}}
+  @media(max-width:980px){.brand p{display:none}.players{gap:6px}.player-card{padding:8px 6px}.player-name{font-size:18px}.sword,.shield{font-size:17px}.shape-option{min-height:62px}.option-btn{min-height:52px;font-size:12px}.topbar{grid-template-columns:1fr auto}.control-wrap{grid-column:1 / -1;order:3}.cover-card{padding:24px 16px}.cover-actions .primary-btn,.cover-actions .secondary-btn{min-width:0;width:min(320px,100%)}.cover-animation{height:102px}.float-shape svg{width:58px!important;height:58px!important}.cover-mini-steps{gap:8px}.cover-step{padding:8px 12px}.cover-dragon{font-size:54px}.cover-shield{font-size:34px}}
+
+
+  /* Triple Jeopardy matched display sizing */
+  .screen{padding:clamp(10px,1.15vw,20px)}
+  .topbar{grid-template-columns:minmax(300px,1fr) auto auto;min-height:48px}
+  .brand-badge{font-size:clamp(28px,3vw,46px)}
+  .brand h1{font-size:clamp(23px,2.35vw,40px)}
+  .brand p{font-size:clamp(12px,1.05vw,17px)}
+  .icon-btn{width:46px;height:46px;font-size:21px}
+  .primary-btn{padding:14px 24px;font-size:clamp(17px,1.45vw,24px)}
+  .secondary-btn{padding:13px 20px;font-size:clamp(15px,1.2vw,20px)}
+  .hero h2{font-size:clamp(42px,5.8vw,92px)}
+  .hero .subtitle{font-size:clamp(17px,1.52vw,26px)}
+  .walt{font-size:clamp(15px,1.3vw,21px)}
+  .rules-card h3{font-size:clamp(24px,2.1vw,37px)}
+  .rule{font-size:clamp(14px,1.17vw,20px)}
+  .status-card{min-height:72px;padding:9px 14px}
+  .status-card h3{font-size:clamp(13px,.92vw,16px)}
+  .hearts{font-size:clamp(20px,1.55vw,28px)}
+  .dragon-avatar{font-size:clamp(40px,4vw,72px)}
+  .dragon-label{font-size:clamp(18px,1.4vw,24px)}
+  .hp-bar{height:18px}
+  .hp-text{font-size:clamp(13px,1vw,16px)}
+  .round-big{font-size:clamp(27px,2.2vw,42px)}
+  .round-small{font-size:clamp(11px,.86vw,14px)}
+  .challenge-panel{padding:clamp(12px,1.55vw,24px);gap:10px}
+  .pre-question{font-size:clamp(28px,2.9vw,52px)}
+  .instruction{font-size:clamp(18px,1.45vw,25px)}
+  .question-sub{font-size:clamp(14px,1.08vw,17px)}
+  .pattern-line{gap:8px;min-height:104px;padding:8px 0;flex-wrap:nowrap;flex:1;align-items:center}
+  .pattern-slot,.pattern-shape{width:54px;height:54px;border-radius:13px}
+  .pattern-shape svg,.pattern-slot svg{width:42px!important;height:42px!important}
+  .pattern-blank-wrap{justify-content:center}
+  .players{min-height:clamp(155px,23vh,245px);gap:10px}
+  .player-card{padding:10px 12px;gap:9px}
+  .player-name{font-size:clamp(20px,1.9vw,34px)}
+  .ready-btn{min-width:145px;padding:10px 18px;font-size:clamp(17px,1.45vw,24px)}
+  .finished-message,.waiting-message{min-height:76px;font-size:clamp(15px,1.25vw,21px)}
+  .shape-grid{gap:7px}
+  .shape-option{min-height:58px;padding:6px}
+  .shape-option svg{width:42px!important;height:42px!important}
+  .option-grid{gap:7px}
+  .option-btn{min-height:54px;padding:7px;font-size:clamp(12px,1vw,17px)}
+  .controls{min-height:42px}
+  .status{font-size:clamp(13px,1.1vw,18px)}
+  .shield,.sword{font-size:clamp(18px,1.45vw,25px)}
+
+  /* Identify-the-change rounds: one shared pattern at a time */
+  .identify-board{flex:1;display:grid;place-items:center;min-height:0}
+  .single-pattern-card{width:min(760px,82%);background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:18px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:185px}
+  .single-pattern-card .mini-title{font-size:clamp(15px,1.15vw,19px);color:var(--gold)}
+  .single-pattern-card .mini-shapes{display:flex;justify-content:center;align-items:center;gap:10px;min-height:72px;flex-wrap:nowrap}
+  .single-pattern-card .pattern-shape{width:58px;height:58px}
+  .single-pattern-card .pattern-shape svg{width:45px!important;height:45px!important}
+  .step-note{font-size:clamp(13px,1vw,16px);font-weight:900;color:#dce6f6;text-align:center}
+  .waiting-message{border:2px solid rgba(23,32,51,.18);border-radius:14px;background:rgba(255,255,255,.48);display:grid;place-items:center;padding:10px;color:#173425;font-weight:1000;text-align:center}
+
+  /* Teacher-controlled answer reveal */
+  .answer-reveal{padding:7px 12px;border-radius:11px;background:rgba(85,230,165,.16);border:1px solid rgba(85,230,165,.42);color:#a7f4cc;font-size:clamp(13px,1vw,17px);font-weight:1000;text-align:center}
+  .identify-review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:0;flex:1}
+  .identify-review-card{background:rgba(255,255,255,.055);border:2px solid rgba(85,230,165,.38);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center}
+  .identify-review-card .mini-shapes{display:flex;justify-content:center;gap:6px;flex-wrap:nowrap}
+  .identify-review-card .pattern-shape{width:48px;height:48px}
+  .identify-review-card .pattern-shape svg{width:37px!important;height:37px!important}
+
+  @media(max-height:820px){
+    .status-card{min-height:66px;padding:7px 12px}
+    .players{min-height:clamp(145px,21vh,220px)}
+    .single-pattern-card{min-height:150px;padding:10px 14px}
+    .shape-option{min-height:52px}.option-btn{min-height:48px}
+  }
+
+
+
+  /* v8 larger Triple Jeopardy sizing + no status lines */
+  .controls{display:none!important;min-height:0!important}
+  .game-main{grid-template-rows:minmax(0,1fr)!important}
+  .players{min-height:clamp(220px,31vh,330px)!important;gap:12px!important}
+  .player-card{padding:14px 14px!important;gap:12px!important;justify-content:flex-start!important}
+  .player-name{font-size:clamp(30px,2.6vw,44px)!important}
+  .sword-tracker{min-height:34px!important}
+  .sword,.shield{font-size:clamp(24px,1.95vw,32px)!important}
+  .ready-btn{min-width:180px!important;padding:12px 22px!important;font-size:clamp(22px,1.8vw,30px)!important}
+  .answer-zone{gap:10px!important}
+  .shape-grid{gap:10px!important}
+  .shape-option{min-height:88px!important;padding:10px!important;border-radius:16px!important}
+  .shape-option svg{width:58px!important;height:58px!important}
+  .option-grid{gap:10px!important}
+  .option-btn{min-height:72px!important;padding:10px 12px!important;font-size:clamp(20px,1.55vw,28px)!important;border-radius:16px!important}
+  .finished-message,.waiting-message{min-height:108px!important;font-size:clamp(19px,1.45vw,26px)!important;padding:14px!important}
+  .challenge-panel{padding:18px 18px 14px!important;gap:14px!important}
+  .instruction{font-size:clamp(26px,2vw,38px)!important}
+  .question-sub{font-size:clamp(19px,1.35vw,24px)!important}
+  .pattern-line{display:grid!important;grid-auto-flow:column!important;grid-auto-columns:max-content!important;justify-content:center!important;align-items:center!important;gap:18px!important;min-height:160px!important;padding:12px 0!important}
+  .pattern-slot,.pattern-shape{width:86px!important;height:86px!important;border-radius:18px!important}
+  .pattern-shape svg,.pattern-slot svg{width:66px!important;height:66px!important}
+  .pattern-blank-wrap{gap:10px!important;min-width:86px!important}
+  .single-pattern-card{width:min(980px,92%)!important;min-height:260px!important;padding:20px 24px!important;gap:16px!important}
+  .single-pattern-card .mini-title{font-size:clamp(24px,1.7vw,32px)!important}
+  .single-pattern-card .mini-shapes{gap:16px!important;min-height:108px!important}
+  .single-pattern-card .pattern-shape{width:88px!important;height:88px!important}
+  .single-pattern-card .pattern-shape svg{width:68px!important;height:68px!important}
+  .step-note{font-size:clamp(22px,1.55vw,28px)!important}
+  .answer-reveal{font-size:clamp(20px,1.45vw,26px)!important;padding:10px 16px!important}
+  .identify-review-grid{gap:14px!important}
+  .identify-review-card{padding:16px!important;gap:12px!important}
+  .identify-review-card .mini-title{font-size:clamp(18px,1.25vw,24px)!important}
+  .identify-review-card .mini-shapes{gap:10px!important}
+  .identify-review-card .pattern-shape{width:64px!important;height:64px!important}
+  .identify-review-card .pattern-shape svg{width:48px!important;height:48px!important}
+  .status-row{margin-bottom:2px!important}
+
+
+
+  /* v9 Pattern Dragon refinement: larger pattern graphics + aligned blanks + flat identify view */
+  .pattern-line{
+    display:flex!important;
+    justify-content:center!important;
+    align-items:flex-start!important;
+    gap:18px!important;
+    min-height:172px!important;
+    padding:12px 0 4px!important;
+    flex-wrap:nowrap!important;
+  }
+  .pattern-blank-wrap{
+    display:grid!important;
+    grid-template-rows:104px 38px!important;
+    align-items:start!important;
+    justify-items:center!important;
+    gap:8px!important;
+    width:104px!important;
+    min-width:104px!important;
+  }
+  .pattern-lead-wrap .pattern-shape,
+  .pattern-slot{
+    width:104px!important;
+    height:104px!important;
+    border-radius:20px!important;
+  }
+  .pattern-lead-wrap .pattern-shape svg,
+  .pattern-slot svg{
+    width:84px!important;
+    height:84px!important;
+  }
+  .tracker-spacer{visibility:hidden!important;pointer-events:none!important}
+  .pattern-slot.blank{font-size:clamp(27px,2vw,36px)!important}
+
+  .shape-option{
+    min-height:104px!important;
+    padding:8px!important;
+  }
+  .shape-option svg{
+    width:82px!important;
+    height:82px!important;
+  }
+
+  /* Identify-the-change now lives directly on the main question panel. */
+  .identify-board{
+    flex:1!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .single-pattern-card{
+    width:100%!important;
+    min-height:0!important;
+    padding:4px 0 0!important;
+    margin:0!important;
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:12px!important;
+  }
+  .single-pattern-card .mini-title{
+    font-size:clamp(25px,1.8vw,34px)!important;
+    line-height:1.05!important;
+    margin:0!important;
+  }
+  .single-pattern-card .mini-shapes{
+    min-height:112px!important;
+    gap:18px!important;
+    margin:0!important;
+  }
+  .single-pattern-card .pattern-shape{
+    width:104px!important;
+    height:104px!important;
+    border-radius:20px!important;
+  }
+  .single-pattern-card .pattern-shape svg{
+    width:84px!important;
+    height:84px!important;
+  }
+  .step-note{
+    font-size:clamp(24px,1.7vw,32px)!important;
+    line-height:1.05!important;
+    margin:0!important;
+  }
+  .single-pattern-card .shield-tracker{min-height:34px!important;margin:0!important}
+  .answer-reveal{margin:0!important}
+
+  @media(max-height:820px){
+    .pattern-line{min-height:150px!important;gap:14px!important;padding-top:6px!important}
+    .pattern-blank-wrap{grid-template-rows:90px 34px!important;width:90px!important;min-width:90px!important;gap:6px!important}
+    .pattern-lead-wrap .pattern-shape,.pattern-slot{width:90px!important;height:90px!important}
+    .pattern-lead-wrap .pattern-shape svg,.pattern-slot svg{width:72px!important;height:72px!important}
+    .single-pattern-card .pattern-shape{width:88px!important;height:88px!important}
+    .single-pattern-card .pattern-shape svg{width:70px!important;height:70px!important}
+    .single-pattern-card .mini-shapes{min-height:94px!important;gap:14px!important}
+    .shape-option{min-height:94px!important}
+    .shape-option svg{width:72px!important;height:72px!important}
+  }
+
+
+
+  /* v4 refinements */
+  .pattern-line{align-items:start!important;grid-auto-columns:112px!important;gap:14px!important}
+  .pattern-blank-wrap,.pattern-lead-wrap{display:grid!important;grid-template-rows:104px 34px!important;justify-items:center!important;align-items:start!important;width:112px!important;min-width:112px!important;gap:10px!important}
+  .pattern-line .shield-tracker{width:112px!important;display:flex!important;justify-content:space-evenly!important;align-items:center!important;gap:0!important;min-height:34px!important}
+  .tracker-spacer{visibility:hidden!important;pointer-events:none!important}
+  .single-pattern-card{gap:14px!important}
+  .single-pattern-card .shield-tracker{width:160px!important;display:flex!important;justify-content:space-evenly!important;align-items:center!important;gap:0!important;min-height:34px!important;margin:2px 0 0!important}
+  .heart-loss-message{min-height:108px!important;font-size:clamp(19px,1.45vw,26px)!important;padding:16px 18px!important;line-height:1.22!important;border-radius:16px!important;background:rgba(255,107,122,.16)!important;border:2px solid rgba(255,107,122,.38)!important;color:#6f5a3e!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font-weight:1000!important}
+  @media(max-height:820px){
+    .pattern-line{grid-auto-columns:98px!important;gap:12px!important}
+    .pattern-blank-wrap,.pattern-lead-wrap{grid-template-rows:90px 34px!important;width:98px!important;min-width:98px!important;gap:8px!important}
+    .pattern-line .shield-tracker{width:98px!important}
+  }
+
+
+
+  /* v5 feature-change spacing */
+  .identify-board{padding-top:2px!important}
+  .single-pattern-card{padding-top:4px!important}
+
+
+
+  /* v6 clarity + battle overlay */
+  .heart-loss-message{
+    min-height:108px!important;
+    font-size:clamp(19px,1.45vw,26px)!important;
+    padding:16px 18px!important;
+    line-height:1.22!important;
+    border-radius:16px!important;
+    background:#fff4f4!important;
+    border:3px solid #e1909a!important;
+    color:#6f3340!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.12)!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    font-weight:1000!important;
+    opacity:1!important;
+  }
+  .battle-overlay{position:fixed;inset:0;z-index:80;background:rgba(4,9,18,.64);backdrop-filter:blur(4px);display:grid;place-items:center;padding:24px}
+  .battle-card{width:min(840px,92vw);background:linear-gradient(145deg,#243f6d,#132847);border:2px solid rgba(255,255,255,.16);border-radius:30px;box-shadow:0 28px 80px rgba(0,0,0,.58);padding:24px 28px 22px;text-align:center;overflow:hidden}
+  .battle-card h2{margin:0 0 8px;font-size:clamp(30px,3vw,48px);color:#ffd166}
+  .battle-card p{margin:0 0 14px;font-size:clamp(18px,1.35vw,24px);color:#dfe9fb;font-weight:900}
+  .battle-arena{position:relative;height:210px;border-radius:22px;background:radial-gradient(circle at center,rgba(255,255,255,.10),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10);overflow:hidden}
+  .battle-ground{position:absolute;left:0;right:0;bottom:0;height:62px;background:linear-gradient(180deg,#264e2b,#16361a)}
+  .battle-knight,.battle-dragon{position:absolute;bottom:34px;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:1000}
+  .battle-knight{left:12%;animation:knightCharge 1.3s ease-in-out forwards}
+  .battle-dragon{right:12%;animation:dragonShake 1.3s ease-in-out forwards}
+  .battle-emoji{font-size:clamp(72px,7vw,108px);line-height:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))}
+  .battle-knight .battle-emoji{display:inline-block;transform:scaleX(-1)}
+  .battle-label{font-size:clamp(17px,1.2vw,22px);color:#f5fbff}
+  .battle-impact{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.4);font-size:clamp(36px,3vw,54px);opacity:0;animation:impactPop 1.3s ease-in-out forwards;color:#ffd166;text-shadow:0 0 18px rgba(255,209,102,.75)}
+  .battle-damage{position:absolute;right:19%;top:20%;padding:10px 16px;border-radius:999px;background:rgba(255,107,122,.18);border:2px solid rgba(255,107,122,.55);font-size:clamp(22px,1.6vw,30px);font-weight:1000;color:#ffd7dc;opacity:0;animation:damagePop 1.3s ease-in-out forwards}
+  .battle-footer{margin-top:14px;font-size:clamp(16px,1.1vw,21px);color:#9ff1c5;font-weight:1000}
+  @keyframes knightCharge{0%{transform:translateX(0)}45%{transform:translateX(0)}75%{transform:translateX(175px)}100%{transform:translateX(120px)}}
+  @keyframes dragonShake{0%,45%{transform:translateX(0)}60%{transform:translateX(-14px) rotate(-4deg)}72%{transform:translateX(10px) rotate(3deg)}84%{transform:translateX(-8px) rotate(-2deg)}100%{transform:translateX(0)}}
+  @keyframes impactPop{0%,48%{opacity:0;transform:translate(-50%,-50%) scale(.4)}58%{opacity:1;transform:translate(-50%,-50%) scale(1.25)}78%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05)}}
+  @keyframes damagePop{0%,54%{opacity:0;transform:translateY(12px)}64%{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(-6px)}}
+
+
+  .player-card.readying{justify-content:center!important}
+  .player-card.readying .player-head{display:flex;align-items:center;justify-content:center;min-height:0!important}
+  .player-card.readying .ready-btn{margin-top:0!important}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="overlayRoot"></div>
+<script>
+(() => {
+  'use strict';
+
+  const STORAGE_KEY='SgLDC_PatternDragon_Community_v17';
+  const SETUP_KEY='SgLDC_Universal_GameSetup_v1';
+const groupOrder=['red','yellow','green','orange','purple','blue'];
+const DEFAULT_GROUP_COLORS=['#ff7f88','#ffe29a','#bfdda8','#ffc58f','#cfa7f3','#a9c8e8'];
+let groups={};
+let setupConfig=null;
+let setupDraft=null;
+let setupValidated=false;
+let selectedPlayerId=null;
+let setupCheckedOnce=false;
+let setupDirty=false;
+let setupSavedSignature=null;
+let setupUndoStack=[];
+let setupRedoStack=[];
+let setupHistoryApplying=false;
+let activePointerDrag=null;
+let suppressTouchClickUntil=0;
+
+  function setupErrorSound(){
+  try{if(typeof wrongSound==='function'){wrongSound();return;}if(typeof badSound==='function'){badSound();return;}}catch(e){}
+}
+function blankSetupDraft(){return{
+  schema:'sgldc-game-setup',version:1,
+  players:Array.from({length:0},()=>null),
+  groups:groupOrder.map((id,i)=>({id,name:`Group ${i+1}`,color:DEFAULT_GROUP_COLORS[i],memberIds:[]}))
+};}
+function normalizeSetup(raw){
+  if(!raw||typeof raw!=='object')return null;
+  let players=[];
+  if(Array.isArray(raw.players))players=raw.players.map((p,i)=>typeof p==='string'?{id:`p${String(i+1).padStart(2,'0')}`,name:p}:{id:String(p?.id||`p${String(i+1).padStart(2,'0')}`),name:String(p?.name||'')});
+  let gs=Array.isArray(raw.groups)?raw.groups:[];
+  const normGroups=groupOrder.map((id,i)=>{
+    const g=gs[i]||{};
+    const memberIds=Array.isArray(g.memberIds)?g.memberIds.map(String):Array.isArray(g.players)?g.players.map(name=>players.find(p=>p.name===name)?.id).filter(Boolean):[];
+    const name=String(g.name??'').trim()||`Group ${i+1}`;
+    return{id,name,color:/^#[0-9a-f]{6}$/i.test(String(g.color||''))?String(g.color):DEFAULT_GROUP_COLORS[i],memberIds};
+  });
+  return{schema:'sgldc-game-setup',version:1,players,groups:normGroups};
+}
+function playerSetupErrors(cfg){
+  const names=cfg.players.map(p=>p.name.trim()).filter(Boolean),errors=[];
+  if(names.length!==30)errors.push(`30 player names required (${names.length} entered)`);
+  if(names.some(n=>[...n].length>12))errors.push('Player names must be 12 characters or fewer');
+  return errors;
+}
+function groupSetupErrors(cfg){
+  const errors=[];
+  if(cfg.groups.some((g,i)=>[...(g.name.trim()||`Group ${i+1}`)].length>12))errors.push('Group names must be 12 characters or fewer');
+  return errors;
+}
+function baseSetupErrors(cfg){return [...playerSetupErrors(cfg),...groupSetupErrors(cfg)];}
+function groupingComplete(cfg){const ids=new Set(cfg.players.map(p=>p.id));const assigned=cfg.groups.flatMap(g=>g.memberIds);return cfg.groups.every(g=>g.memberIds.length===5)&&assigned.length===30&&new Set(assigned).size===30&&assigned.every(id=>ids.has(id));}
+function setupReady(cfg){return !!cfg&&baseSetupErrors(cfg).length===0&&groupingComplete(cfg);}
+function applySetup(cfg){
+  groups={};
+  groupOrder.forEach((id,i)=>{const g=cfg.groups[i];groups[id]={name:g.name.trim()||`Group ${i+1}`,color:g.color,players:g.memberIds.map(pid=>cfg.players.find(p=>p.id===pid)?.name).filter(Boolean)};});
+}
+function loadSetup(){try{const cfg=normalizeSetup(JSON.parse(localStorage.getItem(SETUP_KEY)||'null'));if(setupReady(cfg)){applySetup(cfg);return cfg;}}catch(e){}return null;}
+function persistSetup(cfg){try{localStorage.setItem(SETUP_KEY,JSON.stringify(cfg));}catch(e){}}
+function setupSignature(cfg){
+  const n=normalizeSetup(cfg);
+  if(!n)return '';
+  return JSON.stringify({players:n.players.map(p=>({id:p.id,name:p.name})),groups:n.groups.map(g=>({name:g.name,color:g.color,memberIds:[...g.memberIds]}))});
+}
+function rosterReady(cfg=setupDraft){
+  if(!cfg)return false;
+  const names=cfg.players.map(p=>p.name.trim()).filter(Boolean);
+  return names.length===30&&!names.some(n=>[...n].length>12)&&groupSetupErrors(cfg).length===0;
+}
+function recomputeSetupValidation(){setupValidated=rosterReady(setupDraft);setupCheckedOnce=setupValidated;}
+function refreshSetupButtons(){
+  const randomize=$('#randomizeBtn'),add=$('#addToGameBtn'),download=$('#downloadSetupBtn');
+  const rosterOK=rosterReady(setupDraft);
+  if(randomize)randomize.disabled=!rosterOK;
+  if(download)download.disabled=!rosterOK;
+  if(add)add.disabled=!!setupSavedSignature&&!setupDirty;
+}
+function markSetupDirty(){
+  setupDirty=true;recomputeSetupValidation();refreshSetupButtons();
+}
+function cloneSetup(cfg){return cfg?normalizeSetup(JSON.parse(JSON.stringify(cfg))):null;}
+function setupHistoryEntry(){
+  if(!setupDraft)return null;
+  let cfg;
+  try{cfg=currentDraftFromValidatedUI();}catch(e){cfg=setupDraft;}
+  return{cfg:cloneSetup(cfg),validated:!!setupValidated,checked:!!setupCheckedOnce};
+}
+function refreshHistoryButtons(){const u=$('#undoSetupBtn'),r=$('#redoSetupBtn');if(u)u.disabled=!setupUndoStack.length;if(r)r.disabled=!setupRedoStack.length;}
+function recordSetupHistory(){
+  if(setupHistoryApplying)return;
+  const entry=setupHistoryEntry();if(!entry?.cfg)return;
+  const sig=setupSignature(entry.cfg)+'|'+entry.validated+'|'+entry.checked;
+  const last=setupUndoStack[setupUndoStack.length-1];
+  const lastSig=last?setupSignature(last.cfg)+'|'+last.validated+'|'+last.checked:'';
+  if(sig!==lastSig)setupUndoStack.push(entry);
+  if(setupUndoStack.length>60)setupUndoStack.shift();
+  setupRedoStack=[];refreshHistoryButtons();
+}
+function applySetupHistoryEntry(entry,label){
+  if(!entry?.cfg)return;
+  setupHistoryApplying=true;setupDraft=cloneSetup(entry.cfg);selectedPlayerId=null;
+  setupDraft.groups.forEach((g,i)=>{const n=$(`#groupName-${i}`),c=$(`#groupColor-${i}`);if(n)n.value=g.name;if(c)c.value=g.color;});
+  recomputeSetupValidation();setupDirty=setupSavedSignature!==setupSignature(setupDraft);setupHistoryApplying=false;renderSetupTagsAndGroups();refreshSetupButtons();refreshHistoryButtons();setupStatus(`<strong>${label}.</strong> Review the setup, then add the player names to the game if needed.`,'good');
+}
+function undoSetup(){if(!setupUndoStack.length)return;const current=setupHistoryEntry();if(current)setupRedoStack.push(current);applySetupHistoryEntry(setupUndoStack.pop(),'Undo complete');}
+function redoSetup(){if(!setupRedoStack.length)return;const current=setupHistoryEntry();if(current)setupUndoStack.push(current);applySetupHistoryEntry(setupRedoStack.pop(),'Redo complete');}
+function armTextHistory(el){
+  if(!el)return;let captured=false;
+  el.addEventListener('focus',()=>{captured=false;});
+  el.addEventListener('beforeinput',()=>{if(!captured){recordSetupHistory();captured=true;}});
+  el.addEventListener('blur',()=>{captured=false;});
+}
+function clearPointerDragVisuals(){
+  document.querySelectorAll('.group-card.drag-over,.player-bank.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  if(activePointerDrag?.ghost)activePointerDrag.ghost.remove();
+  activePointerDrag=null;
+}
+function pointerTargetAt(x,y){
+  const el=document.elementFromPoint(x,y);if(!el)return null;
+  const drop=el.closest?.('.group-drop');if(drop)return{type:'group',index:Number(drop.dataset.groupIndex)};
+  const bank=el.closest?.('.player-bank');if(bank)return{type:'bank'};
+  return null;
+}
+function positionPointerGhost(x,y){if(activePointerDrag?.ghost){activePointerDrag.ghost.style.left=x+'px';activePointerDrag.ghost.style.top=y+'px';}}
+function beginPointerDrag(e,tag,player){
+  if(!setupDraft||e.pointerType==='mouse'||activePointerDrag)return;
+  e.preventDefault();selectedPlayerId=null;document.querySelectorAll('.player-tag').forEach(t=>t.classList.remove('selected'));
+  const ghost=tag.cloneNode(true);ghost.classList.add('touch-drag-ghost');ghost.classList.remove('selected');const r=tag.getBoundingClientRect();ghost.style.width=r.width+'px';document.body.appendChild(ghost);
+  activePointerDrag={pointerId:e.pointerId,playerId:player.id,ghost,startX:e.clientX,startY:e.clientY,dragged:false};positionPointerGhost(e.clientX,e.clientY);try{tag.setPointerCapture(e.pointerId);}catch(err){}
+}
+function movePointerDrag(e){
+  if(!activePointerDrag||activePointerDrag.pointerId!==e.pointerId)return;e.preventDefault();
+  if(Math.hypot(e.clientX-activePointerDrag.startX,e.clientY-activePointerDrag.startY)>7)activePointerDrag.dragged=true;
+  positionPointerGhost(e.clientX,e.clientY);document.querySelectorAll('.group-card.drag-over,.player-bank.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  const target=pointerTargetAt(e.clientX,e.clientY);if(target?.type==='group')$(`#groupCard-${target.index}`)?.classList.add('drag-over');else if(target?.type==='bank')$('#playerTags')?.closest('.player-bank')?.classList.add('drag-over');
+}
+function endPointerDrag(e,player){
+  if(!activePointerDrag||activePointerDrag.pointerId!==e.pointerId)return;e.preventDefault();
+  const drag=activePointerDrag,target=pointerTargetAt(e.clientX,e.clientY),wasDragged=drag.dragged;clearPointerDragVisuals();suppressTouchClickUntil=Date.now()+450;
+  if(wasDragged&&target?.type==='group')movePlayerToGroup(drag.playerId,target.index);else if(wasDragged&&target?.type==='bank')movePlayerToBank(drag.playerId);else if(!wasDragged)togglePlayerSelection(player);
+}
+function togglePlayerSelection(player){
+  if(selectedPlayerId===player.id){selectedPlayerId=null;document.querySelectorAll('.player-tag').forEach(t=>t.classList.remove('selected'));return;}
+  selectedPlayerId=player.id;document.querySelectorAll('.player-tag').forEach(t=>t.classList.toggle('selected',t.dataset.playerId===player.id));setupStatus(`<strong>${escapeHTML(player.name)}</strong> selected. Tap a group box to move this player.`);
+}
+
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+
+  const colors={red:'#ef476f',blue:'#4f8df7',green:'#2fb36d',yellow:'#f6c445',purple:'#8d6bf0',orange:'#f28c38'};
+
+  const rounds=[
+    {
+      type:'complete',
+      instruction:'Complete the pattern.',
+      sub:'Choose the correct next shape for each blank.',
+      lead:[{shape:'circle',color:'red',size:'medium',orientation:0},{shape:'circle',color:'blue',size:'medium',orientation:0},{shape:'circle',color:'red',size:'medium',orientation:0},{shape:'circle',color:'blue',size:'medium',orientation:0}],
+      steps:[
+        {answer:{shape:'circle',color:'red',size:'medium',orientation:0},options:[{shape:'circle',color:'red',size:'medium',orientation:0},{shape:'circle',color:'green',size:'medium',orientation:0},{shape:'square',color:'red',size:'medium',orientation:0}]},
+        {answer:{shape:'circle',color:'blue',size:'medium',orientation:0},options:[{shape:'circle',color:'blue',size:'medium',orientation:0},{shape:'circle',color:'yellow',size:'medium',orientation:0},{shape:'triangle',color:'blue',size:'medium',orientation:0}]},
+        {answer:{shape:'circle',color:'red',size:'medium',orientation:0},options:[{shape:'circle',color:'red',size:'medium',orientation:0},{shape:'square',color:'blue',size:'medium',orientation:0},{shape:'circle',color:'orange',size:'medium',orientation:0}]}
+      ]
+    },
+    {
+      type:'identify',
+      instruction:'This pattern shows a change in ______.',
+      sub:'Choose size, shape, colour or orientation.',
+      patterns:[
+        {answer:'shape',seq:[{shape:'circle',color:'green',size:'medium',orientation:0},{shape:'square',color:'green',size:'medium',orientation:0},{shape:'triangle',color:'green',size:'medium',orientation:0},{shape:'circle',color:'green',size:'medium',orientation:0}]},
+        {answer:'colour',seq:[{shape:'square',color:'yellow',size:'medium',orientation:0},{shape:'square',color:'purple',size:'medium',orientation:0},{shape:'square',color:'yellow',size:'medium',orientation:0},{shape:'square',color:'purple',size:'medium',orientation:0}]},
+        {answer:'size',seq:[{shape:'triangle',color:'orange',size:'small',orientation:0},{shape:'triangle',color:'orange',size:'large',orientation:0},{shape:'triangle',color:'orange',size:'small',orientation:0},{shape:'triangle',color:'orange',size:'large',orientation:0}]}
+      ]
+    },
+    {
+      type:'complete',
+      instruction:'Complete the pattern.',
+      sub:'Choose the correct next shape for each blank.',
+      lead:[{shape:'square',color:'green',size:'small',orientation:0},{shape:'square',color:'green',size:'large',orientation:0},{shape:'square',color:'green',size:'small',orientation:0},{shape:'square',color:'green',size:'large',orientation:0}],
+      steps:[
+        {answer:{shape:'square',color:'green',size:'small',orientation:0},options:[{shape:'square',color:'green',size:'small',orientation:0},{shape:'square',color:'green',size:'large',orientation:0},{shape:'circle',color:'green',size:'small',orientation:0}]},
+        {answer:{shape:'square',color:'green',size:'large',orientation:0},options:[{shape:'square',color:'green',size:'large',orientation:0},{shape:'square',color:'green',size:'small',orientation:0},{shape:'triangle',color:'green',size:'large',orientation:0}]},
+        {answer:{shape:'square',color:'green',size:'small',orientation:0},options:[{shape:'square',color:'green',size:'small',orientation:0},{shape:'square',color:'green',size:'large',orientation:0},{shape:'diamond',color:'green',size:'small',orientation:0}]}
+      ]
+    },
+    {
+      type:'identify',
+      instruction:'This pattern shows a change in ______.',
+      sub:'Choose size, shape, colour or orientation.',
+      patterns:[
+        {answer:'orientation',seq:[{shape:'triangle',color:'purple',size:'medium',orientation:0},{shape:'triangle',color:'purple',size:'medium',orientation:90},{shape:'triangle',color:'purple',size:'medium',orientation:180},{shape:'triangle',color:'purple',size:'medium',orientation:270}]},
+        {answer:'shape',seq:[{shape:'rectangle',color:'blue',size:'medium',orientation:0},{shape:'circle',color:'blue',size:'medium',orientation:0},{shape:'square',color:'blue',size:'medium',orientation:0},{shape:'rectangle',color:'blue',size:'medium',orientation:0}]},
+        {answer:'colour',seq:[{shape:'diamond',color:'red',size:'medium',orientation:0},{shape:'diamond',color:'yellow',size:'medium',orientation:0},{shape:'diamond',color:'red',size:'medium',orientation:0},{shape:'diamond',color:'yellow',size:'medium',orientation:0}]}
+      ]
+    },
+    {
+      type:'complete',
+      instruction:'Complete the pattern.',
+      sub:'Choose the correct next shape for each blank.',
+      lead:[{shape:'triangle',color:'purple',size:'medium',orientation:0},{shape:'triangle',color:'purple',size:'medium',orientation:90},{shape:'triangle',color:'purple',size:'medium',orientation:180},{shape:'triangle',color:'purple',size:'medium',orientation:270}],
+      steps:[
+        {answer:{shape:'triangle',color:'purple',size:'medium',orientation:0},options:[{shape:'triangle',color:'purple',size:'medium',orientation:0},{shape:'triangle',color:'purple',size:'medium',orientation:90},{shape:'square',color:'purple',size:'medium',orientation:0}]},
+        {answer:{shape:'triangle',color:'purple',size:'medium',orientation:90},options:[{shape:'triangle',color:'purple',size:'medium',orientation:90},{shape:'triangle',color:'purple',size:'medium',orientation:180},{shape:'triangle',color:'orange',size:'medium',orientation:90}]},
+        {answer:{shape:'triangle',color:'purple',size:'medium',orientation:180},options:[{shape:'triangle',color:'purple',size:'medium',orientation:180},{shape:'triangle',color:'purple',size:'medium',orientation:270},{shape:'circle',color:'purple',size:'medium',orientation:0}]}
+      ]
+    },
+    {
+      type:'identify',
+      instruction:'This pattern shows a change in ______.',
+      sub:'Choose size, shape, colour or orientation.',
+      patterns:[
+        {answer:'size',seq:[{shape:'circle',color:'orange',size:'large',orientation:0},{shape:'circle',color:'orange',size:'small',orientation:0},{shape:'circle',color:'orange',size:'large',orientation:0},{shape:'circle',color:'orange',size:'small',orientation:0}]},
+        {answer:'orientation',seq:[{shape:'diamond',color:'green',size:'medium',orientation:0},{shape:'diamond',color:'green',size:'medium',orientation:45},{shape:'diamond',color:'green',size:'medium',orientation:0},{shape:'diamond',color:'green',size:'medium',orientation:45}]},
+        {answer:'shape',seq:[{shape:'square',color:'red',size:'medium',orientation:0},{shape:'triangle',color:'red',size:'medium',orientation:0},{shape:'circle',color:'red',size:'medium',orientation:0},{shape:'square',color:'red',size:'medium',orientation:0}]}
+      ]
+    },
+    {
+      type:'complete',
+      instruction:'Complete the pattern.',
+      sub:'Choose the correct next shape for each blank.',
+      lead:[{shape:'diamond',color:'yellow',size:'medium',orientation:0},{shape:'circle',color:'yellow',size:'medium',orientation:0},{shape:'square',color:'yellow',size:'medium',orientation:0},{shape:'diamond',color:'yellow',size:'medium',orientation:0}],
+      steps:[
+        {answer:{shape:'circle',color:'yellow',size:'medium',orientation:0},options:[{shape:'circle',color:'yellow',size:'medium',orientation:0},{shape:'triangle',color:'yellow',size:'medium',orientation:0},{shape:'circle',color:'blue',size:'medium',orientation:0}]},
+        {answer:{shape:'square',color:'yellow',size:'medium',orientation:0},options:[{shape:'square',color:'yellow',size:'medium',orientation:0},{shape:'diamond',color:'yellow',size:'medium',orientation:0},{shape:'square',color:'purple',size:'medium',orientation:0}]},
+        {answer:{shape:'diamond',color:'yellow',size:'medium',orientation:0},options:[{shape:'diamond',color:'yellow',size:'medium',orientation:0},{shape:'circle',color:'yellow',size:'medium',orientation:0},{shape:'rectangle',color:'yellow',size:'medium',orientation:0}]}
+      ]
+    },
+    {
+      type:'identify',
+      instruction:'This pattern shows a change in ______.',
+      sub:'Choose size, shape, colour or orientation.',
+      patterns:[
+        {answer:'colour',seq:[{shape:'triangle',color:'blue',size:'medium',orientation:0},{shape:'triangle',color:'green',size:'medium',orientation:0},{shape:'triangle',color:'blue',size:'medium',orientation:0},{shape:'triangle',color:'green',size:'medium',orientation:0}]},
+        {answer:'size',seq:[{shape:'rectangle',color:'purple',size:'small',orientation:0},{shape:'rectangle',color:'purple',size:'medium',orientation:0},{shape:'rectangle',color:'purple',size:'large',orientation:0},{shape:'rectangle',color:'purple',size:'small',orientation:0}]},
+        {answer:'orientation',seq:[{shape:'triangle',color:'red',size:'medium',orientation:270},{shape:'triangle',color:'red',size:'medium',orientation:180},{shape:'triangle',color:'red',size:'medium',orientation:90},{shape:'triangle',color:'red',size:'medium',orientation:0}]}
+      ]
+    },
+    {
+      type:'complete',
+      instruction:'Complete the pattern.',
+      sub:'Choose the correct next shape for each blank.',
+      lead:[{shape:'rectangle',color:'orange',size:'medium',orientation:0},{shape:'rectangle',color:'orange',size:'medium',orientation:90},{shape:'rectangle',color:'orange',size:'medium',orientation:0},{shape:'rectangle',color:'orange',size:'medium',orientation:90}],
+      steps:[
+        {answer:{shape:'rectangle',color:'orange',size:'medium',orientation:0},options:[{shape:'rectangle',color:'orange',size:'medium',orientation:0},{shape:'rectangle',color:'orange',size:'medium',orientation:90},{shape:'square',color:'orange',size:'medium',orientation:0}]},
+        {answer:{shape:'rectangle',color:'orange',size:'medium',orientation:90},options:[{shape:'rectangle',color:'orange',size:'medium',orientation:90},{shape:'rectangle',color:'orange',size:'medium',orientation:0},{shape:'rectangle',color:'blue',size:'medium',orientation:90}]},
+        {answer:{shape:'rectangle',color:'orange',size:'medium',orientation:0},options:[{shape:'rectangle',color:'orange',size:'medium',orientation:0},{shape:'triangle',color:'orange',size:'medium',orientation:0},{shape:'rectangle',color:'orange',size:'small',orientation:0}]}
+      ]
+    },
+    {
+      type:'identify',
+      instruction:'This pattern shows a change in ______.',
+      sub:'Choose size, shape, colour or orientation.',
+      patterns:[
+        {answer:'shape',seq:[{shape:'circle',color:'yellow',size:'medium',orientation:0},{shape:'diamond',color:'yellow',size:'medium',orientation:0},{shape:'triangle',color:'yellow',size:'medium',orientation:0},{shape:'circle',color:'yellow',size:'medium',orientation:0}]},
+        {answer:'colour',seq:[{shape:'square',color:'green',size:'medium',orientation:0},{shape:'square',color:'orange',size:'medium',orientation:0},{shape:'square',color:'green',size:'medium',orientation:0},{shape:'square',color:'orange',size:'medium',orientation:0}]},
+        {answer:'size',seq:[{shape:'triangle',color:'purple',size:'small',orientation:90},{shape:'triangle',color:'purple',size:'medium',orientation:90},{shape:'triangle',color:'purple',size:'large',orientation:90},{shape:'triangle',color:'purple',size:'small',orientation:90}]}
+      ]
+    }
+  ];
+
+  let state=null, muted=false, audioCtx=null;
+  let phase='checkin', readyLanes=new Set(), playerSteps=[0,0,0], playerScores=[0,0,0], playerTimeMs=[0,0,0], playerFinished=[false,false,false], laneProcessing=[false,false,false], roundCompleting=false, countTimer=null, currentStage=0, wrongPauseLane=null, currentStageStart=0, stageElapsedBase=0;
+  const app=document.getElementById('app');
+  const overlayRoot=document.getElementById('overlayRoot');
+  const $=s=>document.querySelector(s);
+
+  function nowMs(){return (window.performance&&performance.now)?performance.now():Date.now();}
+  function startStageClock(){stageElapsedBase=0;currentStageStart=nowMs();}
+  function pauseStageClock(){if(currentStageStart){stageElapsedBase+=nowMs()-currentStageStart;currentStageStart=0;}}
+  function resumeStageClock(){if(!currentStageStart)currentStageStart=nowMs();}
+  function stageElapsedMs(){return stageElapsedBase+(currentStageStart?nowMs()-currentStageStart:0);}
+
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function ensureAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();}
+  function tone(freq=440,duration=.12,type='sine',volume=.08){if(muted)return;ensureAudio();if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(volume,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration);}
+  function goodSound(){tone(523,.11,'triangle',.08);setTimeout(()=>tone(659,.11,'triangle',.08),100);setTimeout(()=>tone(784,.16,'triangle',.09),200);}
+  function badSound(){tone(220,.16,'sawtooth',.05);}
+  function confetti(count=45){const colors=['#ffd166','#55e6a5','#ff6b7a','#a9c8e8','#cfa7f3','#ffc58f'];for(let i=0;i<count;i++){const p=document.createElement('div');p.className='confetti';p.style.left=Math.random()*100+'vw';p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.animationDuration=(2.2+Math.random()*2.2)+'s';p.style.animationDelay=(Math.random()*.5)+'s';p.style.setProperty('--drift',(-120+Math.random()*240)+'px');p.style.transform=`rotate(${Math.random()*180}deg)`;document.body.appendChild(p);setTimeout(()=>p.remove(),5200);}}
+
+  function showBattleOverlay(damage=10, dragonDefeated=false){
+    clearOverlay();
+    overlayRoot.innerHTML=`<div class="battle-overlay"><div class="battle-card"><h2>${dragonDefeated?'Final Blow!':'Direct Hit!'}</h2><div class="battle-arena"><div class="battle-knight"><div class="battle-emoji">🤺</div><div class="battle-label">Knight</div></div><div class="battle-impact">⚔️</div><div class="battle-damage">-${damage} HP</div><div class="battle-dragon"><div class="battle-emoji">🐉</div><div class="battle-label">Pattern Dragon</div></div><div class="battle-ground"></div></div><div class="battle-footer">Great work, class!</div></div></div>`;
+    countTimer=setTimeout(()=>{overlayRoot.innerHTML='';countTimer=null;},2200);
+  }
+
+  function makePlayerSchedule(){
+    const base=[[0,1,2],[3,4,5],[0,3,4],[1,2,5],[0,1,3],[2,4,5],[0,2,4],[1,3,5],[0,1,5],[2,3,4]];
+    const perm=shuffle(groupOrder), rounds=base.map(t=>t.map(i=>perm[i]));
+    const pools={}, cursors={};
+    groupOrder.forEach(g=>{pools[g]=shuffle(groups[g].players);cursors[g]=0;});
+    return rounds.map((triple,ri)=>shuffle(triple.map(g=>({groupId:g,groupName:groups[g].name,color:groups[g].color,player:pools[g][cursors[g]++]}))).map((x,lane)=>({...x,lane,round:ri+1})));
+  }
+
+  function freshState(){return {version:16,hearts:10,dragonHP:100,roundIndex:0,finished:false,rounds:rounds,playerSchedule:makePlayerSchedule(),playerTotals:{},playerStats:{},lastResult:null};}
+  function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+  function loadState(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!s||![16].includes(s.version)||!Array.isArray(s.rounds)||!Array.isArray(s.playerSchedule))return null;s.playerTotals=s.playerTotals||{};s.playerStats=s.playerStats||{};return s;}catch(e){return null;}}
+
+  function toolbar(){return `<div class="toolbar"><button class="icon-btn" id="muteBtn">${muted?'🔇':'🔊'}</button><button class="icon-btn" id="fullBtn">⛶</button><button class="icon-btn" id="homeBtn">⌂</button></div>`;}
+  function bindToolbar(){const m=$('#muteBtn'); if(m)m.onclick=()=>{muted=!muted;m.textContent=muted?'🔇':'🔊';}; const f=$('#fullBtn'); if(f)f.onclick=()=>{ensureAudio();if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}; const h=$('#homeBtn'); if(h)h.onclick=renderIntro;}
+
+  function coverAnimationHTML(){return `<div class="cover-animation" aria-hidden="true"><div class="cover-shield">🛡️</div><div class="float-shape shape-1">${shapeSVG({shape:'circle',color:'red',size:'medium',orientation:0},82)}</div><div class="float-shape shape-2">${shapeSVG({shape:'square',color:'blue',size:'medium',orientation:0},72)}</div><div class="float-shape shape-3">${shapeSVG({shape:'triangle',color:'yellow',size:'medium',orientation:0},84)}</div><div class="float-shape shape-4">${shapeSVG({shape:'diamond',color:'green',size:'medium',orientation:0},76)}</div><div class="float-shape shape-5">${shapeSVG({shape:'rectangle',color:'purple',size:'medium',orientation:0},80)}</div><div class="cover-dragon">🐉</div></div>`;}
+
+  function introControls(){
+    clearOverlay();phase='checkin';
+    setupConfig=loadSetup();
+    const isSetupComplete=setupReady(setupConfig);
+    const saved=loadState(), canResume=isSetupComplete&&saved&&!saved.finished&&saved.roundIndex<10;
+    app.innerHTML=`<main class="screen">
+      <div class="topbar">
+        <div class="brand"><div class="brand-badge">🐉</div><div><h1>Class vs the Pattern Dragon</h1><p>Co-operative class quest</p></div></div>
+        <div class="control-wrap"></div>
+        <div class="toolbar"><button class="icon-btn" id="muteBtn">${muted?'🔇':'🔊'}</button><button class="icon-btn" id="fullBtn">⛶</button></div>
+      </div>
+      <section class="intro-center">
+        <div class="cover-card">
+          <div class="cover-inner">
+            <span class="cover-chip">Co-operative Class Quest</span>
+            <h2 class="cover-title">Class vs the<br><em>Pattern Dragon</em></h2>
+            <p class="cover-subtitle">Work together to defeat the dragon.</p>
+            <div class="cover-actions"><button class="secondary-btn" id="setupGameBtn">⚙ Setup Game</button><button class="primary-btn ${isSetupComplete?'':'start-disabled'}" id="newGameBtn" ${isSetupComplete?'':'disabled'}>⚔️ Start New Quest</button>${canResume?'<button class="secondary-btn" id="resumeBtn">▶ Resume Quest</button>':''}</div>
+            <div class="cover-mini-steps">
+              <div class="cover-step">Work <strong>together</strong></div>
+              <div class="cover-arrow">→</div>
+              <div class="cover-step">Spot the <strong>pattern</strong></div>
+              <div class="cover-arrow">→</div>
+              <div class="cover-step">Damage the <strong>dragon</strong></div>
+            </div>
+            <div class="cover-note">Wrong answers cost <strong>1 heart</strong>.</div>
+          </div>
+          ${coverAnimationHTML()}
+        </div>
+      </section>
+    </main>`;
+    $('#muteBtn').onclick=()=>{muted=!muted;$('#muteBtn').textContent=muted?'🔇':'🔊';};
+    $('#fullBtn').onclick=()=>{ensureAudio();if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();};
+    $('#setupGameBtn').onclick=()=>renderSetup();
+    if(isSetupComplete) $('#newGameBtn').onclick=()=>{ensureAudio();if(saved&&!saved.finished&&!confirm('Start a new quest? The saved quest will be replaced.'))return;applySetup(setupConfig);state=freshState();saveState();renderRound();};
+    if(canResume) $('#resumeBtn').onclick=()=>{ensureAudio();applySetup(setupConfig);state=saved;renderRound();};
+  }
+  const renderIntro=introControls;
+
+  let setupToastTimer=null;
+function setupStatus(message,type=''){
+  if(!type)return;
+  const el=$('#setupToast');if(!el||!message)return;
+  if(setupToastTimer)clearTimeout(setupToastTimer);
+  el.className=`setup-toast ${type}`;
+  el.innerHTML=message;
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setupToastTimer=setTimeout(()=>{el.classList.remove('show');setupToastTimer=null;},type==='bad'?4200:2800);
+}
+function renderSetup(){
+  overlayRoot.innerHTML='';phase='setup';selectedPlayerId=null;setupCheckedOnce=false;setupDirty=false;setupUndoStack=[];setupRedoStack=[];clearPointerDragVisuals();
+  setupConfig=loadSetup();
+  setupDraft=normalizeSetup(setupConfig)||blankSetupDraft();
+  recomputeSetupValidation();
+  setupSavedSignature=setupConfig?setupSignature(setupConfig):null;
+  app.innerHTML=`<main class="screen setup-screen">
+    <div class="setup-topbar"><button class="icon-btn setup-back" id="setupBackBtn" title="Back">←</button><div class="setup-title-wrap"><h1>Game Setup</h1></div><div class="setup-history"><button class="icon-btn" id="undoSetupBtn" title="Undo" aria-label="Undo setup change" disabled>↶</button><button class="icon-btn" id="redoSetupBtn" title="Redo" aria-label="Redo setup change" disabled>↷</button></div><div>${toolbar()}</div></div>
+    <section class="setup-grid">
+      <div class="setup-panel player-bank"><div class="setup-panel-label"><span>Player Names</span><span class="setup-count" id="playerCount">${setupDraft.players.length}/30</span></div><textarea class="player-entry" id="playerNamesInput" spellcheck="false" rows="1" placeholder="Enter one name per line"></textarea><div class="player-tags" id="playerTags"></div></div>
+      ${setupDraft.groups.map((g,i)=>{const col=2+Math.floor(i/2),row=i%2+1;return `<div class="setup-panel group-card" id="groupCard-${i}" data-group-index="${i}" style="grid-column:${col};grid-row:${row}"><div class="group-header"><input class="group-name-input" id="groupName-${i}" maxlength="12" value="${escapeHTML(g.name||`Group ${i+1}`)}" placeholder="Group ${i+1}" aria-label="Group ${i+1} name"><input class="group-colour" id="groupColor-${i}" type="color" value="${g.color}" title="Choose group colour" aria-label="Choose group ${i+1} colour"></div><div class="group-drop" id="groupDrop-${i}" data-group-index="${i}"></div><div class="group-player-count" id="groupCount-${i}">${g.memberIds.length}/5 players</div></div>`}).join('')}
+    </section>
+    <div class="setup-actions"><button class="setup-action" id="uploadBtn">Upload ↑</button><button class="setup-action" id="randomizeBtn" disabled>Randomize ↻</button><button class="setup-action primary" id="addToGameBtn">Add player names to game</button><button class="setup-action" id="downloadSetupBtn" disabled>Download ↓</button></div>
+    <div class="setup-toast" id="setupToast" role="status" aria-live="polite"></div>
+    <input type="file" id="setupFileInput" accept=".txt,.json,text/plain,application/json" class="hidden">
+  </main>`;
+  bindToolbar();
+  $('#setupBackBtn').onclick=renderIntro;
+  $('#undoSetupBtn').onclick=undoSetup;$('#redoSetupBtn').onclick=redoSetup;refreshHistoryButtons();
+  bindNameEntry($('#playerNamesInput'),names=>addNamesToBank(names));
+  setupDraft.groups.forEach((g,i)=>{
+    const groupName=$(`#groupName-${i}`);armTextHistory(groupName);
+    groupName.addEventListener('input',()=>{if(setupDraft?.groups?.[i])setupDraft.groups[i].name=groupName.value.trim()||`Group ${i+1}`;markSetupDirty();});
+    groupName.addEventListener('blur',()=>{if(!groupName.value.trim()){groupName.value=`Group ${i+1}`;if(setupDraft?.groups?.[i])setupDraft.groups[i].name=groupName.value;markSetupDirty();}});
+    const colour=$(`#groupColor-${i}`);let colourHistoryCaptured=false;colour.addEventListener('pointerdown',()=>{if(!colourHistoryCaptured){recordSetupHistory();colourHistoryCaptured=true;}});colour.addEventListener('focus',()=>{colourHistoryCaptured=false;});colour.addEventListener('keydown',()=>{if(!colourHistoryCaptured){recordSetupHistory();colourHistoryCaptured=true;}});colour.addEventListener('change',()=>{colourHistoryCaptured=false;});
+    colour.addEventListener('input',e=>{if(setupDraft?.groups?.[i])setupDraft.groups[i].color=e.target.value;document.querySelectorAll(`#groupDrop-${i} .player-tag`).forEach(tag=>tag.style.background=e.target.value);markSetupDirty();});
+  });
+  $('#uploadBtn').onclick=()=>$('#setupFileInput').click();
+  $('#setupFileInput').onchange=handleSetupUpload;
+  $('#randomizeBtn').onclick=randomizeGroups;
+  $('#addToGameBtn').onclick=addSetupToGame;
+  $('#downloadSetupBtn').onclick=downloadSetup;
+  renderSetupTagsAndGroups();refreshSetupButtons();
+}
+function splitNameBatch(text){return String(text||'').split(/\r?\n|\t/).map(x=>x.trim()).filter(Boolean);}
+function bindNameEntry(el,onCommit){
+  if(!el)return;
+  const commit=()=>{const names=splitNameBatch(el.value);el.value='';if(names.length)onCommit(names);};
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();commit();}});
+  el.addEventListener('input',()=>{if(/[\r\n]/.test(el.value)){const parts=el.value.split(/\r?\n/),tail=parts.pop()||'';el.value=tail;const names=parts.map(x=>x.trim()).filter(Boolean);if(names.length)onCommit(names);}});
+  el.addEventListener('paste',e=>{const text=e.clipboardData?.getData('text')||'';if(/[\r\n\t]/.test(text)){e.preventDefault();el.value='';const names=splitNameBatch(text);if(names.length)onCommit(names);}});
+  el.addEventListener('blur',()=>{if(el.value.trim())commit();});
+}
+function nextPlayerId(){const ids=new Set((setupDraft?.players||[]).map(p=>p.id));let n=1,id='';do{id=`p${String(n++).padStart(2,'0')}`;}while(ids.has(id));return id;}
+function addNamesToBank(names){
+  if(!setupDraft||!names.length)return;
+  const clean=names.map(n=>String(n).trim()).filter(Boolean),tooLong=clean.filter(n=>[...n].length>12);
+  if(tooLong.length){setupStatus(`<strong>Player name too long:</strong> ${escapeHTML(tooLong[0])}. Use 12 characters or fewer.`,'bad');setupErrorSound();return;}
+  const space=Math.max(0,30-setupDraft.players.length);if(!space){setupStatus('<strong>30/30 player names entered.</strong> The roster is full.','bad');setupErrorSound();return;}
+  recordSetupHistory();const accepted=clean.slice(0,space);accepted.forEach(name=>setupDraft.players.push({id:nextPlayerId(),name}));markSetupDirty();renderSetupTagsAndGroups();
+  if(clean.length>accepted.length)setupStatus(`<strong>30-player limit reached.</strong> ${clean.length-accepted.length} extra name${clean.length-accepted.length===1?' was':'s were'} not added.`,'bad');
+}
+function addNamesToGroup(names,groupIndex){
+  if(!setupDraft||!names.length)return;const target=setupDraft.groups[groupIndex];if(!target)return;
+  const clean=names.map(n=>String(n).trim()).filter(Boolean),tooLong=clean.filter(n=>[...n].length>12);
+  if(tooLong.length){setupStatus(`<strong>Player name too long:</strong> ${escapeHTML(tooLong[0])}. Use 12 characters or fewer.`,'bad');setupErrorSound();return;}
+  let slots=Math.max(0,5-target.memberIds.length);if(!slots){setupStatus(`<strong>${escapeHTML(target.name||`Group ${groupIndex+1}`)}</strong> already has 5 players.`,'bad');setupErrorSound();return;}
+  recordSetupHistory();let added=0,skipped=0;
+  for(const name of clean){
+    if(slots<=0){skipped++;continue;}
+    const assigned=new Set(setupDraft.groups.flatMap(g=>g.memberIds));
+    let player=setupDraft.players.find(p=>p.name===name&&!assigned.has(p.id));
+    if(!player){if(setupDraft.players.length>=30){skipped++;continue;}player={id:nextPlayerId(),name};setupDraft.players.push(player);}
+    target.memberIds.push(player.id);slots--;added++;
+  }
+  if(added){selectedPlayerId=null;markSetupDirty();renderSetupTagsAndGroups();}
+  if(skipped){setupStatus('<strong>Some names were not added.</strong> A group can hold 5 players and the full roster can hold 30.','bad');setupErrorSound();}
+}
+function renderSetupTagsAndGroups(){
+  if(!setupDraft)return;
+  const assignedMap=new Map();setupDraft.groups.forEach((g,gi)=>g.memberIds.forEach(pid=>assignedMap.set(pid,gi)));
+  const bank=$('#playerTags');if(!bank)return;bank.innerHTML='';
+  setupDraft.players.forEach(p=>{if(!assignedMap.has(p.id))bank.appendChild(makePlayerTag(p,null));});
+  const bankPanel=bank.closest('.player-bank');bankPanel.ondragover=e=>{e.preventDefault();};bankPanel.ondrop=e=>{e.preventDefault();movePlayerToBank(e.dataTransfer.getData('text/plain'));};bank.onclick=e=>{if(e.target.closest('.player-tag'))return;if(selectedPlayerId)movePlayerToBank(selectedPlayerId);};
+  $('#playerCount').textContent=`${setupDraft.players.length}/30`;
+  setupDraft.groups.forEach((g,i)=>{
+    const drop=$(`#groupDrop-${i}`),count=$(`#groupCount-${i}`);drop.innerHTML='';
+    g.memberIds.forEach(pid=>{const p=setupDraft.players.find(x=>x.id===pid);if(p)drop.appendChild(makePlayerTag(p,i));});
+    if(g.memberIds.length<5){const entry=document.createElement('textarea');entry.className='group-entry';entry.rows=1;entry.spellcheck=false;entry.placeholder='Type, paste or drag names';entry.setAttribute('aria-label',`Add player names to ${g.name||`Group ${i+1}`}`);bindNameEntry(entry,names=>addNamesToGroup(names,i));drop.appendChild(entry);}
+    if(count)count.textContent=`${g.memberIds.length}/5 players`;const card=$(`#groupCard-${i}`);card.classList.toggle('full',g.memberIds.length===5);bindGroupDrop(drop,i);
+  });
+  recomputeSetupValidation();refreshSetupButtons();
+}
+function makePlayerTag(player,groupIndex){
+  const tag=document.createElement('div');tag.className='player-tag'+(groupIndex!==null?' assigned':'');tag.draggable=true;tag.dataset.playerId=player.id;tag.textContent=player.name;
+  if(groupIndex!==null){const color=setupDraft.groups[groupIndex].color;tag.style.background=color;}
+  tag.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',player.id);e.dataTransfer.effectAllowed='move';selectedPlayerId=player.id;});
+  tag.addEventListener('pointerdown',e=>beginPointerDrag(e,tag,player));tag.addEventListener('pointermove',movePointerDrag);tag.addEventListener('pointerup',e=>endPointerDrag(e,player));tag.addEventListener('pointercancel',clearPointerDragVisuals);
+  tag.addEventListener('click',e=>{if(Date.now()<suppressTouchClickUntil){e.preventDefault();return;}togglePlayerSelection(player);});
+  return tag;
+}
+function bindGroupDrop(drop,groupIndex){
+  drop.ondragover=e=>{e.preventDefault();drop.closest('.group-card').classList.add('drag-over');};drop.ondragleave=()=>drop.closest('.group-card').classList.remove('drag-over');drop.ondrop=e=>{e.preventDefault();drop.closest('.group-card').classList.remove('drag-over');movePlayerToGroup(e.dataTransfer.getData('text/plain'),groupIndex);};
+  drop.onclick=e=>{if(e.target.closest('.player-tag,.group-entry'))return;if(selectedPlayerId)movePlayerToGroup(selectedPlayerId,groupIndex);};
+}
+function movePlayerToGroup(playerId,targetIndex){
+  if(!setupDraft)return;const target=setupDraft.groups[targetIndex];const current=setupDraft.groups.findIndex(g=>g.memberIds.includes(playerId));if(current===targetIndex)return;if(target.memberIds.length>=5){setupStatus(`<strong>${escapeHTML(target.name||`Group ${targetIndex+1}`)}</strong> already has 5 players.`,'bad');setupErrorSound();return;}recordSetupHistory();if(current>=0)setupDraft.groups[current].memberIds=setupDraft.groups[current].memberIds.filter(id=>id!==playerId);target.memberIds.push(playerId);selectedPlayerId=null;markSetupDirty();renderSetupTagsAndGroups();const assigned=setupDraft.groups.reduce((n,g)=>n+g.memberIds.length,0);if(assigned===30)setupStatus('<strong>30/30 players assigned a group.</strong> Ready to add the player names to the game.','good');
+}
+function movePlayerToBank(playerId){
+  if(!setupDraft)return;const current=setupDraft.groups.findIndex(g=>g.memberIds.includes(playerId));if(current<0)return;recordSetupHistory();setupDraft.groups[current].memberIds=setupDraft.groups[current].memberIds.filter(id=>id!==playerId);selectedPlayerId=null;markSetupDirty();renderSetupTagsAndGroups();
+}
+function randomizeGroups(){
+  if(!rosterReady(setupDraft)){setupStatus('<strong>Randomize needs exactly 30 valid player names.</strong>','bad');setupErrorSound();return;}recordSetupHistory();const ids=shuffle(setupDraft.players.map(p=>p.id));setupDraft.groups.forEach((g,i)=>g.memberIds=ids.slice(i*5,i*5+5));selectedPlayerId=null;markSetupDirty();renderSetupTagsAndGroups();setupStatus('<strong>Randomized.</strong> All 30 players have been assigned a group.','good');
+}
+function addSetupToGame(){
+  const bankEntry=$('#playerNamesInput');if(bankEntry?.value.trim()){const names=splitNameBatch(bankEntry.value);bankEntry.value='';if(names.length)addNamesToBank(names);}
+  setupDraft=currentDraftFromValidatedUI();
+  const playerErrors=playerSetupErrors(setupDraft),groupErrors=groupSetupErrors(setupDraft);
+  if(playerErrors.length||groupErrors.length){setupStatus(`<strong>Cannot add to game:</strong> ${[...playerErrors,...groupErrors].join(' · ')}`,'bad');setupErrorSound();return;}
+  const assigned=setupDraft.groups.reduce((n,g)=>n+g.memberIds.length,0);
+  if(!groupingComplete(setupDraft)){refreshSetupButtons();setupStatus(`<strong>Cannot add to game:</strong> ${assigned}/30 players assigned a group. Assign to groups first.`,'bad');setupErrorSound();return;}
+  persistSetup(setupDraft);setupConfig=normalizeSetup(setupDraft);applySetup(setupConfig);setupSavedSignature=setupSignature(setupConfig);setupDirty=false;try{localStorage.removeItem(STORAGE_KEY);}catch(e){}refreshSetupButtons();tone(660,.1,'triangle',.07);setTimeout(()=>tone(880,.16,'triangle',.08),100);setupStatus('<strong>Player names added to game.</strong> The game is ready. You can Download this setup or make further changes.','good');
+}
+function currentDraftFromValidatedUI(){
+  if(!setupDraft)return blankSetupDraft();
+  setupDraft.groups.forEach((g,i)=>{g.name=($(`#groupName-${i}`)?.value||g.name).trim()||`Group ${i+1}`;g.color=$(`#groupColor-${i}`)?.value||g.color;});
+  return setupDraft;
+}
+function cleanSetupField(value){return String(value??'').replace(/[\t\r\n]+/g,' ').trim();}
+function serializeSetupText(cfg){
+  const lines=['SGLDC_GAME_SETUP\t2','# Portable classroom game setup','# PLAYER = player id + name','# GROUP = group id + group name + colour','# ASSIGN = player id + group id'];
+  cfg.players.forEach(p=>lines.push(`PLAYER\t${cleanSetupField(p.id)}\t${cleanSetupField(p.name)}`));
+  cfg.groups.forEach((g,i)=>lines.push(`GROUP\t${groupOrder[i]}\t${cleanSetupField(g.name)}\t${cleanSetupField(g.color)}`));
+  cfg.groups.forEach((g,i)=>g.memberIds.forEach(pid=>lines.push(`ASSIGN\t${cleanSetupField(pid)}\t${groupOrder[i]}`)));
+  return lines.join('\n')+'\n';
+}
+function parseSetupText(text){
+  const lines=String(text||'').split(/\r?\n/).map(line=>line.trim()).filter(line=>line&&!line.startsWith('#'));
+  if(!lines.length||!/^SGLDC_GAME_SETUP(?:\t|\s)+2$/i.test(lines[0]))return null;
+  const players=[],groupMap=new Map(),assignments=[];
+  for(const line of lines.slice(1)){
+    const parts=line.split('\t');const type=(parts.shift()||'').toUpperCase();
+    if(type==='PLAYER'&&parts.length>=2){const id=parts.shift().trim(),name=parts.join('\t').trim();if(id)players.push({id,name});}
+    else if(type==='GROUP'&&parts.length>=3){const id=parts.shift().trim(),name=parts.shift().trim(),color=parts.shift().trim();groupMap.set(id,{id,name,color,memberIds:[]});}
+    else if(type==='ASSIGN'&&parts.length>=2){assignments.push({playerId:parts[0].trim(),groupId:parts[1].trim()});}
+  }
+  if(!players.length)return null;
+  const groupsOut=groupOrder.map((id,i)=>{const g=groupMap.get(id)||{id,name:'',color:DEFAULT_GROUP_COLORS[i],memberIds:[]};return{id,name:g.name,color:g.color,memberIds:[]};});
+  assignments.forEach(a=>{const gi=groupOrder.indexOf(a.groupId);if(gi>=0&&players.some(p=>p.id===a.playerId)&&!groupsOut[gi].memberIds.includes(a.playerId))groupsOut[gi].memberIds.push(a.playerId);});
+  return normalizeSetup({schema:'sgldc-game-setup',version:2,players,groups:groupsOut});
+}
+function parseCompatibleSetupFile(text){
+  const portable=parseSetupText(text);if(portable)return portable;
+  try{return normalizeSetup(JSON.parse(text));}catch(err){}
+  const start=text.indexOf('{'),end=text.lastIndexOf('}');
+  if(start>=0&&end>start){try{return normalizeSetup(JSON.parse(text.slice(start,end+1)));}catch(err){}}
+  return null;
+}
+function downloadSetup(){
+  const bankEntry=$('#playerNamesInput');if(bankEntry?.value.trim()){const names=splitNameBatch(bankEntry.value);bankEntry.value='';if(names.length)addNamesToBank(names);}
+  const cfg=currentDraftFromValidatedUI(),errors=[...playerSetupErrors(cfg),...groupSetupErrors(cfg)];if(errors.length){setupStatus(`<strong>Cannot download:</strong> ${errors.join(' · ')}`,'bad');setupErrorSound();return;}const blob=new Blob([serializeSetupText(cfg)],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Game_Setup.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);setupStatus('<strong>Game_Setup.txt downloaded.</strong> Player names, group names, colours and assignments are included.','good');
+}
+async function handleSetupUpload(e){
+  const file=e.target.files?.[0];if(!file)return;
+  try{
+    const text=await file.text(),cfg=parseCompatibleSetupFile(text);if(!cfg)throw new Error('Invalid setup file');recordSetupHistory();setupDraft=cfg;selectedPlayerId=null;
+    setupDraft.groups.forEach((g,i)=>{$(`#groupName-${i}`).value=g.name||`Group ${i+1}`;$(`#groupColor-${i}`).value=g.color;});
+    recomputeSetupValidation();setupDirty=setupSavedSignature!==setupSignature(cfg);renderSetupTagsAndGroups();
+    const assigned=cfg.groups.reduce((n,g)=>n+g.memberIds.length,0),nameErrors=cfg.players.some(p=>[...p.name.trim()].length>12),groupErrors=groupSetupErrors(cfg);
+    if(nameErrors||groupErrors.length){setupStatus(`<strong>Uploaded setup needs attention:</strong> ${nameErrors?'Player names must be 12 characters or fewer':groupErrors.join(' · ')}`,'bad');}
+    else setupStatus(`<strong>Game_Setup.txt loaded.</strong> ${cfg.players.length}/30 player names · ${assigned}/30 assigned a group.`,'good');
+    refreshSetupButtons();refreshHistoryButtons();
+  }catch(err){setupStatus('<strong>Upload failed:</strong> this is not a compatible SgLDC game setup file.','bad');}
+  finally{e.target.value='';}
+}
+
+function renderHearts(){
+    const out=[]; for(let i=0;i<10;i++) out.push(`<span class="heart ${i>=state.hearts?'lost':''}">❤️</span>`); return out.join('');
+  }
+  function dragonBar(){const pct=Math.max(0,state.dragonHP); return `<div class="dragon-wrap"><div class="dragon-avatar">🐉</div><div class="dragon-meta"><div class="dragon-label">Pattern Dragon</div><div class="hp-bar"><div class="hp-fill" style="width:${pct}%"></div></div><div class="hp-text">${state.dragonHP} / 100 HP</div></div></div>`;}
+
+  function renderRound(){
+    if(!state) state=loadState() || freshState();
+    if(state.finished || state.roundIndex>=10 || state.hearts<=0 || state.dragonHP<=0){ renderEnd(); return; }
+    clearOverlay();
+    phase='checkin'; readyLanes=new Set(); playerSteps=[0,0,0]; playerScores=[0,0,0]; playerTimeMs=[0,0,0]; playerFinished=[false,false,false]; laneProcessing=[false,false,false]; roundCompleting=false; currentStage=0; wrongPauseLane=null; currentStageStart=0; stageElapsedBase=0;
+    const round=state.rounds[state.roundIndex], roster=state.playerSchedule[state.roundIndex];
+    app.innerHTML=`<main class="screen">
+      <div class="topbar">
+        <div class="brand"><div class="brand-badge">🐉</div><div><h1>Class vs the Pattern Dragon</h1></div></div>
+        <div class="control-wrap"><button class="primary-btn waiting" id="stageBtn" disabled>Waiting for players…</button></div>
+        ${toolbar()}
+      </div>
+      <section class="status-row">
+        <div class="status-card"><h3>Class Hearts</h3><div class="hearts">${renderHearts()}</div></div>
+        <div class="status-card" id="enemyHealthCard"><h3>Dragon Health</h3>${dragonBar()}</div>
+        <div class="status-card quest-card"><h3>Quest Progress</h3><div class="round-big">${state.roundIndex+1}<span style="font-size:.45em;font-weight:900"> / 10</span></div><div class="round-small">${round.type==='complete'?'Complete the pattern':'Identify the change'}</div></div>
+      </section>
+      <section class="game-main">
+        <div class="arena">
+          <div class="challenge-panel">
+            <div class="pre-question" id="preQuestion">Get ready for the next challenge!</div>
+            <div class="challenge-live hidden" id="challengeLive"></div>
+          </div>
+          <div class="players">${roster.map((p,i)=>playerCard(p,i)).join('')}</div>
+        </div>
+        <div class="controls"><div class="status" id="statusText"><strong>Ready?</strong> Wait for all three players to check in.</div></div>
+      </section>
+    </main>`;
+    bindToolbar();
+    $('#stageBtn').onclick=advanceStage;
+    document.querySelectorAll('.ready-btn').forEach(btn=>btn.addEventListener('pointerdown',e=>{e.preventDefault();checkInPlayer(Number(btn.dataset.lane));},{passive:false}));
+    buildChallengeHidden();
+  }
+
+  function playerCard(p,i){
+    return `<div class="player-card readying" data-lane="${i}" data-color="${p.color}" style="background:${p.color}">
+      <div class="player-head"><span class="player-name">${escapeHTML(p.player)}</span></div>
+      <div class="sword-tracker" id="swords-${i}">${emojiTracker('sword',0)}</div>
+      <button class="ready-btn" data-lane="${i}">Ready?</button>
+      <div class="answer-zone dimmed hidden" id="zone-${i}"></div>
+    </div>`;
+  }
+
+  function clearOverlay(){overlayRoot.innerHTML=''; if(countTimer){clearTimeout(countTimer);countTimer=null;}}
+
+  function checkInPlayer(lane){
+    if(phase!=='checkin' || readyLanes.has(lane)) return;
+    ensureAudio();
+    readyLanes.add(lane);
+    const card=document.querySelector(`.player-card[data-lane="${lane}"]`); const btn=card.querySelector('.ready-btn');
+    btn.disabled=true; btn.textContent='Ready!👍';
+    card.classList.remove('readying'); card.classList.add('checked');
+    applyReadyGlow(card, card.dataset.color);
+    tone(560+lane*80,.16,'triangle',.08);
+    $('#statusText').innerHTML=`<strong>${readyLanes.size} of 3</strong> players ready.`;
+    if(readyLanes.size===3){
+      const stageBtn=$('#stageBtn');
+      stageBtn.disabled=false; stageBtn.classList.remove('waiting'); stageBtn.classList.add('ready-to-show'); stageBtn.textContent='📘 Show Question';
+      $('#statusText').innerHTML='<strong>All players are ready!</strong> Teacher, tap Show Question.';
+      tone(660,.12,'triangle',.08); setTimeout(()=>tone(880,.18,'triangle',.09),130);
+    }
+  }
+
+  function applyReadyGlow(card, color){
+    card.style.boxShadow=`0 0 18px ${hexToRgba(color,.50)}, 0 0 36px ${hexToRgba(color,.25)}, var(--shadow)`;
+    card.style.filter='brightness(1.02)';
+    card.style.border='0';
+  }
+
+  function advanceStage(){
+    if(phase==='checkin' && readyLanes.size===3) showQuestion();
+    else if(phase==='question') goLive();
+    else if(phase==='stageReview') nextSubStage();
+    else if(phase==='review') showCorrectAnswers();
+    else if(phase==='revealed') nextRound();
+  }
+
+  function buildChallengeHidden(){
+    const round=state.rounds[state.roundIndex];
+    const live=$('#challengeLive');
+    live.innerHTML=renderChallengeHTML(round);
+    for(let lane=0; lane<3; lane++) renderAnswerZone(lane, true);
+  }
+
+  function renderChallengeHTML(round){
+    if(round.type==='complete'){
+      const shown=[...round.lead];
+      const leadCells=shown.map(s=>`<div class="pattern-blank-wrap pattern-lead-wrap">${shapeBox(s)}<div class="shield-tracker tracker-spacer" aria-hidden="true">${emojiTracker('shield',0)}</div></div>`).join('');
+      const blanks=round.steps.map((_,i)=>`<div class="pattern-blank-wrap"><div class="pattern-slot blank" id="blank-${i}">?</div><div class="shield-tracker" id="shields-${i}">${emojiTracker('shield',0)}</div></div>`).join('');
+      return `<div class="instruction">${round.instruction}</div><div class="question-sub">${round.sub}</div><div class="pattern-line">${leadCells}${blanks}</div>`;
+    }
+    const p=round.patterns[0];
+    return `<div class="instruction">${round.instruction}</div><div class="identify-board"><div class="single-pattern-card" id="singlePatternCard"><div class="mini-title">Pattern 1 of 3</div><div class="mini-shapes">${p.seq.map(shapeBox).join('')}</div><div class="shield-tracker" id="identifyShields">${emojiTracker('shield',0)}</div></div></div>`;
+  }
+
+  function currentSharedStep(){
+    return currentStage;
+  }
+
+  function renderIdentifyStage(){
+    const round=state.rounds[state.roundIndex];
+    if(round.type!=='identify') return;
+    const index=Math.min(currentStage,2), p=round.patterns[index], card=$('#singlePatternCard');
+    if(!card) return;
+    const correctCount=(phase==='stageReview') ? 3 : playerSteps.filter(step=>step>currentStage).length;
+    const reveal=phase==='stageReview';
+    card.innerHTML=`<div class="mini-title">Pattern ${index+1} of 3</div><div class="mini-shapes">${p.seq.map(shapeBox).join('')}</div>${reveal?`<div class="answer-reveal">✓ Change in ${p.answer}</div>`:''}<div class="shield-tracker" id="identifyShields">${emojiTracker('shield',correctCount)}</div>`;
+  }
+
+  function showQuestion(){
+    phase='question';
+    $('#preQuestion').classList.add('hidden');
+    $('#challengeLive').classList.remove('hidden');
+    document.querySelectorAll('.answer-zone').forEach(z=>{z.classList.remove('hidden'); z.classList.add('dimmed');});
+    document.querySelectorAll('.ready-btn').forEach(b=>b.classList.add('hidden'));
+    const btn=$('#stageBtn'); btn.classList.remove('ready-to-show'); btn.classList.add('ready-to-go'); btn.textContent='🚀 GO!';
+  }
+
+  function goLive(){
+    phase='live';
+    startStageClock();
+    const btn=$('#stageBtn'); btn.disabled=true; btn.classList.remove('ready-to-go'); btn.classList.add('live'); btn.textContent='✅ Buzzers Live';
+    document.querySelectorAll('.answer-zone').forEach(z=>z.classList.remove('dimmed'));
+    document.querySelectorAll('.player-card').forEach(card=>card.classList.add('live'));
+    enableCurrentStep();
+  }
+
+  function revealCurrentStage(){
+    phase='stageReview';
+    document.querySelectorAll('.player-card').forEach(card=>card.classList.remove('live'));
+    refreshSharedProgress();
+    for(let lane=0; lane<3; lane++) renderAnswerZone(lane,true);
+    renderIdentifyStage();
+    const btn=$('#stageBtn');
+    btn.disabled=false; btn.classList.remove('live','waiting','ready-to-show'); btn.classList.add('ready-to-go');
+    btn.textContent=currentStage<2 ? '➡ Next Part' : '🏁 Finish Round';
+  }
+
+  function nextSubStage(){
+    if(phase!=='stageReview') return;
+    if(currentStage<2){
+      currentStage++;
+      phase='live';
+      startStageClock();
+      const btn=$('#stageBtn');
+      btn.disabled=true; btn.classList.remove('ready-to-go'); btn.classList.add('live'); btn.textContent='✅ Buzzers Live';
+      document.querySelectorAll('.player-card').forEach(card=>card.classList.add('live'));
+      enableCurrentStep();
+    }else{
+      playerFinished=[true,true,true];
+      roundCompleting=true;
+      const round=state.rounds[state.roundIndex];
+      if(round.type==='complete') completeRoundAlreadyRevealed(true);
+      else completeRound(true);
+    }
+  }
+
+  function renderAnswerZone(lane, disabled){
+    const zone=$(`#zone-${lane}`); if(!zone) return;
+    const round=state.rounds[state.roundIndex];
+    zone.innerHTML='';
+
+    if(playerFinished[lane]){
+      zone.className='answer-zone';
+      zone.innerHTML='<div class="finished-message">✅ Complete!<br>Wait for your teammates.</div>';
+      const card=document.querySelector(`.player-card[data-lane="${lane}"]`);
+      if(card){card.classList.remove('live');card.classList.add('finished');}
+      return;
+    }
+
+    zone.className=`answer-zone ${disabled?'dimmed':''}`;
+
+    if(phase==='heartPause'){
+      zone.className='answer-zone';
+      if(lane===wrongPauseLane){
+        zone.innerHTML='<div class="heart-loss-message">Your wrong answer has caused the class to lose a heart.<br>Discuss with your teammates.</div>';
+      }else{
+        zone.innerHTML='<div class="waiting-message">⏸ Pause.<br>Discuss with your teammates.</div>';
+      }
+      return;
+    }
+
+    if(phase==='stageReview' || playerSteps[lane]>currentStage){
+      const waiting=(phase==='stageReview') ? '✅ Answer shown!<br>Wait for the next part.' : '✅ Correct!<br>Wait for your teammates.';
+      zone.innerHTML=`<div class="waiting-message">${waiting}</div>`;
+      return;
+    }
+
+    if(round.type==='identify'){
+      const grid=document.createElement('div'); grid.className='option-grid';
+      shuffle(['size','shape','colour','orientation']).forEach(label=>{
+        const btn=document.createElement('button'); btn.className='option-btn'; btn.textContent=label; if(disabled) btn.disabled=true;
+        btn.addEventListener('pointerdown',e=>{e.preventDefault(); if(disabled) return; handleIdentifyChoice(lane,label,btn);},{passive:false});
+        grid.appendChild(btn);
+      });
+      zone.appendChild(grid); return;
+    }
+
+    const step=currentStage;
+    const grid=document.createElement('div'); grid.className='shape-grid';
+    const options=shuffle(round.steps[step].options.map((opt,idx)=>({id:idx,shape:opt})));
+    options.forEach(item=>{
+      const btn=document.createElement('button'); btn.className='shape-option'; if(disabled) btn.disabled=true;
+      btn.innerHTML=shapeSVG(item.shape,58);
+      btn.addEventListener('pointerdown',e=>{e.preventDefault(); if(disabled) return; handleCompleteChoice(lane,item.shape,btn);},{passive:false});
+      grid.appendChild(btn);
+    });
+    zone.appendChild(grid);
+  }
+
+  function enableCurrentStep(){
+    for(let lane=0; lane<3; lane++) renderAnswerZone(lane,false);
+    refreshSharedProgress();
+  }
+
+  function handleCompleteChoice(lane, selected, btn){
+    if(phase!=='live' || laneProcessing[lane] || playerFinished[lane] || roundCompleting) return;
+    const step=currentStage;
+    const correct=state.rounds[state.roundIndex].steps[step].answer;
+    if(shapeEquals(selected,correct)){
+      laneProcessing[lane]=true;
+      playerScores[lane]++;
+      playerTimeMs[lane]+=stageElapsedMs();
+      playerSteps[lane]=Math.max(playerSteps[lane], currentStage+1);
+      updateScores(); flashCard(lane,'good'); btn.classList.add('correct-flash'); goodSound();
+      setTimeout(()=>{
+        laneProcessing[lane]=false;
+        if(playerSteps.every(s=>s>currentStage)) revealCurrentStage();
+        else renderAnswerZone(lane,false);
+      },360);
+    } else {
+      loseHeart(lane,btn);
+    }
+  }
+
+  function handleIdentifyChoice(lane, selected, btn){
+    if(phase!=='live' || laneProcessing[lane] || playerFinished[lane] || roundCompleting) return;
+    const step=currentStage;
+    const correct=state.rounds[state.roundIndex].patterns[step].answer;
+    if(selected===correct){
+      laneProcessing[lane]=true;
+      playerScores[lane]++;
+      playerTimeMs[lane]+=stageElapsedMs();
+      playerSteps[lane]=Math.max(playerSteps[lane], currentStage+1);
+      updateScores(); flashCard(lane,'good'); btn.classList.add('correct-flash'); goodSound();
+      setTimeout(()=>{
+        laneProcessing[lane]=false;
+        if(playerSteps.every(s=>s>currentStage)) revealCurrentStage();
+        else { renderAnswerZone(lane,false); renderIdentifyStage(); }
+      },360);
+    }else loseHeart(lane,btn);
+  }
+
+  function loseHeart(lane, btn){
+    if(phase!=='live' || laneProcessing[lane] || playerFinished[lane] || roundCompleting) return;
+    laneProcessing[lane]=true;
+    wrongPauseLane=lane;
+    badSound(); if(btn) btn.classList.add('wrong-flash'); flashCard(lane,'bad');
+    state.hearts=Math.max(0, state.hearts-1); saveState(); updateHeartDisplay();
+    if(state.hearts<=0){
+      roundCompleting=true; phase='complete';
+      setTimeout(()=>{ completeRound(false, true); }, 420);
+      return;
+    }
+    phase='heartPause';
+    pauseStageClock();
+    for(let i=0;i<3;i++) renderAnswerZone(i,true);
+    setTimeout(()=>{
+      for(let i=0;i<3;i++) laneProcessing[i]=false;
+      if(btn) btn.classList.remove('wrong-flash');
+      wrongPauseLane=null;
+      if(!roundCompleting){
+        phase='live';
+        resumeStageClock();
+        enableCurrentStep();
+      }
+    },5000);
+  }
+
+  function progressStatus(includeStrong=true){
+    return '';
+  }
+
+  function checkAllPlayersFinished(){
+    return;
+  }
+
+  function refreshSharedProgress(){
+    const round=state.rounds[state.roundIndex];
+    if(round.type==='complete'){
+      for(let i=0;i<3;i++){
+        const completedCount=(phase==='stageReview' && i===currentStage) ? 3 : playerSteps.filter(step=>step>i).length;
+        updateShieldTracker(i,completedCount);
+        const blank=$(`#blank-${i}`);
+        if(blank){
+          if(i<currentStage || (phase==='stageReview' && i===currentStage)){
+            blank.classList.remove('blank'); blank.classList.add('filled'); blank.innerHTML=shapeSVG(round.steps[i].answer,66);
+          }else{
+            blank.classList.remove('filled'); blank.classList.add('blank'); blank.textContent='?';
+          }
+        }
+      }
+      return;
+    }
+    renderIdentifyStage();
+  }
+
+  function completeRoundAlreadyRevealed(success, zeroHearts=false){
+    phase='revealed';
+    document.querySelectorAll('.answer-zone button').forEach(b=>b.disabled=true);
+    document.querySelectorAll('.player-card').forEach(card=>card.classList.remove('live'));
+    const roster=state.playerSchedule[state.roundIndex];
+    roster.forEach((p,i)=>{ state.playerTotals[p.player]=(state.playerTotals[p.player]||0)+playerScores[i]; const stat=state.playerStats[p.player]||{correct:0,time:0}; stat.correct+=playerScores[i]; stat.time+=playerTimeMs[i]; state.playerStats[p.player]=stat; });
+    let damage=0;
+    if(success){ state.dragonHP=Math.max(0,state.dragonHP-10); damage=10; confetti(32); showBattleOverlay(damage, state.dragonHP<=0); }
+    const health=$('#enemyHealthCard');
+    if(health) health.innerHTML=`<h3>Dragon Health</h3>${dragonBar()}`;
+    state.lastResult={success, damage, zeroHearts, playerScores:[...playerScores]};
+    saveState();
+    const btn=$('#stageBtn');
+    btn.disabled=false;
+    btn.classList.remove('waiting','live','ready-to-show');
+    btn.classList.add('ready-to-go');
+    btn.textContent=(state.dragonHP<=0 || state.hearts<=0 || state.roundIndex===9)?'🏁 See Final Result':'Next Round →';
+  }
+
+  function completeRound(success, zeroHearts=false){
+    phase='review';
+    document.querySelectorAll('.answer-zone button').forEach(b=>b.disabled=true);
+    document.querySelectorAll('.player-card').forEach(card=>card.classList.remove('live'));
+    const roster=state.playerSchedule[state.roundIndex];
+    roster.forEach((p,i)=>{ state.playerTotals[p.player]=(state.playerTotals[p.player]||0)+playerScores[i]; const stat=state.playerStats[p.player]||{correct:0,time:0}; stat.correct+=playerScores[i]; stat.time+=playerTimeMs[i]; state.playerStats[p.player]=stat; });
+    let damage=0;
+    if(success){ state.dragonHP=Math.max(0,state.dragonHP-10); damage=10; confetti(32); showBattleOverlay(damage, state.dragonHP<=0); }
+    const health=$('#enemyHealthCard'); if(health) health.innerHTML=`<h3>Dragon Health</h3>${dragonBar()}`;
+    state.lastResult={success, damage, zeroHearts, playerScores:[...playerScores]};
+    saveState();
+    const btn=$('#stageBtn');
+    btn.disabled=false; btn.classList.remove('waiting','live','ready-to-go'); btn.classList.add('ready-to-show'); btn.textContent='🔍 Show Correct Answers';
+    const result=success?`<strong>Round complete!</strong> The class dealt ${damage} damage.`:`<strong>Round stopped.</strong> The class is out of hearts.`;
+    $('#statusText').innerHTML=`${result} Teacher, tap Show Correct Answers.`;
+  }
+
+  function showCorrectAnswers(){
+    if(phase!=='review') return;
+    phase='revealed';
+    const round=state.rounds[state.roundIndex];
+    if(round.type==='complete'){
+      round.steps.forEach((step,i)=>{
+        const blank=$(`#blank-${i}`);
+        if(blank){blank.classList.remove('blank');blank.classList.add('filled');blank.innerHTML=shapeSVG(step.answer,42);}
+        updateShieldTracker(i,3);
+      });
+    }else{
+      const live=$('#challengeLive');
+      live.innerHTML=`<div class="instruction">Correct answers</div><div class="question-sub">Review each pattern and name the one feature that changes.</div><div class="identify-review-grid">${round.patterns.map((p,i)=>`<div class="identify-review-card"><div class="mini-title">Pattern ${i+1}</div><div class="mini-shapes">${p.seq.map(shapeBox).join('')}</div><div class="answer-reveal">✓ Change in ${p.answer}</div></div>`).join('')}</div>`;
+    }
+    const btn=$('#stageBtn');
+    btn.classList.remove('live','ready-to-show'); btn.classList.add('ready-to-go'); btn.disabled=false;
+    btn.textContent=(state.dragonHP<=0 || state.hearts<=0 || state.roundIndex===9)?'🏁 See Final Result':'Next Round →';
+    $('#statusText').innerHTML='<strong>Correct answers shown.</strong> Review them with the class, then continue.';
+  }
+
+  function nextRound(){
+    overlayRoot.innerHTML='';
+    state.roundIndex++;
+    if(state.dragonHP<=0 || state.hearts<=0 || state.roundIndex>=10){ state.finished=true; saveState(); renderEnd(); }
+    else { saveState(); renderRound(); }
+  }
+
+  function renderEnd(){
+    clearOverlay(); if(!state) state=loadState() || freshState();
+    const saved=state;
+    const heroes=Object.entries(saved.playerStats||{}).filter(([,row])=>row&&row.correct>0).map(([name,row])=>({name,correct:row.correct,time:row.time||0,avg:(row.time||0)/row.correct})).sort((a,b)=>a.avg-b.avg||b.correct-a.correct||a.time-b.time||a.name.localeCompare(b.name));
+    const victory=saved.dragonHP<=0;
+    const outcomeTitle = victory ? 'The Pattern Dragon is Defeated!' : 'The Dragon Escaped!';
+    const outcomeText = victory ? 'The class worked together and saved the day.' : (saved.hearts<=0 ? 'The class ran out of hearts.' : 'The quest ended before the dragon could be defeated.');
+    const outcomeChip = victory ? {text:'Victory!', bg:'linear-gradient(135deg,#55e6a5,#31bf7b)'} : {text:'Try Again', bg:'linear-gradient(135deg,#ff8a9a,#ff6b7a)'};
+    app.innerHTML=`<main class="screen">
+      <div class="topbar">
+        <div class="brand"><div class="brand-badge">${victory?'🏆':'🐉'}</div><div><h1>${outcomeTitle}</h1><p>${outcomeText}</p></div></div>
+        <div class="control-wrap"></div>
+        ${toolbar()}
+      </div>
+      <section class="status-row">
+        <div class="status-card"><h3>Hearts Remaining</h3><div class="hearts">${renderHearts()}</div></div>
+        <div class="status-card"><h3>Dragon Health</h3>${dragonBar()}</div>
+        <div class="status-card quest-card"><h3>Quest Finished</h3><div class="round-big">${Math.min(saved.roundIndex,10)}<span style="font-size:.45em;font-weight:900"> / 10</span></div><div class="round-small">Rounds completed</div></div>
+      </section>
+      <section class="end-wrap">
+        <div class="winner-panel"><div class="trophy">${victory?'🏆':'🐲'}</div><p>${victory?'Class Result':'Quest Result'}</p><div class="winner-chip" style="background:${outcomeChip.bg}">${outcomeChip.text}</div><h2>${100-saved.dragonHP} damage</h2><p>${outcomeText}</p><div class="overlay-actions"><button class="primary-btn" id="againBtn">⚔️ New Quest</button></div></div>
+        <div class="summary-panel"><h3>Top Dragon Tamers</h3><p style="margin:0 0 12px;color:var(--muted);font-weight:800">Fastest average correct answer time</p>${heroes.length?heroes.slice(0,12).map((row,i)=>`<div class="summary-row"><div class="summary-num">${i+1}</div><div class="summary-name" style="background:${i%2? '#cfe4ff':'#ffe6a8'}">${row.name}</div><div class="summary-score">${(row.avg/1000).toFixed(1)}s</div></div>`).join(''):'<p>No correct answers recorded yet.</p>'}</div>
+      </section>
+    </main>`;
+    bindToolbar(); if(victory) confetti(90);
+    $('#againBtn').onclick=()=>{ if(confirm('Start a fresh quest?')){ state=freshState(); saveState(); renderRound(); } };
+  }
+
+  function emojiTracker(type,count){
+    const icon=type==='sword'?'⚔️':'🛡️';
+    return [0,1,2].map(i=>`<span class="${type} ${i<count?'lit':''}">${icon}</span>`).join('');
+  }
+  function updateScores(){ playerScores.forEach((n,i)=>{ const el=$(`#swords-${i}`); if(el) el.innerHTML=emojiTracker('sword',n); }); }
+  function updateShieldTracker(index,count){ const el=$(`#shields-${index}`); if(el) el.innerHTML=emojiTracker('shield',count); }
+  function updateHeartDisplay(){ const box=document.querySelector('.hearts'); if(box) box.innerHTML=renderHearts(); }
+  function flashCard(lane, kind){ const card=document.querySelector(`.player-card[data-lane="${lane}"]`); if(!card) return; const cls=kind==='good'?'correct-hero':'wrong-hit'; card.classList.add(cls); setTimeout(()=>card.classList.remove(cls), kind==='good'?420:620); }
+
+  function shapeEquals(a,b){ return a.shape===b.shape && a.color===b.color && a.size===b.size && (a.orientation||0)===(b.orientation||0); }
+  function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+  function hexToRgba(hex,alpha){
+    const h=hex.replace('#',''); const val=h.length===3? h.split('').map(c=>c+c).join('') : h;
+    const num=parseInt(val,16); const r=(num>>16)&255, g=(num>>8)&255, b=num&255;
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  function sizeScale(size){ return size==='small'?0.62 : size==='large'?1.24 : 1.02; }
+  function shapeSVG(shape, canvas=48){
+    const c = colors[shape.color] || shape.color || '#888';
+    const scale=sizeScale(shape.size||'medium');
+    const rot=shape.orientation||0;
+    const cx=32, cy=32;
+    let inner='';
+    if(shape.shape==='circle') inner=`<circle cx="32" cy="32" r="18" fill="${c}" />`;
+    else if(shape.shape==='square') inner=`<rect x="14" y="14" width="36" height="36" rx="0" fill="${c}" />`;
+    else if(shape.shape==='rectangle') inner=`<rect x="11" y="18" width="42" height="28" rx="0" fill="${c}" />`;
+    else if(shape.shape==='triangle') inner=`<polygon points="32,10 52,50 12,50" fill="${c}" />`;
+    else if(shape.shape==='diamond') inner=`<polygon points="32,8 54,32 32,56 10,32" fill="${c}" />`;
+    else inner=`<circle cx="32" cy="32" r="18" fill="${c}" />`;
+    return `<svg viewBox="0 0 64 64" width="${canvas}" height="${canvas}" aria-hidden="true"><g transform="translate(${cx} ${cy}) scale(${scale}) rotate(${rot}) translate(${-cx} ${-cy})">${inner}</g></svg>`;
+  }
+  function shapeBox(shape){ return `<div class="pattern-shape">${shapeSVG(shape,80)}</div>`; }
+
+  document.addEventListener('keydown',e=>{
+    if(phase==='checkin' && ['1','2','3'].includes(e.key)) checkInPlayer(Number(e.key)-1);
+    if(e.key.toLowerCase()==='g' && phase==='question') goLive();
+    if(e.key.toLowerCase()==='s' && phase==='checkin' && readyLanes.size===3) showQuestion();
+    if(e.key.toLowerCase()==='r' && phase==='review') showCorrectAnswers();
+    if(e.key.toLowerCase()==='n' && (phase==='stageReview' || phase==='revealed')) advanceStage();
+  });
+
+  renderIntro();
+})();
+</script>
+</body>
+</html>
