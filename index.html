@@ -819,6 +819,15 @@
       return "type-" + type.toLowerCase();
     }
 
+    function launchEventName(item) {
+      const slug = item.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      return `launch-${item.section.toLowerCase().replace(/s$/, "")}-${slug}`;
+    }
+
     function previewMarkup(item) {
       if (item.preview) {
         return `
@@ -851,7 +860,13 @@
         article.className = "card";
         article.style.setProperty("--accent", subjectColours[item.subject] || "#e9e0ff");
         article.innerHTML = `
-          <a class="preview-link" href="${item.file}" aria-label="Open ${item.title}">
+          <a
+            class="preview-link"
+            href="${item.file}"
+            aria-label="Open ${item.title}"
+            data-goatcounter-click="${launchEventName(item)}"
+            data-goatcounter-title="Launch: ${item.title}"
+          >
             ${previewMarkup(item)}
           </a>
           <div class="card-body">
@@ -862,13 +877,24 @@
               <span class="tag subject">${item.subject}</span>
               <span class="tag ${typeClass(item.type)}">${item.type}</span>
             </div>
-            <a class="play-btn" href="${item.file}">
+            <a
+              class="play-btn"
+              href="${item.file}"
+              data-goatcounter-click="${launchEventName(item)}"
+              data-goatcounter-title="Launch: ${item.title}"
+            >
               ${activeSection === "Tools" ? "Open Tool" : "Play"} <span aria-hidden="true">→</span>
             </a>
           </div>
         `;
         cardsEl.appendChild(article);
       });
+
+      // GoatCounter binds click events on page load. Because these cards are
+      // generated dynamically, bind the newly created links whenever possible.
+      if (window.goatcounter && typeof window.goatcounter.bind_events === "function") {
+        window.goatcounter.bind_events();
+      }
     }
 
     function switchSection(section) {
