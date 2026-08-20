@@ -97,20 +97,50 @@ button{touch-action:manipulation}
 @media (max-width:600px){.starter-car-grid{grid-template-columns:repeat(2,1fr)}.solo-table-grid{grid-template-columns:repeat(3,1fr)}.solo-result-banner{align-items:flex-start}.garage-balance{align-items:flex-start;flex-direction:column}.garage-note{text-align:left}.solo-garage-top{grid-template-columns:1fr}.solo-garage-preview{min-height:110px}.solo-upgrade-head{align-items:flex-start;flex-direction:column}.solo-buy-btn{width:100%}.solo-upgrade-category .upgrade-grid{gap:6px}.solo-upgrade-option strong{font-size:12px}.solo-upgrade-option{min-height:126px}.solo-upgrade-option .upgrade-car-option{height:76px}.solo-upgrade-option .upgrade-car-option .car{height:74px;width:45px}}
 
 
-/* v27: refined lane highlight + centered feedback/tables */
-.lane-guide{width:18.8%;border-radius:22px}
+/* v28: medium lane highlight + centered gold coins */
+.lane-guide{width:19.6%;border-radius:22px}
 .lane-guide.active{
   background:linear-gradient(90deg,
     rgba(255,255,255,0) 0%,
-    rgba(255,255,255,.12) 10%,
-    rgba(255,255,255,.22) 24%,
-    rgba(255,255,255,.30) 38%,
-    rgba(255,255,255,.34) 50%,
-    rgba(255,255,255,.30) 62%,
-    rgba(255,255,255,.22) 76%,
-    rgba(255,255,255,.12) 90%,
+    rgba(255,255,255,.16) 9%,
+    rgba(255,255,255,.28) 22%,
+    rgba(255,255,255,.38) 36%,
+    rgba(255,255,255,.44) 50%,
+    rgba(255,255,255,.38) 64%,
+    rgba(255,255,255,.28) 78%,
+    rgba(255,255,255,.16) 91%,
     rgba(255,255,255,0) 100%);
-  box-shadow:inset 0 0 18px rgba(255,255,255,.10),0 0 10px rgba(255,255,255,.08);
+  box-shadow:inset 0 0 20px rgba(255,255,255,.12),0 0 12px rgba(255,255,255,.09);
+}
+.gold-coin{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  width:1.22em;
+  height:1.22em;
+  min-width:1.22em;
+  min-height:1.22em;
+  border-radius:50%;
+  vertical-align:-.16em;
+  overflow:hidden;
+  background:radial-gradient(circle at 32% 26%,#fffbd0 0 12%,#ffe57b 23%,#f6c33d 52%,#d99312 78%,#a96605 100%);
+  border:1px solid #d99b1f;
+  box-shadow:inset 0 0 0 2px rgba(255,244,171,.62),0 2px 4px rgba(133,84,10,.16);
+  color:#a66b0b;
+  font-size:.82em;
+  font-weight:1000;
+  line-height:1;
+}
+.gold-coin::before{
+  content:"★";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-size:.62em;
+  line-height:1;
+  text-shadow:0 1px 0 rgba(255,255,255,.4);
 }
 .feedback{
   top:14px;
@@ -138,7 +168,7 @@ button{touch-action:manipulation}
 .solo-table-grid{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px;width:100%;margin-top:5px}
 .solo-table-chip{flex:0 0 auto;min-width:118px;padding:11px 16px}
 .solo-racer .feedback{top:16px;font-size:clamp(18px,3.3vw,24px);max-width:min(84%,300px);padding:10px 18px}
-.gold-coin{display:inline-grid;place-items:center;width:1.18em;height:1.18em;border-radius:50%;vertical-align:-.14em;background:radial-gradient(circle at 32% 26%,#fffbd0 0 12%,#ffe57b 23%,#f6c33d 52%,#d99312 78%,#a96605 100%);border:1px solid #d99b1f;box-shadow:inset 0 0 0 2px rgba(255,244,171,.62),0 2px 4px rgba(133,84,10,.16);color:#a66b0b;font-size:.82em;font-weight:1000;line-height:1}.gold-coin::before{content:"★";font-size:.62em;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.gold-coin{display:inline-flex;align-items:center;justify-content:center;position:relative;width:1.22em;height:1.22em;min-width:1.22em;min-height:1.22em;border-radius:50%;vertical-align:-.16em;overflow:hidden;background:radial-gradient(circle at 32% 26%,#fffbd0 0 12%,#ffe57b 23%,#f6c33d 52%,#d99312 78%,#a96605 100%);border:1px solid #d99b1f;box-shadow:inset 0 0 0 2px rgba(255,244,171,.62),0 2px 4px rgba(133,84,10,.16);color:#a66b0b;font-size:.82em;font-weight:1000;line-height:1}.gold-coin::before{content:"★";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.62em;line-height:1;text-shadow:0 1px 0 rgba(255,255,255,.4)}
 .solo-upgrade-head{align-items:flex-start}.solo-upgrade-choice{display:flex;flex-direction:column;gap:7px;min-width:0}.solo-upgrade-choice .solo-upgrade-option{width:100%;height:100%}.solo-option-buy{width:100%;min-height:45px;border:0;border-radius:15px;background:#f1edf5;color:#9b8aaa;font-size:15px;font-weight:1000;box-shadow:inset 0 0 0 2px #e9e0f0;cursor:default}.solo-option-buy.ready{cursor:pointer;background:linear-gradient(135deg,#ff6aa7,#ff8cc4);color:#fff;box-shadow:0 9px 20px rgba(255,106,167,.32);animation:buyGlow 1.15s ease-in-out infinite alternate}.solo-option-buy.ready:active{transform:translateY(1px)}.solo-option-buy.equipped{background:#effcf7;color:#287c63;box-shadow:inset 0 0 0 2px #86d9c4}.solo-option-buy.locked{background:#f7f4f9;color:#b0a2b9}.solo-option-buy.need{background:#fff6cf;color:#9b6c13;box-shadow:inset 0 0 0 2px #f2d983}@keyframes buyGlow{to{box-shadow:0 10px 26px rgba(255,106,167,.52)}}
 .solo-upgrade-category .upgrade-grid{align-items:stretch}.solo-upgrade-option.selected{box-shadow:inset 0 0 0 4px #ff86b8,0 8px 20px rgba(255,111,166,.18);background:#fff7fb}
 .solo-finale{position:relative;overflow:auto;align-self:stretch}.solo-trophy-stage{position:relative;display:grid;place-items:center;min-height:150px;margin-bottom:2px}.solo-trophy-glow{position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,91,.55),rgba(255,169,83,.18) 48%,transparent 72%);animation:trophyGlow 1.45s ease-in-out infinite alternate}.solo-trophy{position:relative;font-size:104px;filter:drop-shadow(0 12px 12px rgba(128,76,14,.18));animation:trophyArrival 1.05s cubic-bezier(.16,.86,.28,1.24) both,trophyFloat 1.7s ease-in-out 1.05s infinite alternate}.solo-trophy-spark{position:absolute;font-size:28px;animation:sparkPop 1.5s ease-in-out infinite}.solo-trophy-spark.s1{left:29%;top:17%}.solo-trophy-spark.s2{right:28%;top:26%;animation-delay:-.6s}.solo-trophy-spark.s3{left:37%;bottom:10%;animation-delay:-1s}@keyframes trophyArrival{0%{transform:translateY(90px) scale(.35) rotate(-14deg);opacity:0}68%{transform:translateY(-8px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none;opacity:1}}@keyframes trophyFloat{to{transform:translateY(-8px) rotate(2deg)}}@keyframes trophyGlow{to{transform:scale(1.16);opacity:.72}}@keyframes sparkPop{0%,100%{transform:scale(.65) rotate(-12deg);opacity:.35}50%{transform:scale(1.25) rotate(12deg);opacity:1}}
@@ -877,4 +907,4 @@ renderCover();
 </body>
 </html>
 
-<!-- v26: single-player garage buttons + gold coins + trophy finale + perfect-run Ghost Town bonus + approved feathered lane highlight -->
+<!-- v28: medium lane highlight + centered gold coin icons -->
