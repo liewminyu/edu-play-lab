@@ -96,6 +96,29 @@ button{touch-action:manipulation}
 }
 @media (max-width:600px){.starter-car-grid{grid-template-columns:repeat(2,1fr)}.solo-table-grid{grid-template-columns:repeat(3,1fr)}.solo-result-banner{align-items:flex-start}.garage-balance{align-items:flex-start;flex-direction:column}.garage-note{text-align:left}.solo-garage-top{grid-template-columns:1fr}.solo-garage-preview{min-height:110px}.solo-upgrade-head{align-items:flex-start;flex-direction:column}.solo-buy-btn{width:100%}.solo-upgrade-category .upgrade-grid{gap:6px}.solo-upgrade-option strong{font-size:12px}.solo-upgrade-option{min-height:126px}.solo-upgrade-option .upgrade-car-option{height:76px}.solo-upgrade-option .upgrade-car-option .car{height:74px;width:45px}}
 
+
+/* v26: approved borderless lane highlight + solo garage/finale refinements */
+.lane-guide{width:23.2%;border-radius:0}
+.lane-guide.active{
+  background:linear-gradient(90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.38) 5%,
+    rgba(255,255,255,.58) 10%,
+    rgba(255,255,255,.64) 16%,
+    rgba(255,255,255,.64) 84%,
+    rgba(255,255,255,.58) 90%,
+    rgba(255,255,255,.38) 95%,
+    rgba(255,255,255,0) 100%);
+  box-shadow:inset 0 0 24px rgba(255,255,255,.14),0 0 18px rgba(255,255,255,.10);
+}
+.gold-coin{display:inline-grid;place-items:center;width:1.18em;height:1.18em;border-radius:50%;vertical-align:-.14em;background:radial-gradient(circle at 32% 26%,#fffbd0 0 12%,#ffe57b 23%,#f6c33d 52%,#d99312 78%,#a96605 100%);border:1px solid #d99b1f;box-shadow:inset 0 0 0 2px rgba(255,244,171,.62),0 2px 4px rgba(133,84,10,.16);color:#a66b0b;font-size:.82em;font-weight:1000;line-height:1}.gold-coin::before{content:"★";font-size:.62em;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.solo-upgrade-head{align-items:flex-start}.solo-upgrade-choice{display:flex;flex-direction:column;gap:7px;min-width:0}.solo-upgrade-choice .solo-upgrade-option{width:100%;height:100%}.solo-option-buy{width:100%;min-height:45px;border:0;border-radius:15px;background:#f1edf5;color:#9b8aaa;font-size:15px;font-weight:1000;box-shadow:inset 0 0 0 2px #e9e0f0;cursor:default}.solo-option-buy.ready{cursor:pointer;background:linear-gradient(135deg,#ff6aa7,#ff8cc4);color:#fff;box-shadow:0 9px 20px rgba(255,106,167,.32);animation:buyGlow 1.15s ease-in-out infinite alternate}.solo-option-buy.ready:active{transform:translateY(1px)}.solo-option-buy.equipped{background:#effcf7;color:#287c63;box-shadow:inset 0 0 0 2px #86d9c4}.solo-option-buy.locked{background:#f7f4f9;color:#b0a2b9}.solo-option-buy.need{background:#fff6cf;color:#9b6c13;box-shadow:inset 0 0 0 2px #f2d983}@keyframes buyGlow{to{box-shadow:0 10px 26px rgba(255,106,167,.52)}}
+.solo-upgrade-category .upgrade-grid{align-items:stretch}.solo-upgrade-option.selected{box-shadow:inset 0 0 0 4px #ff86b8,0 8px 20px rgba(255,111,166,.18);background:#fff7fb}
+.solo-finale{position:relative;overflow:auto;align-self:stretch}.solo-trophy-stage{position:relative;display:grid;place-items:center;min-height:150px;margin-bottom:2px}.solo-trophy-glow{position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,91,.55),rgba(255,169,83,.18) 48%,transparent 72%);animation:trophyGlow 1.45s ease-in-out infinite alternate}.solo-trophy{position:relative;font-size:104px;filter:drop-shadow(0 12px 12px rgba(128,76,14,.18));animation:trophyArrival 1.05s cubic-bezier(.16,.86,.28,1.24) both,trophyFloat 1.7s ease-in-out 1.05s infinite alternate}.solo-trophy-spark{position:absolute;font-size:28px;animation:sparkPop 1.5s ease-in-out infinite}.solo-trophy-spark.s1{left:29%;top:17%}.solo-trophy-spark.s2{right:28%;top:26%;animation-delay:-.6s}.solo-trophy-spark.s3{left:37%;bottom:10%;animation-delay:-1s}@keyframes trophyArrival{0%{transform:translateY(90px) scale(.35) rotate(-14deg);opacity:0}68%{transform:translateY(-8px) scale(1.12) rotate(4deg);opacity:1}100%{transform:none;opacity:1}}@keyframes trophyFloat{to{transform:translateY(-8px) rotate(2deg)}}@keyframes trophyGlow{to{transform:scale(1.16);opacity:.72}}@keyframes sparkPop{0%,100%{transform:scale(.65) rotate(-12deg);opacity:.35}50%{transform:scale(1.25) rotate(12deg);opacity:1}}
+.solo-grand-time{font-size:clamp(28px,6vw,44px);font-weight:1000;color:#72558d;margin:5px 0 9px}.solo-grand-time small{display:block;font-size:12px;color:#9a82ae;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}.solo-race-time-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;width:100%;margin:10px 0 12px}.solo-race-time{background:#fff;border-radius:15px;padding:8px 5px;box-shadow:var(--soft);font-weight:1000;color:#72558d}.solo-race-time small{display:block;font-size:10px;color:#9a82ae;text-transform:uppercase;letter-spacing:.04em}.bonus-unlock{width:100%;margin:12px 0 3px;padding:15px;border-radius:20px;background:linear-gradient(145deg,#2f2844,#49365e);color:#fff;box-shadow:0 14px 30px rgba(47,40,68,.22);position:relative;overflow:hidden}.bonus-unlock:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 12% 20%,rgba(255,190,71,.18),transparent 28%),radial-gradient(circle at 88% 75%,rgba(167,104,222,.22),transparent 34%);pointer-events:none}.bonus-unlock>*{position:relative}.bonus-unlock h3{margin:0 0 4px;font-size:23px}.bonus-unlock p{margin:0 0 11px;color:#f4eefe;font-weight:800}.bonus-btn{width:100%;border:0;border-radius:15px;padding:13px 14px;background:linear-gradient(135deg,#ff9a48,#ffcc54);color:#4a2f17;font-weight:1000;font-size:18px;box-shadow:0 8px 20px rgba(255,173,67,.26);cursor:pointer}.bonus-btn:active{transform:translateY(1px)}
+.solo-bonus-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;background:#3f3152;color:#fff;font-weight:1000;box-shadow:var(--soft)}
+@media(max-width:680px){.solo-race-time-grid{grid-template-columns:repeat(3,1fr)}.solo-upgrade-option{min-height:132px}.solo-option-buy{min-height:43px}}
+
 </style>
 </head>
 <body>
@@ -575,6 +598,7 @@ const SOLO_RACES=[
   {tables:[2,3,4,5,6,7,8,9,10],label:'×2 to ×10'},
   {tables:[2,3,4,5,6,7,8,9,10,11,12],label:'×2 to ×12'}
 ];
+const SOLO_BONUS_RACE={tables:[2,3,4,5,6,7,8,9,10,11,12],label:'×2 to ×12',name:'Halloween Candy Ghost Town'};
 const SOLO_UPGRADE_PAIRS=[[0,1],[2,3],[4,5],[6,7],[8,9]];
 const SOLO_UPGRADE_COSTS={
   wrap:[1,3,5],wheels:[1,3,5],headlights:[1,2,4],spoiler:[2,3,5],
@@ -592,14 +616,20 @@ const SOLO_CAR_COLORS=[
 let soloState=null;
 let soloStartColor=SOLO_CAR_COLORS[0].value;
 let garageSelections={};
+function coinIcon(){return '<span class="gold-coin" aria-label="gold coin"></span>'}
+function fmtLongTime(ms){const sec=Math.max(0,ms||0)/1000;if(sec<60)return sec.toFixed(2)+' s';const m=Math.floor(sec/60),s=sec-m*60;return m+'m '+s.toFixed(2).padStart(5,'0')+'s'}
+function currentSoloRace(){return soloState?.bonusActive?SOLO_BONUS_RACE:SOLO_RACES[soloState?.raceIndex||0]}
+function isPerfectMainRun(){const normal=(soloState?.records||[]).filter(r=>!r.bonus);return normal.length===5&&normal.reduce((n,r)=>n+r.attempts,0)===50&&soloState.hearts===5}
+
 
 function shell(content,showFooter=false){
   return `<div class="screen"><div class="topbar"><div class="brand"><div class="brand-icon">🍭</div><div><h1>Sugar Rush Multiplication</h1></div></div><div class="toolbar"><div id="pageActionControls" class="page-controls"></div><button class="icon-btn" id="soundBtn" title="Sound">${muted?'🔇':'🔊'}</button><button class="icon-btn" id="fullBtn" title="Fullscreen">⛶</button><div id="pageHomeControls" class="page-controls"></div></div></div><div class="main">${content}</div>${showFooter?'<div class="footer">Edu Play Lab · Liew Min Yu + ChatGPT</div>':''}</div>`;
 }
 
 function currentRaceBackground(){
+  if(soloState?.bonusActive)return ROAD_BACKGROUNDS.find(x=>x.name==='Halloween Candy Ghost Town')||ROAD_BACKGROUNDS[5]||ROAD_BACKGROUNDS[0];
   const idx=soloState?.raceIndex||0;
-  return ROAD_BACKGROUNDS[idx%Math.min(5,ROAD_BACKGROUNDS.length)]||ROAD_BACKGROUNDS[0];
+  return ROAD_BACKGROUNDS[idx%5]||ROAD_BACKGROUNDS[0];
 }
 
 function soloCarSpec(extraRound=null,extraOption=null){
@@ -614,7 +644,7 @@ function soloCarMarkup(spec=soloCarSpec(),cls='solo-preview-car'){
   return `<div class="car ${cls}" style="--carfill:${spec.bodyColor}">${topCarSvg(spec)}</div>`;
 }
 function soloHud(){
-  return `<div class="solo-hud"><span class="hud-pill" id="heartHud">${'❤️'.repeat(soloState?.hearts??5)}<b>${soloState?.hearts??5}</b></span><span class="hud-pill">🪙 <b id="coinHud">${soloState?.coins??0}</b></span></div>`;
+  return `<div class="solo-hud"><span class="hud-pill" id="heartHud">${'❤️'.repeat(soloState?.hearts??5)}<b>${soloState?.hearts??5}</b></span><span class="hud-pill">${coinIcon()} <b id="coinHud">${soloState?.coins??0}</b></span></div>`;
 }
 function updateSoloHud(){
   const h=$('#heartHud');if(h)h.innerHTML=`${'❤️'.repeat(Math.max(0,soloState.hearts))}<b>${soloState.hearts}</b>`;
@@ -625,9 +655,8 @@ function renderCover(){
   stopRaceMusic();heatState=null;tournament=null;soloState=null;garageSelections={};
   app.innerHTML=shell(`<div class="cover solo-cover">
     <section class="hero panel solo-hero">
-      <div class="candy-float c1">🍭</div><div class="candy-float c2">🍬</div><div class="candy-float c3">🧁</div><div class="candy-float c4">🍩</div>
       <h2>Race.<br>Multiply.<br><span style="color:#ff6ea9">Sugar boost!</span></h2>
-      <div class="tagline"><span class="pill">🏁 5 races</span><span class="pill">❤️ 5 hearts</span><span class="pill">🪙 Earn upgrades</span></div>
+      <div class="tagline"><span class="pill">🏁 5 races</span><span class="pill">❤️ 5 hearts</span><span class="pill">${coinIcon()} Earn upgrades</span></div>
     </section>
     <section class="setup panel solo-setup">
       <div><h3>Ready to race?</h3><p>Enter your name, choose your starter car, then race through Candyland.</p></div>
@@ -651,7 +680,7 @@ function renderCover(){
   start.addEventListener('click',()=>{
     const name=input.value.trim();if(!name)return;
     ensureAudio();
-    soloState={name,baseColor:soloStartColor,hearts:5,coins:0,raceIndex:0,picks:{},records:[],earned:[]};
+    soloState={name,baseColor:soloStartColor,hearts:5,coins:0,raceIndex:0,picks:{},records:[],earned:[],bonusActive:false,bonusCompleted:false,bonusFailed:false,runStartedAt:performance.now()};
     renderHeatSetup();
   });
   setTimeout(()=>input.focus(),60);
@@ -666,23 +695,24 @@ function goHome(){
 }
 
 function renderHeatSetup(){
-  const race=SOLO_RACES[soloState.raceIndex];
+  const race=currentSoloRace();
   const bg=currentRaceBackground();
+  const bonus=!!soloState.bonusActive;
   const chips=race.tables.map(n=>`<span class="table-chip selected solo-table-chip">×${n}</span>`).join('');
   app.innerHTML=shell(`<div class="heat-setup solo-race-setup">
-    <div class="heat-head"><h2>🍬 Race ${soloState.raceIndex+1}</h2><div class="round-pill">Race ${soloState.raceIndex+1} of 5</div></div>
+    <div class="heat-head"><h2>${bonus?'👻 Bonus Race':'🍬 Race '+(soloState.raceIndex+1)}</h2><div class="round-pill">${bonus?'Perfect Run Bonus':'Race '+(soloState.raceIndex+1)+' of 5'}</div></div>
     ${soloHud()}
-    <div class="landscape-panel panel solo-landscape"><img class="landscape-thumb" src="${bg.src}" alt="${esc(bg.name)} background preview"><div class="landscape-copy"><div class="landscape-eyebrow">Next stop</div><div class="landscape-name">${esc(bg.name)}</div><div class="landscape-eyebrow">♫ Matching race soundtrack</div></div></div>
+    <div class="landscape-panel panel solo-landscape"><img class="landscape-thumb" src="${bg.src}" alt="${esc(bg.name)} background preview"><div class="landscape-copy"><div class="landscape-eyebrow">${bonus?'Unlocked':'Next stop'}</div><div class="landscape-name">${esc(bg.name)}</div><div class="landscape-eyebrow">♫ Matching race soundtrack</div></div></div>
     <section class="player-select panel solo-table-panel" style="--group:${soloState.baseColor}">
       <div class="solo-race-car">${soloCarMarkup()}</div>
       <h3>${esc(soloState.name)}</h3>
-      <p class="table-help">This race uses these times tables:</p>
+      <p class="table-help">${bonus?'One final challenge using all the tables:':'This race uses these times tables:'}</p>
       <div class="table-grid solo-table-grid">${chips}</div>
       <div class="solo-heart-note">${'❤️'.repeat(soloState.hearts)} <strong>${soloState.hearts} hearts remaining</strong></div>
     </section>
   </div>`);
   bindToolbar();
-  installTopControls({actionId:'raceBtn',actionLabel:'START RACE 🏁',actionDisabled:false,onAction:()=>{const b=$('#raceBtn');if(b.disabled)return;b.disabled=true;ensureAudio();armRaceMusic();prepareRace();}});
+  installTopControls({actionId:'raceBtn',actionLabel:bonus?'START BONUS 👻':'START RACE 🏁',actionDisabled:false,onAction:()=>{const b=$('#raceBtn');if(b.disabled)return;b.disabled=true;ensureAudio();armRaceMusic();prepareRace();}});
 }
 
 function generateQuestions(tables){
@@ -691,16 +721,16 @@ function generateQuestions(tables){
 }
 
 function prepareRace(){
-  const race=SOLO_RACES[soloState.raceIndex];
+  const race=currentSoloRace();
   const spec=soloCarSpec();
   heatState={players:[{id:'solo',name:soloState.name,groupId:'solo',groupName:'Solo Racer',groupColor:spec.bodyColor,tables:[...race.tables],questions:generateQuestions(new Set(race.tables)),q:0,attempts:0,lane:1,startTime:0,finishTime:0,locked:true,choices:[],fallTimer:null,currentFallMs:0}],started:false};
   renderRace();countdown();
 }
 
 function renderRace(){
-  const p=heatState.players[0],spec=soloCarSpec();
+  const p=heatState.players[0],spec=soloCarSpec(),bonus=!!soloState.bonusActive;
   app.innerHTML=shell(`<div class="solo-game-wrap">
-    <div class="solo-game-head">${soloHud()}<div class="round-pill">Race ${soloState.raceIndex+1} of 5</div></div>
+    <div class="solo-game-head">${soloHud()}<div class="round-pill">${bonus?'BONUS 👻':'Race '+(soloState.raceIndex+1)+' of 5'}</div></div>
     <div class="race-map solo-race-map"><div class="map-lanes solo-map-lanes"><div class="track-line"><div class="map-car" id="mapcar-0" style="left:0"><b class="map-car-icon">🏎️</b><span>${esc(p.name)}</span></div></div></div></div>
     <div class="lanes-wrap solo-lanes"><section class="racer solo-racer" id="racer-0" style="--player:${spec.bodyColor}">
       <div class="racer-head"><div class="racer-name">${esc(p.name)}</div><div class="qcount" id="qcount-0">0 / 10 🍬</div></div>
@@ -721,18 +751,25 @@ function wrong(i){
 
 function finishPlayer(i){
   const p=heatState.players[i];if(p.finishTime)return;p.finishTime=performance.now()-p.startTime;p.locked=true;clearTimeout(p.fallTimer);$$(`.move-btn[data-lane="${i}"]`).forEach(b=>b.disabled=true);$('#field-'+i).querySelectorAll('.candy').forEach(c=>c.remove());$('#equation-'+i).textContent='10 / 10 ✓';$('#mapcar-'+i).style.left='91.5%';finishSound();
-  const card=$('#racer-'+i);const done=document.createElement('div');done.className='finished-card';done.innerHTML=`<div class="flag">🏁</div><h3>FINISHED!</h3><p>${esc(p.name)} cleared Race ${soloState.raceIndex+1}!</p>`;card.appendChild(done);
+  const card=$('#racer-'+i);const done=document.createElement('div');done.className='finished-card';done.innerHTML=`<div class="flag">🏁</div><h3>FINISHED!</h3><p>${esc(p.name)} cleared ${soloState.bonusActive?'the Ghost Town bonus':'Race '+(soloState.raceIndex+1)}!</p>`;card.appendChild(done);
   fadeOutRaceMusic(1100);setTimeout(endHeat,1250);
 }
 
 function endHeat(){
-  stopRaceMusic();const p=heatState.players[0];const reward=soloState.hearts;soloState.coins+=reward;soloState.records.push({race:soloState.raceIndex+1,time:p.finishTime,attempts:p.attempts,hearts:soloState.hearts,reward});soloState.earned.push(reward);showHeatResults();
+  stopRaceMusic();const p=heatState.players[0];
+  if(soloState.bonusActive){
+    soloState.records.push({race:'bonus',bonus:true,time:p.finishTime,attempts:p.attempts,hearts:soloState.hearts,reward:0});
+    soloState.bonusActive=false;soloState.bonusCompleted=true;renderFinal();return;
+  }
+  const reward=soloState.hearts;soloState.coins+=reward;soloState.records.push({race:soloState.raceIndex+1,bonus:false,time:p.finishTime,attempts:p.attempts,hearts:soloState.hearts,reward});soloState.earned.push(reward);showHeatResults();
 }
 
 function soloUpgradeOptionMarkup(roundIndex,optionIndex){
   const round=UPGRADE_ROUNDS[roundIndex],opt=round.options[optionIndex],spec=soloCarSpec(roundIndex,optionIndex),cost=SOLO_UPGRADE_COSTS[round.key][optionIndex];
-  const owned=soloState.picks[round.key]===optionIndex;
-  return `<button class="upgrade-btn solo-upgrade-option ${owned?'owned':''}" data-round="${roundIndex}" data-option="${optionIndex}" ${soloState.picks[round.key]!==undefined?'disabled':''}><div class="upgrade-car-option"><div class="car" style="--carfill:${spec.bodyColor}">${topCarSvg(spec)}</div></div><strong>${esc(opt.name)}</strong><div class="upgrade-cost">🪙 ${cost}</div><div class="upgrade-lock-note">${owned?'✓ Equipped':'Tap to preview'}</div></button>`;
+  const picked=soloState.picks[round.key],owned=picked===optionIndex,categoryLocked=picked!==undefined;
+  const buyLabel=owned?'EQUIPPED ✓':categoryLocked?'LOCKED':'PREVIEW FIRST';
+  const buyClass=owned?'equipped':categoryLocked?'locked':'';
+  return `<div class="solo-upgrade-choice ${owned?'owned':''}" data-choice-round="${roundIndex}" data-choice-option="${optionIndex}"><button class="upgrade-btn solo-upgrade-option ${owned?'owned':''}" data-round="${roundIndex}" data-option="${optionIndex}" ${categoryLocked?'disabled':''}><div class="upgrade-car-option"><div class="car" style="--carfill:${spec.bodyColor}">${topCarSvg(spec)}</div></div><strong>${esc(opt.name)}</strong><div class="upgrade-cost">${coinIcon()} ${cost}</div><div class="upgrade-lock-note">${owned?'✓ Equipped':'Tap to preview'}</div></button><button class="solo-option-buy ${buyClass}" data-buy-round="${roundIndex}" data-buy-option="${optionIndex}" disabled>${buyLabel}</button></div>`;
 }
 
 function garageCurrentPreview(spec=soloCarSpec(),label='Current car'){
@@ -741,30 +778,34 @@ function garageCurrentPreview(spec=soloCarSpec(),label='Current car'){
 
 function showHeatResults(){
   garageSelections={};
-  const rec=soloState.records.at(-1),pair=SOLO_UPGRADE_PAIRS[soloState.raceIndex];
+  const rec=soloState.records.filter(r=>!r.bonus).at(-1),pair=SOLO_UPGRADE_PAIRS[soloState.raceIndex];
   const categorySections=pair.map(roundIndex=>{
-    const round=UPGRADE_ROUNDS[roundIndex],owned=soloState.picks[round.key]!==undefined;
-    return `<section class="solo-upgrade-category panel" data-category="${roundIndex}"><div class="solo-upgrade-head"><div><div class="upgrade-round">UPGRADE ${roundIndex+1} OF 10</div><h3>${esc(round.name)}</h3></div><button class="secondary solo-buy-btn" data-buy-round="${roundIndex}" disabled>${owned?'EQUIPPED ✓':'SELECT AN OPTION'}</button></div><div class="upgrade-grid">${round.options.map((_,idx)=>soloUpgradeOptionMarkup(roundIndex,idx)).join('')}</div></section>`;
+    const round=UPGRADE_ROUNDS[roundIndex];
+    return `<section class="solo-upgrade-category panel" data-category="${roundIndex}"><div class="solo-upgrade-head"><div><div class="upgrade-round">UPGRADE ${roundIndex+1} OF 10</div><h3>${esc(round.name)}</h3></div></div><div class="upgrade-grid">${round.options.map((_,idx)=>soloUpgradeOptionMarkup(roundIndex,idx)).join('')}</div></section>`;
   }).join('');
   const isLast=soloState.raceIndex===SOLO_RACES.length-1;
   app.innerHTML=shell(`<div class="result-screen solo-result-screen">
-    <div class="solo-result-banner panel"><div><div class="result-kicker">RACE ${soloState.raceIndex+1} COMPLETE!</div><h2>Sweet driving, ${esc(soloState.name)}! 🍬</h2><p>10 correct in ${rec.attempts} attempts</p></div><div class="coin-award"><span>+${rec.reward}</span><small>🪙 COINS</small></div></div>
+    <div class="solo-result-banner panel"><div><div class="result-kicker">RACE ${soloState.raceIndex+1} COMPLETE!</div><h2>Sweet driving, ${esc(soloState.name)}! 🍬</h2><p>10 correct in ${rec.attempts} attempts</p></div><div class="coin-award"><span>+${rec.reward}</span><small>${coinIcon()} COINS</small></div></div>
     <div class="garage-balance">${soloHud()}<span class="garage-note">Spend now or save your coins for later upgrades.</span></div>
-    <div class="solo-garage-top panel"><div><div class="upgrade-round">CANDY GARAGE</div><h3>Two new upgrade parts unlocked</h3><p>Preview any flavour before you buy. You can buy one flavour from each category, or skip it.</p></div>${garageCurrentPreview()}</div>
+    <div class="solo-garage-top panel"><div><div class="upgrade-round">CANDY GARAGE</div><h3>Two new upgrade parts unlocked</h3><p>Preview any flavour before you buy. The buy button below that upgrade will light up when it is selected.</p></div>${garageCurrentPreview()}</div>
     <div class="solo-upgrade-pair">${categorySections}</div>
   </div>`);
   bindToolbar();
-  installTopControls({actionId:'nextBtn',actionLabel:isLast?'FINISH 🏆':'NEXT RACE 🍭',actionDisabled:false,onAction:()=>{if(isLast)renderFinal();else{soloState.raceIndex++;renderHeatSetup();}}});
+  installTopControls({actionId:'nextBtn',actionLabel:isLast?'FINISH 🏆':'NEXT RACE 🍭',actionDisabled:false,onAction:()=>{if(isLast){renderFinal();return;}soloState.raceIndex++;renderHeatSetup();}});
   $$('.solo-upgrade-option:not(:disabled)').forEach(btn=>btn.addEventListener('click',()=>{
     const roundIndex=+btn.dataset.round,optIndex=+btn.dataset.option,round=UPGRADE_ROUNDS[roundIndex],cost=SOLO_UPGRADE_COSTS[round.key][optIndex];
     garageSelections[roundIndex]=optIndex;
     $$(`.solo-upgrade-option[data-round="${roundIndex}"]`).forEach(b=>{b.classList.toggle('selected',b===btn);const n=b.querySelector('.upgrade-lock-note');if(n)n.textContent=b===btn?'Previewing':'Tap to preview';});
     const spec=soloCarSpec(roundIndex,optIndex);$('#garagePreview')?.replaceWith(new DOMParser().parseFromString(garageCurrentPreview(spec,round.options[optIndex].name+' preview'),'text/html').body.firstChild);
-    const buy=$(`[data-buy-round="${roundIndex}"]`);buy.disabled=soloState.coins<cost;buy.textContent=soloState.coins>=cost?`BUY · 🪙 ${cost}`:`NEED ${cost} COINS`;
+    $$(`.solo-option-buy[data-buy-round="${roundIndex}"]`).forEach(b=>{b.disabled=true;b.classList.remove('ready','need');b.textContent='PREVIEW FIRST';});
+    const buy=$(`.solo-option-buy[data-buy-round="${roundIndex}"][data-buy-option="${optIndex}"]`);
+    if(soloState.coins>=cost){buy.disabled=false;buy.classList.add('ready');buy.innerHTML=`BUY · ${coinIcon()} ${cost}`;}else{buy.disabled=true;buy.classList.add('need');buy.innerHTML=`NEED ${coinIcon()} ${cost}`;}
   }));
-  $$('.solo-buy-btn').forEach(btn=>btn.addEventListener('click',()=>{
-    const roundIndex=+btn.dataset.buyRound,optIndex=garageSelections[roundIndex];if(optIndex===undefined)return;
+  $$('.solo-option-buy').forEach(btn=>btn.addEventListener('click',()=>{
+    if(btn.disabled)return;
+    const roundIndex=+btn.dataset.buyRound,optIndex=+btn.dataset.buyOption;
     const round=UPGRADE_ROUNDS[roundIndex],cost=SOLO_UPGRADE_COSTS[round.key][optIndex];
+    if(garageSelections[roundIndex]!==optIndex)return;
     if(soloState.picks[round.key]!==undefined){toast('That upgrade is already equipped.');return;}
     if(soloState.coins<cost){toast('Not enough coins yet.');return;}
     soloState.coins-=cost;soloState.picks[round.key]=optIndex;correctSound();toast(round.options[optIndex].name+' equipped ✓');showHeatResults();
@@ -773,16 +814,35 @@ function showHeatResults(){
 
 function showGameOver(){
   stopRaceMusic();heatState=null;const spec=soloCarSpec();
-  app.innerHTML=shell(`<div class="solo-end-wrap"><section class="champion panel solo-gameover"><div class="trophy">💔</div><h2>SUGAR RUSH OVER</h2><div class="team">No hearts left</div><div class="solo-final-car">${soloCarMarkup(spec)}</div><p>${esc(soloState.name)}, you reached Race ${soloState.raceIndex+1}. Try again and see how far your car can go!</p><button class="primary" id="newBtn">TRY AGAIN 🍭</button></section></div>`);
-  bindToolbar();installTopControls({showHome:false});$('#newBtn').addEventListener('click',renderCover);
+  const bonus=!!soloState?.bonusActive;
+  if(bonus){soloState.bonusActive=false;soloState.bonusFailed=true;}
+  app.innerHTML=shell(`<div class="solo-end-wrap"><section class="champion panel solo-gameover"><div class="trophy">${bonus?'👻':'💔'}</div><h2>${bonus?'BONUS RACE OVER':'SUGAR RUSH OVER'}</h2><div class="team">${bonus?'Ghost Town got away this time':'No hearts left'}</div><div class="solo-final-car">${soloCarMarkup(spec)}</div><p>${bonus?`${esc(soloState.name)}, you still completed all five main races and unlocked the secret track.`:`${esc(soloState.name)}, you reached Race ${soloState.raceIndex+1}. Try again and see how far your car can go!`}</p><button class="primary" id="newBtn">${bonus?'VIEW MY TROPHY 🏆':'TRY AGAIN 🍭'}</button></section></div>`);
+  bindToolbar();installTopControls({showHome:false});$('#newBtn').addEventListener('click',bonus?renderFinal:renderCover);
 }
 
 function renderFinal(){
-  stopRaceMusic();victoryMusic();const spec=soloCarSpec();const totalAttempts=soloState.records.reduce((n,r)=>n+r.attempts,0);const totalCorrect=soloState.records.length*10;const bought=Object.keys(soloState.picks).length;
-  const confetti=Array.from({length:24},(_,i)=>`<span style="left:${(i*37)%100}%;animation-delay:-${(i%7)*.52}s">${CANDY_DECOR[i%CANDY_DECOR.length]}</span>`).join('');
-  app.innerHTML=shell(`<div class="solo-end-wrap"><section class="champion panel solo-champion"><div class="confetti">${confetti}</div><div class="trophy">🏆</div><h2>SUGAR RUSH COMPLETE!</h2><div class="team">${esc(soloState.name)}</div><div class="solo-final-car">${soloCarMarkup(spec)}</div><div class="solo-final-stats"><span>❤️ <b>${soloState.hearts}</b> left</span><span>🪙 <b>${soloState.coins}</b> saved</span><span>🔧 <b>${bought}</b> upgrades</span><span>🍬 <b>${totalCorrect}</b> correct</span></div><p class="fair-note">You raced through all 5 Candyland tracks in ${totalAttempts} total attempts.</p><button class="primary" id="newBtn">RACE AGAIN 🍭</button></section></div>`);
-  bindToolbar();installTopControls({showHome:false});$('#newBtn').addEventListener('click',renderCover);
+  stopRaceMusic();victoryMusic();
+  const spec=soloCarSpec(),normal=soloState.records.filter(r=>!r.bonus),bonusRec=soloState.records.find(r=>r.bonus);
+  const totalAttempts=normal.reduce((n,r)=>n+r.attempts,0),totalCorrect=normal.length*10,bought=Object.keys(soloState.picks).length,totalTime=normal.reduce((n,r)=>n+r.time,0),perfect=isPerfectMainRun();
+  const confetti=Array.from({length:28},(_,i)=>`<span style="left:${(i*37)%100}%;animation-delay:-${(i%7)*.52}s">${CANDY_DECOR[i%CANDY_DECOR.length]}</span>`).join('');
+  const timeCards=normal.map((r,i)=>`<div class="solo-race-time"><small>Race ${i+1}</small>${fmtLongTime(r.time)}</div>`).join('');
+  const bonusDone=!!soloState.bonusCompleted;
+  const title=bonusDone?'GHOST TOWN CONQUERED!':'SUGAR RUSH COMPLETE!';
+  const trophy=bonusDone?'🏆':'🏆';
+  const bonusBlock=perfect&&!bonusDone&&!soloState.bonusFailed?`<div class="bonus-unlock"><h3>👻 PERFECT RUN BONUS UNLOCKED!</h3><p>50 / 50 in exactly 50 attempts and all 5 hearts intact. Halloween Candy Ghost Town is open.</p><button class="bonus-btn" id="bonusBtn">ENTER GHOST TOWN 🎃</button></div>`:'';
+  const bonusSummary=bonusDone&&bonusRec?`<div class="bonus-unlock"><h3>🎃 Halloween Candy Ghost Town cleared!</h3><p>Bonus time: <strong>${fmtLongTime(bonusRec.time)}</strong> · ${10}/${bonusRec.attempts} attempts · ${soloState.hearts} hearts left.</p></div>`:'';
+  app.innerHTML=shell(`<div class="solo-end-wrap solo-finale"><section class="champion panel solo-champion"><div class="confetti">${confetti}</div><div class="solo-trophy-stage"><div class="solo-trophy-glow"></div><span class="solo-trophy-spark s1">✨</span><span class="solo-trophy-spark s2">⭐</span><span class="solo-trophy-spark s3">✨</span><div class="solo-trophy">${trophy}</div></div><h2>${title}</h2><div class="team">${esc(soloState.name)}</div><div class="solo-final-car">${soloCarMarkup(spec)}</div><div class="solo-grand-time"><small>Total race time</small>${fmtLongTime(totalTime)}</div><div class="solo-final-stats"><span>❤️ <b>${soloState.hearts}</b> left</span><span>${coinIcon()} <b>${soloState.coins}</b> saved</span><span>🔧 <b>${bought}</b> upgrades</span><span>🍬 <b>${totalCorrect} / ${totalAttempts}</b></span></div><div class="solo-race-time-grid">${timeCards}</div>${bonusBlock}${bonusSummary}<button class="primary" id="newBtn">RACE AGAIN 🍭</button></section></div>`);
+  bindToolbar();installTopControls({showHome:false});
+  $('#newBtn').addEventListener('click',renderCover);
+  $('#bonusBtn')?.addEventListener('click',()=>{soloState.bonusActive=true;soloState.bonusFailed=false;soloState.raceIndex=5;ensureAudio();renderHeatSetup();});
 }
+
+function victoryMusic(){
+  if(muted)return;ensureAudio();
+  [523,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.052,i*.13));
+  setTimeout(()=>{tone(784,.18,'sine',.04);tone(1047,.26,'triangle',.045,.12)},620);
+}
+
 
 
 renderCover();
@@ -790,4 +850,4 @@ renderCover();
 </body>
 </html>
 
-<!-- v23: landscape-specific embedded music + synced 3-2-1-Go audio -->
+<!-- v26: single-player garage buttons + gold coins + trophy finale + perfect-run Ghost Town bonus + approved feathered lane highlight -->
