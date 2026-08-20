@@ -176,6 +176,71 @@ button{touch-action:manipulation}
 .solo-bonus-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;background:#3f3152;color:#fff;font-weight:1000;box-shadow:var(--soft)}
 @media(max-width:680px){.solo-race-time-grid{grid-template-columns:repeat(3,1fr)}.solo-upgrade-option{min-height:132px}.solo-option-buy{min-height:43px}.solo-table-chip{min-width:96px}}
 
+
+/* v30: solo polish pass + refined reward card alignment */
+.coin-award{
+  min-width:114px;
+  min-height:164px;
+  padding:12px 10px;
+  gap:7px;
+}
+.coin-award span{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  margin:0;
+  line-height:.9;
+  letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  text-align:center;
+}
+.coin-award small{
+  width:100%;
+  gap:5px;
+}
+.solo-racer .racer-name{font-size:clamp(20px,3.9vw,31px)}
+.solo-racer .qcount{font-size:16px;padding:6px 12px}
+.solo-racer .lane-guide{width:20.4%;border-radius:24px}
+.solo-racer .lane-guide.active{
+  background:linear-gradient(90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.13) 8%,
+    rgba(255,255,255,.23) 21%,
+    rgba(255,255,255,.31) 34%,
+    rgba(255,255,255,.39) 50%,
+    rgba(255,255,255,.31) 66%,
+    rgba(255,255,255,.23) 79%,
+    rgba(255,255,255,.13) 92%,
+    rgba(255,255,255,0) 100%);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.42),inset 0 0 18px rgba(255,255,255,.10),0 0 12px color-mix(in srgb,var(--player) 12%,transparent);
+}
+.solo-racer .answer-strip{left:11.9%;right:11.9%;bottom:2.9%}
+.solo-racer .answer-slot{height:40px}
+.solo-racer .answer-label{
+  font-size:13px;
+  letter-spacing:.55px;
+  padding:5px 11px;
+  background:rgba(58,39,80,.74);
+  box-shadow:0 4px 10px rgba(58,39,80,.12);
+}
+.solo-racer .candy{top:2%;width:100px;height:100px}
+.solo-racer .candy-emoji{font-size:76px;filter:drop-shadow(0 8px 7px rgba(73,47,96,.18))}
+.solo-racer .candy-num{min-width:48px;height:48px;padding:0 10px;font-size:clamp(23px,3.8vw,31px)}
+.solo-racer .car{width:66px;height:108px;bottom:4.1%;filter:drop-shadow(0 9px 6px rgba(40,26,58,.24))}
+.solo-race-map .map-car{font-size:24px;gap:5px}
+.solo-race-map .map-car span{font-size:12px;padding:4px 8px;max-width:112px}
+@media (max-width:600px){
+  .coin-award{min-width:106px;min-height:150px}
+  .solo-racer .answer-strip{left:12.4%;right:12.4%;bottom:2.6%}
+  .solo-racer .answer-slot{height:36px}
+  .solo-racer .answer-label{font-size:12px;padding:4px 10px}
+  .solo-racer .candy{width:92px;height:92px}
+  .solo-racer .candy-emoji{font-size:70px}
+  .solo-racer .candy-num{min-width:44px;height:44px;font-size:clamp(22px,4vw,28px)}
+  .solo-racer .car{width:60px;height:100px}
+}
+
 </style>
 </head>
 <body>
@@ -907,4 +972,4 @@ renderCover();
 </body>
 </html>
 
-<!-- v29: centered top reward card with aligned +coins layout -->
+<!-- v30: solo polish pass + refined reward card alignment -->
