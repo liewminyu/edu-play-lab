@@ -484,8 +484,19 @@
       background: var(--aqua);
     }
 
-    .play-btn {
+    .card-actions {
       margin-top: auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 9px;
+    }
+
+    .card-actions.has-download {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .play-btn,
+    .download-btn {
       min-height: 44px;
       display: inline-flex;
       align-items: center;
@@ -493,17 +504,33 @@
       gap: 8px;
       padding: 10px 15px;
       border-radius: 14px;
-      background: #2c3449;
-      color: #fff;
       text-decoration: none;
       font-weight: 900;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .play-btn {
+      background: #2c3449;
+      color: #fff;
       box-shadow: 0 8px 16px rgba(44,52,73,0.13);
-      transition: transform 0.15s ease, background 0.15s ease;
     }
 
     .play-btn:hover {
       transform: translateY(-1px);
       background: #1e263a;
+    }
+
+    .download-btn {
+      border: 1.5px solid #cdd6e7;
+      background: #fff;
+      color: #2c3449;
+      box-shadow: 0 8px 16px rgba(44,52,73,0.07);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-1px);
+      border-color: #aebbd2;
+      background: #f7f9fc;
     }
 
     .empty-state {
@@ -733,7 +760,7 @@
   <script>
     const interactives = [
       { title:"Sugar Rush Multiplication", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 9", unitName:"Multiplication Tables of 3 and 4", type:"Competitive", file:"games/Sugar_Rush_Multiplication.html", preview:"previews/sugar-rush-multiplication.gif" },
-      { title:"Sugar Rush Multiplication (Single Player)", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 9", unitName:"Multiplication Tables of 3 and 4", type:"Independent Practice", file:"games/Sugar_Rush_Multiplication_Single_Player.html", preview:"previews/sugar-rush-multiplication-single-player.gif" },
+      { title:"Sugar Rush Multiplication (Single Player)", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 9", unitName:"Multiplication Tables of 3 and 4", type:"Independent Practice", file:"games/Sugar_Rush_Multiplication_Single_Player.html", preview:"previews/sugar-rush-multiplication-single-player.gif", slsDownload:"downloads/Sugar_Rush_Multiplication_Independent_Practice_SLS.zip" },
       { title:"Picture Graphs Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 13", unitName:"Picture Graphs", type:"Competitive", file:"games/Picture_Graphs_Battle_Royale.html", preview:"previews/picture-graphs-battle-royale.gif" },
       { title:"Quick Shape Sort Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Quick_Shape_Sort_Battle_Royale.html", preview:"previews/quick-shape-sort-battle-royale.gif" },
       { title:"3D Shapes Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/3D_Shapes_Battle_Royale.html", preview:"previews/3d-shapes-battle-royale.gif" },
@@ -890,14 +917,27 @@
               <span class="tag subject">${item.subject}</span>
               <span class="tag ${typeClass(item.type)}">${item.type}</span>
             </div>
-            <a
-              class="play-btn"
-              href="${item.file}"
-              data-goatcounter-click="${launchEventName(item)}"
-              data-goatcounter-title="Launch: ${item.title}"
-            >
-              ${activeSection === "Tools" ? "Open Tool" : "Play"} <span aria-hidden="true">→</span>
-            </a>
+            <div class="card-actions ${item.slsDownload ? "has-download" : ""}">
+              <a
+                class="play-btn"
+                href="${item.file}"
+                data-goatcounter-click="${launchEventName(item)}"
+                data-goatcounter-title="Launch: ${item.title}"
+              >
+                ${activeSection === "Tools" ? "Open Tool" : "Play"} <span aria-hidden="true">→</span>
+              </a>
+              ${item.slsDownload ? `
+                <a
+                  class="download-btn"
+                  href="${item.slsDownload}"
+                  download
+                  data-goatcounter-click="download-sls-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}"
+                  data-goatcounter-title="Download for SLS: ${item.title}"
+                >
+                  Download for SLS <span aria-hidden="true">↓</span>
+                </a>
+              ` : ""}
+            </div>
           </div>
         `;
         cardsEl.appendChild(article);
