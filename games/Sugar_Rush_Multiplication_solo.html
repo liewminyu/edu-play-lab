@@ -61,11 +61,11 @@ button{touch-action:manipulation}
 .scenery{display:none}
 .candy{position:absolute;top:2.5%;left:50%;width:86px;height:86px;display:flex;align-items:center;justify-content:center;z-index:7;transform:translate(-50%,-90px) rotate(var(--rot));transition:none;pointer-events:none}.candy-emoji{font-size:68px;line-height:1;filter:drop-shadow(0 8px 7px rgba(73,47,96,.17))}.candy-num{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);min-width:44px;height:44px;padding:0 9px;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;color:#3b294c;font-size:clamp(21px,1.8vw,29px);font-weight:1000;box-shadow:0 6px 11px rgba(73,47,96,.14);border:3px solid rgba(255,255,255,.92)}
 .candy.drop{animation:candyDrop var(--fall,5.4s) linear forwards}@keyframes candyDrop{0%{transform:translate(-50%,-88px) rotate(var(--rot)) scale(.78)}82%{transform:translate(-50%,calc(var(--dropY) - 42px)) rotate(calc(var(--rot) + 5deg)) scale(.98)}100%{transform:translate(-50%,var(--dropY)) rotate(calc(var(--rot) + 7deg)) scale(1)}}
-.car{position:absolute;bottom:4.5%;left:50%;width:58px;height:96px;transform:translateX(-50%);z-index:8;transition:left .17s ease-out,filter .12s ease;filter:drop-shadow(0 8px 5px rgba(40,26,58,.23))}.car svg{display:block;width:100%;height:100%;overflow:visible}.car-shadow{fill:rgba(0,0,0,.18)}.car-body-fill{fill:var(--carfill)}.car-dark{fill:#342f3d}.car-glass{fill:#cdeeff}.car-glass-dark{fill:#7ba9c1}.car-light-front{fill:#ffe77f}.car-light-rear{fill:#ff7c91}.car-trim{fill:rgba(255,255,255,.70)}
-.speed-lines{position:absolute;inset:0;opacity:0;pointer-events:none;background:repeating-linear-gradient(102deg,transparent 0 22px,rgba(255,255,255,.82) 23px 25px,transparent 26px 52px);transform:translateX(-20%);z-index:4}.racer.boost .speed-lines{opacity:.78;animation:speedFlash .15s linear infinite}.racer.boost .road{filter:blur(1.8px) saturate(1.08);animation:roadBoost .52s ease-out}.racer.boost .car{animation:boostCar .52s ease-out}.racer.stumble .car{animation:jerkCar .46s ease-in-out}.racer.stumble .road{filter:saturate(.72) brightness(.96);animation:roadSlow .46s ease-out}@keyframes roadBoost{0%{transform:scale(1);background-position:center 50%}40%{transform:scale(1.02);background-position:center 53%}100%{transform:scale(1);background-position:center 50%}}@keyframes roadSlow{0%,100%{transform:scale(1)}50%{transform:scale(.995)}}
+.car{position:absolute;bottom:4.5%;left:50%;width:58px;height:96px;transform:translateX(-50%);z-index:8;transition:left .17s ease-out,bottom .20s cubic-bezier(.12,.78,.18,1),filter .12s ease;filter:drop-shadow(0 8px 5px rgba(40,26,58,.23))}.car.speeding{bottom:calc(100% - 108px)}.car svg{display:block;width:100%;height:100%;overflow:visible}.car-shadow{fill:rgba(0,0,0,.18)}.car-body-fill{fill:var(--carfill)}.car-dark{fill:#342f3d}.car-glass{fill:#cdeeff}.car-glass-dark{fill:#7ba9c1}.car-light-front{fill:#ffe77f}.car-light-rear{fill:#ff7c91}.car-trim{fill:rgba(255,255,255,.70)}
+.speed-lines{position:absolute;inset:0;opacity:0;pointer-events:none;background:repeating-linear-gradient(102deg,transparent 0 22px,rgba(255,255,255,.82) 23px 25px,transparent 26px 52px);transform:translateX(-20%);z-index:4}.racer.boost .speed-lines,.racer.manual-speed .speed-lines{opacity:.78;animation:speedFlash .15s linear infinite}.racer.boost .road{filter:blur(1.8px) saturate(1.08);animation:roadBoost .52s ease-out}.racer.boost .car{animation:boostCar .52s ease-out}.racer.stumble .car{animation:jerkCar .46s ease-in-out}.racer.stumble .road{filter:saturate(.72) brightness(.96);animation:roadSlow .46s ease-out}@keyframes roadBoost{0%{transform:scale(1);background-position:center 50%}40%{transform:scale(1.02);background-position:center 53%}100%{transform:scale(1);background-position:center 50%}}@keyframes roadSlow{0%,100%{transform:scale(1)}50%{transform:scale(.995)}}
 @keyframes speedFlash{to{transform:translateX(0)}}@keyframes boostCar{0%{transform:translateX(-50%) translateY(2px) scale(1)}38%{transform:translateX(-50%) translateY(-10px) scale(1.10)}100%{transform:translateX(-50%) translateY(0) scale(1)}}@keyframes jerkCar{0%,100%{transform:translateX(-50%) rotate(0)}20%{transform:translateX(-62%) rotate(-8deg)}44%{transform:translateX(-38%) rotate(7deg)}67%{transform:translateX(-56%) rotate(-4deg)}}
 .feedback{position:absolute;font-weight:1000}
-.controls{position:relative;z-index:10;padding:6px 10px 8px;background:#ffffffec;border-top:2px solid rgba(108,83,133,.10);display:grid;grid-template-columns:1fr;gap:7px}.equation{text-align:center;font-size:clamp(28px,3vw,48px);font-weight:1000;line-height:1}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.move-btn{border:0;border-radius:15px;min-height:50px;background:linear-gradient(145deg,#fff,#f4edf9);color:var(--ink);font-weight:1000;font-size:clamp(18px,1.7vw,26px);box-shadow:inset 0 0 0 2px #e8dcf2,0 6px 12px rgba(74,48,96,.09);cursor:pointer}.move-btn:active{transform:translateY(1px) scale(.99)}.move-btn:disabled{opacity:.38}
+.controls{position:relative;z-index:10;padding:6px 10px 8px;background:#ffffffec;border-top:2px solid rgba(108,83,133,.10);display:grid;grid-template-columns:1fr;gap:7px}.equation{text-align:center;font-size:clamp(28px,3vw,48px);font-weight:1000;line-height:1}.buttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.move-btn,.speed-up-btn{border:0;border-radius:15px;min-height:50px;background:linear-gradient(145deg,#fff,#f4edf9);color:var(--ink);font-weight:1000;font-size:clamp(18px,1.7vw,26px);box-shadow:inset 0 0 0 2px #e8dcf2,0 6px 12px rgba(74,48,96,.09);cursor:pointer}.move-btn:active,.speed-up-btn:active{transform:translateY(1px) scale(.99)}.move-btn:disabled,.speed-up-btn:disabled{opacity:.38}
 .finished-card{position:absolute;inset:48px 0 0;z-index:20;background:linear-gradient(145deg,#fff7fbf3,#effffff3);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:15px}.finished-card .flag{font-size:70px}.finished-card h3{margin:0;font-size:clamp(32px,3vw,48px)}.finished-card p{margin:5px 0 0;color:var(--ink2);font-weight:900}
 
 /* Results */
@@ -649,7 +649,7 @@ function countdown(){
 function startHeat(){
   if(!heatState||heatState.started)return;
   const now=performance.now();heatState.started=true;startRaceMusic();
-  heatState.players.forEach((p,i)=>{p.startTime=now;p.locked=false;$('#car-'+i).style.left=carLeftForLane(p.lane);updateLaneUI(i);$$(`.move-btn[data-lane="${i}"]`).forEach(b=>b.disabled=false);showQuestion(i)});
+  heatState.players.forEach((p,i)=>{p.startTime=now;p.locked=false;$('#car-'+i).style.left=carLeftForLane(p.lane);updateLaneUI(i);$$(`.move-btn[data-lane="${i}"],.speed-up-btn[data-lane="${i}"]`).forEach(b=>b.disabled=false);showQuestion(i)});
 }
 function showQuestion(i){
   const p=heatState.players[i];if(p.q>=10)return finishPlayer(i);p.locked=false;p.choices=makeChoices(p.questions[p.q].answer);$('#equation-'+i).textContent=`${p.questions[p.q].a} × ${p.questions[p.q].b} = ?`;$('#qcount-'+i).textContent=`${p.q} / 10 🍬`;spawnCandies(i);
@@ -666,6 +666,16 @@ function spawnCandies(i){
 function carLeftForLane(lane){return LANE_X[lane]+'%'}
 function moveCar(i,dir){
   const p=heatState.players[i];if(!heatState.started||p.locked||p.finishTime)return;ensureAudio();p.lane=Math.max(0,Math.min(2,p.lane+dir));$('#car-'+i).style.left=carLeftForLane(p.lane);updateLaneUI(i);tone(310+40*p.lane,.045,'square',.025);
+}
+function speedUp(i){
+  const p=heatState.players[i];if(!heatState.started||p.locked||p.finishTime)return;
+  p.locked=true;clearTimeout(p.fallTimer);
+  const racer=$('#racer-'+i),car=$('#car-'+i);racer?.classList.add('manual-speed');car?.classList.add('speeding');
+  setTimeout(()=>{
+    p.attempts++;const hit=p.choices[p.lane]?.value,answer=p.questions[p.q].answer;racer?.classList.remove('manual-speed');
+    if(hit===answer)correct(i);else wrong(i);
+    setTimeout(()=>car?.classList.remove('speeding'),300);
+  },220);
 }
 function resolveDrop(i){
   const p=heatState.players[i];if(p.locked||p.finishTime)return;p.locked=true;p.attempts++;
@@ -894,11 +904,12 @@ function renderRace(){
     <div class="lanes-wrap solo-lanes"><section class="racer solo-racer" id="racer-0" style="--player:${spec.bodyColor}">
       <div class="racer-head"><div class="racer-name">${esc(p.name)}</div><div class="qcount" id="qcount-0">0 / 10 🍬</div></div>
       <div class="playfield" id="field-0"><div class="road"></div><div class="lane-guides"><div class="lane-guide" data-slot="0"></div><div class="lane-guide" data-slot="1"></div><div class="lane-guide" data-slot="2"></div></div><div class="answer-strip"><div class="answer-slot" data-slot="0"><div class="answer-label">LEFT</div></div><div class="answer-slot" data-slot="1"><div class="answer-label">MIDDLE</div></div><div class="answer-slot" data-slot="2"><div class="answer-label">RIGHT</div></div></div><div class="speed-lines"></div><div class="feedback" id="feedback-0"></div><div class="car" id="car-0" style="--carfill:${spec.bodyColor}">${topCarSvg(spec)}</div></div>
-      <div class="controls"><div class="equation" id="equation-0">Ready?</div><div class="buttons"><button class="move-btn" data-lane="0" data-dir="-1" disabled>◀ LEFT</button><button class="move-btn" data-lane="0" data-dir="1" disabled>RIGHT ▶</button></div></div>
+      <div class="controls"><div class="equation" id="equation-0">Ready?</div><div class="buttons"><button class="move-btn" data-lane="0" data-dir="-1" disabled>◀ LEFT</button><button class="speed-up-btn" data-lane="0" disabled>SPEED UP</button><button class="move-btn" data-lane="0" data-dir="1" disabled>RIGHT ▶</button></div></div>
     </section></div>
   </div>`);
   bindToolbar();installTopControls({showHome:true});applyRaceBackground();
   $$('.move-btn').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();moveCar(0,+b.dataset.dir)},{passive:false}));
+  $$('.speed-up-btn').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();speedUp(0)},{passive:false}));
   updateLaneUI(0);
 }
 
@@ -909,7 +920,7 @@ function wrong(i){
 }
 
 function finishPlayer(i){
-  const p=heatState.players[i];if(p.finishTime)return;p.finishTime=performance.now()-p.startTime;p.locked=true;clearTimeout(p.fallTimer);$$(`.move-btn[data-lane="${i}"]`).forEach(b=>b.disabled=true);$('#field-'+i).querySelectorAll('.candy').forEach(c=>c.remove());$('#equation-'+i).textContent='10 / 10 ✓';$('#mapcar-'+i).style.left='91.5%';finishSound();
+  const p=heatState.players[i];if(p.finishTime)return;p.finishTime=performance.now()-p.startTime;p.locked=true;clearTimeout(p.fallTimer);$$(`.move-btn[data-lane="${i}"],.speed-up-btn[data-lane="${i}"]`).forEach(b=>b.disabled=true);$('#field-'+i).querySelectorAll('.candy').forEach(c=>c.remove());$('#equation-'+i).textContent='10 / 10 ✓';$('#mapcar-'+i).style.left='91.5%';finishSound();
   const card=$('#racer-'+i);const done=document.createElement('div');done.className='finished-card';done.innerHTML=`<div class="flag">🏁</div><h3>FINISHED!</h3><p>${esc(p.name)} cleared ${soloState.bonusActive?'the Ghost Town bonus':'Race '+(soloState.raceIndex+1)}!</p>`;card.appendChild(done);
   fadeOutRaceMusic(1100);setTimeout(endHeat,1250);
 }
