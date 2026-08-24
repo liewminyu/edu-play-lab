@@ -479,6 +479,11 @@
       background: var(--yellow);
     }
 
+    .tag.type-independent-practice {
+      border-color: transparent;
+      background: var(--aqua);
+    }
+
     .play-btn {
       margin-top: auto;
       min-height: 44px;
@@ -727,6 +732,8 @@
 
   <script>
     const interactives = [
+      { title:"Sugar Rush Multiplication", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 9", unitName:"Multiplication Tables of 3 and 4", type:"Competitive", file:"games/Sugar_Rush_Multiplication.html", preview:"previews/sugar-rush-multiplication.gif" },
+      { title:"Sugar Rush Multiplication (Single Player)", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 9", unitName:"Multiplication Tables of 3 and 4", type:"Independent Practice", file:"games/Sugar_Rush_Multiplication_Single_Player.html", preview:"previews/sugar-rush-multiplication-single-player.gif" },
       { title:"Picture Graphs Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 13", unitName:"Picture Graphs", type:"Competitive", file:"games/Picture_Graphs_Battle_Royale.html", preview:"previews/picture-graphs-battle-royale.gif" },
       { title:"Quick Shape Sort Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Quick_Shape_Sort_Battle_Royale.html", preview:"previews/quick-shape-sort-battle-royale.gif" },
       { title:"3D Shapes Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/3D_Shapes_Battle_Royale.html", preview:"previews/3d-shapes-battle-royale.gif" },
@@ -819,7 +826,10 @@
     }
 
     function typeClass(type) {
-      return "type-" + type.toLowerCase();
+      return "type-" + type
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
     }
 
     function launchEventName(item) {
