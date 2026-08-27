@@ -198,10 +198,11 @@ table.tt td{min-width:68px!important;max-width:68px!important}
 .cs-grid{flex:1;min-height:590px;display:grid;grid-template-columns:minmax(230px,.85fr) minmax(320px,1.12fr) minmax(390px,1.55fr);gap:12px}.cs-panel{min-width:0;background:#fff;border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden}.cs-panel-head{padding:12px 13px;border-bottom:1px solid var(--border);background:#f8fafc}.cs-panel-head>div{display:flex;align-items:center;gap:5px}.cs-panel-head strong{font-size:13px}.cs-panel-head small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:4px}.cs-floor-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cs-tag-bank{flex:1;padding:10px;overflow:auto;display:flex;flex-direction:column;gap:7px}.cs-raw-tag{border:1.5px solid #cbd5e1;background:#e5e7eb;color:#475569;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:700;line-height:1.3;cursor:grab;overflow-wrap:anywhere}.cs-raw-tag:hover,.cs-raw-tag.selected{border-color:#64748b;background:#dbe1e8}.cs-empty{padding:22px 14px;color:var(--muted);font-size:11px;line-height:1.45;text-align:center}.cs-location-detail{flex:1;padding:12px;overflow:auto}.cs-empty-detail{display:grid;place-items:center;color:var(--muted);text-align:center}.cs-detail-card{display:flex;flex-direction:column;gap:11px}.cs-field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px}.cs-field input,.cs-field select{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 9px;font-size:12px;background:#fff}.cs-alias-drop{border:2px dashed #94a3b8;border-radius:9px;padding:10px;min-height:94px}.cs-alias-drop.drag-over{border-color:var(--accent);background:#eff6ff}.cs-alias-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.cs-alias-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;border-radius:999px;background:#eef2f7;color:#334155;padding:5px 8px;font-size:11px;font-weight:700}.cs-alias-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}.cs-alias-chip button{border:0;background:transparent;color:#64748b;cursor:pointer;font-size:13px;line-height:1;padding:0}.cs-detail-actions{display:flex;gap:8px;flex-wrap:wrap}.cs-selected-hint{font-size:11px;color:var(--muted);line-height:1.4}.cs-floor-list{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:9px}.cs-floor-card{border:1.5px solid var(--border);border-left:8px solid var(--floor-color,#cbd5e1);border-radius:10px;padding:9px;background:#fff}.cs-floor-card.drag-over{outline:2px dashed var(--accent);background:#eff6ff}.cs-floor-tools{display:grid;grid-template-columns:minmax(110px,1fr) 42px auto;gap:7px;align-items:center}.cs-floor-name{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;font-weight:800}.cs-floor-color{width:42px;height:34px;border:1px solid var(--border);border-radius:6px;padding:2px;background:#fff}.cs-location-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;min-height:32px}.cs-location-chip{border:1.5px solid rgba(15,23,42,.12);border-radius:8px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cs-location-chip.selected{outline:2px solid #2563eb;outline-offset:1px}.cs-footer-note{font-size:11px;color:var(--muted);padding:2px 3px}.cs-warning{padding:8px 10px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;color:#92400e;font-size:11px;line-height:1.4}
 @media(max-width:1000px){.cs-grid{grid-template-columns:1fr;min-height:0}.cs-panel{min-height:330px}.cs-school-row{grid-template-columns:1fr}.cs-shell{min-height:auto}.setup-strip-actions{margin-left:0}}
 
-.pencil-badge{display:inline-block;margin-top:3px;padding:2px 5px;border-radius:5px;background:#fff7cc;color:#6b4f00;border:1px solid #e6c84f;font-size:11px!important;font-weight:800;line-height:1.15;white-space:normal}
-.cell.pencil-request{box-shadow:inset 0 0 0 2px #e6c84f}
-.pencil-banner{background:#fffbea;border:1.5px solid #e6c84f;border-radius:8px;padding:9px 14px;margin-bottom:10px;font-size:11px;color:#6b4f00;line-height:1.4}
-.pencil-summary{background:#fff7cc;border:1px solid #e6c84f;border-radius:999px;padding:3px 8px;color:#6b4f00;font-size:11px;font-weight:700}
+.pencil-badge{display:inline-block;margin-top:3px;padding:2px 6px;border-radius:5px;background:#f8fafc;color:#374151;border:1px solid #cbd5e1;font-size:11px!important;font-weight:800;line-height:1.15;white-space:normal}
+.cell.pencil-request{box-shadow:none!important;outline:none!important}
+.pencil-banner{background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:9px 14px;margin-bottom:10px;font-size:11px;color:#374151;line-height:1.4}
+.pencil-summary{background:#f8fafc;border:1px solid #cbd5e1;border-radius:999px;padding:3px 8px;color:#374151;font-size:11px;font-weight:700}
+.tt-date{margin-top:4px;font-size:11px;font-weight:600;color:var(--muted);line-height:1.2}
 
 .page-credit{padding:2px 4px 16px;text-align:center;font-size:11px;color:var(--muted);font-family:Arial,sans-serif}
 
@@ -291,7 +292,7 @@ table.tt td{min-width:68px!important;max-width:68px!important}
 <!-- TIMETABLE -->
 <div class="card tt-card" id="ttCard">
 <div class="card-head" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
-<div><h3 id="ttTitle">iPad &amp; Laptop Deployment Tool</h3></div>
+<div><h3 id="ttTitle">iPad &amp; Laptop Deployment Tool</h3><div id="ttDate" class="tt-date"></div></div>
 <div class="btn-row">
 <button class="btn btn-outline" id="btnOriginalStandalone" onclick="showView('original')">Original RBS</button><button class="btn btn-success" id="optimiseBtn" onclick="optimiseSchedule()" style="">⚡ Optimise</button>
 <button class="btn btn-danger" id="deleteBookingBtn" onclick="toggleDeleteMode()" style="display:none">🗑 Delete Booking</button>
@@ -1325,7 +1326,7 @@ function renderRearrangeTable(){
     <div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div>
     <div class="leg-item" style="margin-left:8px"><div class="leg-sw" style="background:#fef3c7;border:2px solid #f59e0b"></div>⚠ Overlapping</div>
     <div class="leg-item" style="margin-left:12px;color:var(--muted);font-size:11px">💡 Drag any block to a different cart row; timing stays locked</div>
-    ${bookings&&bookings.date?`<span style="margin-left:auto;font-size:11px;color:var(--muted)">📅 ${bookings.date}</span>`:''}`;
+    `;
   wrap.appendChild(leg);
 }
 
@@ -2545,20 +2546,27 @@ function parseCompatibleClassroomSetup(text){const p=parseClassroomSetupText(tex
 function downloadClassroomSetup(){classroomSetup=classroomSetup||loadClassroomSetup();if(!classroomSetup.floors.length){toast('Add at least one floor before downloading Classroom Setup');return;}const blob=new Blob([serializeClassroomSetup(classroomSetup)],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Classroom_Setup.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Classroom_Setup.txt downloaded ✓');}
 async function handleClassroomSetupUpload(event){const file=event.target.files?.[0];if(!file)return;try{const cfg=parseCompatibleClassroomSetup(await file.text());if(!cfg)throw new Error('invalid');classroomSetup=cfg;selectedSetupLocationId=null;selectedRawTag='';persistClassroomSetup();applyClassroomSetupToCurrentData();if(document.getElementById('classroomSetupOverlay')?.classList.contains('open'))renderClassroomSetup();checkReady();toast(`Classroom Setup loaded: ${cfg.floors.length} floors · ${cfg.locations.length} locations ✓`);}catch(e){alert('This is not a compatible Classroom_Setup.txt file.');}finally{event.target.value='';}}
 
+function updateTimetableDate(){
+  const el=document.getElementById('ttDate');
+  if(el)el.textContent=bookings?.date?`📅 ${bookings.date}`:'';
+}
+
 // Patch timetable labels/legend dynamically after legacy render functions run.
 const _legacyRenderRearrangeTable=renderRearrangeTable;
 renderRearrangeTable=function(){
   _legacyRenderRearrangeTable();
+  updateTimetableDate();
   const th=document.querySelector('#mainTable th.hc');if(th)th.textContent='Resource';
   const pencilCount=visibleRows(editableRows).reduce((n,r)=>n+(r.slots||[]).filter(s=>s.applePencil).length,0);
   const summary=document.querySelector('#ttBody .tt-summary');
   if(summary&&pencilCount){
     const s=document.createElement('span');s.className='pencil-summary';s.innerHTML=`🍎Apple Pencils: <strong>${pencilCount}</strong> booking${pencilCount===1?'':'s'}`;summary.insertBefore(s,summary.firstChild);
   }
-  const legend=document.querySelector('#ttBody .legend');if(legend){const items=(classroomSetup?.floors||[]).map((f,i)=>`<div class="leg-item"><div class="leg-sw" style="background:${f.color};border:1.5px solid rgba(15,23,42,.24)"></div>${escHtml(f.name)}</div>`).join('');legend.innerHTML=`<span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Floor:</span>${items}<div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div><div class="leg-item" style="margin-left:8px"><div class="leg-sw" style="background:#fef3c7;border:2px solid #f59e0b"></div>⚠ Overlapping</div><div class="leg-item"><span class="pencil-badge">🍎Apple Pencils</span></div><div class="leg-item" style="margin-left:12px;color:var(--muted);font-size:11px">💡 Drag any block to a different resource row; timing stays locked</div>${bookings?.date?`<span style="margin-left:auto;font-size:11px;color:var(--muted)">📅 ${escHtml(bookings.date)}</span>`:''}`;}
+  const legend=document.querySelector('#ttBody .legend');if(legend){const items=(classroomSetup?.floors||[]).map((f,i)=>`<div class="leg-item"><div class="leg-sw" style="background:${f.color};border:1.5px solid rgba(15,23,42,.24)"></div>${escHtml(f.name)}</div>`).join('');legend.innerHTML=`<span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Floor:</span>${items}<div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div><div class="leg-item" style="margin-left:8px"><div class="leg-sw" style="background:#fef3c7;border:2px solid #f59e0b"></div>⚠ Overlapping</div><div class="leg-item"><span class="pencil-badge">🍎Apple Pencils</span></div><div class="leg-item" style="margin-left:12px;color:var(--muted);font-size:11px">💡 Drag any block to a different resource row; timing stays locked</div>`;}
 };
 
 renderOriginalTable=function(){
+  updateTimetableDate();
   const wrap=document.getElementById('ttBody');wrap.innerHTML='';
   const pencilCount=(bookings?.carts||[]).filter(c=>isDeployableCartName(c.name)).reduce((n,c)=>n+Object.values(c.slots||{}).filter(s=>s.applePencil).length,0);
   const scroll=document.createElement('div');scroll.className='tt-scroll';const table=document.createElement('table');table.className='tt';table.id='mainTable';addTimetableColGroup(table);
@@ -2576,8 +2584,8 @@ renderOriginalTable=function(){
 };
 
 // Initial profile + branding. Community starts blank; a saved/uploaded setup makes it school-ready.
-(function initClassroomSetupV10(){classroomSetup=loadClassroomSetup();persistClassroomSetup();updateBranding();updateClassroomSetupSummary();const title=document.getElementById('ttTitle');if(title)title.textContent=(classroomSetup.schoolName?classroomSetup.schoolName+' — ':'')+'iPad & Laptop Deployment Tool';const overlay=document.getElementById('classroomSetupOverlay');if(overlay)overlay.addEventListener('click',e=>{if(e.target===overlay)closeClassroomSetup()});})();
+(function initClassroomSetupV10(){classroomSetup=loadClassroomSetup();persistClassroomSetup();updateBranding();updateClassroomSetupSummary();const title=document.getElementById('ttTitle');if(title)title.textContent=(classroomSetup.schoolName?classroomSetup.schoolName+' — ':'')+'iPad & Laptop Deployment Tool';updateTimetableDate();const overlay=document.getElementById('classroomSetupOverlay');if(overlay)overlay.addEventListener('click',e=>{if(e.target===overlay)closeClassroomSetup()});})();
 
 </script>
 </body></html>
-<!-- Updated 27 August 2026: compact timetable, Apple Pencil indicator, simplified title and footer credit. -->
+<!-- Updated 27 August 2026 v6: timetable date moved to header; neutral Apple Pencil pills; Pencil cell outline removed. -->
