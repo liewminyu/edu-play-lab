@@ -1,0 +1,2583 @@
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>iPad &amp; Laptop Deployment Tool | RBS Classroom Setup</title>
+<style>
+:root {
+  --bg:#f0f4f8;--surface:#fff;--border:#d1dae6;
+  --text:#1a2332;--muted:#6b7e96;--accent:#1a56db;--accent-light:#e8f0fe;
+  --l1:#ddeeff;--l1b:#1e4f86;--l1t:#1e4f86;
+  --l2:#dff7df;--l2b:#166534;--l2t:#166534;
+  --l3:#fff4cc;--l3b:#856404;--l3t:#856404;
+  --l4:#fce1e4;--l4b:#842029;--l4t:#842029;
+  --l5:#e8d9ff;--l5b:#4a2f80;--l5t:#4a2f80;
+  --lx:#e9ecef;--lxb:#6c757d;--lxt:#6c757d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--text);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+header .logo{font-size:20px;font-weight:800}
+header .sub{font-size:12px;color:#a0aec0;margin-top:2px}
+header .badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;text-transform:none}
+.main{padding:20px 24px;max-width:1600px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;overflow:hidden}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px}
+.card-head h3{font-size:14px;font-weight:700}
+.card-head p{font-size:12px;color:var(--muted);margin-top:2px}
+.card-body{padding:16px 18px}
+.upload-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.upload-row{grid-template-columns:1fr}}
+.drop{border:2.5px dashed var(--border);border-radius:8px;padding:24px 16px;text-align:center;cursor:pointer;transition:.15s;position:relative}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-light)}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop .icon{font-size:30px;margin-bottom:6px}
+.drop h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.drop p{font-size:11px;color:var(--muted)}
+.file-status{margin-top:8px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;display:inline-block}
+.file-status.ok{background:#d1fae5;color:#065f46}
+.file-status.none{background:var(--bg);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;border:1.5px solid transparent;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-outline{background:var(--bg);color:var(--text);border-color:var(--border)}
+.btn-danger{background:#fee2e2;color:#9b1c1c;border-color:#fca5a5}
+.btn-warn{background:#fef3c7;color:#92400e;border-color:#fcd34d}
+.btn-success{background:#10b981;color:#fff;border-color:#10b981}
+.btn-fix{background:#fffbeb;color:#92400e;border:1.5px solid #fcd34d;padding:4px 10px;font-size:11px;border-radius:6px;cursor:pointer;font-weight:700}
+.btn:hover,.btn-fix:hover{filter:brightness(.95)}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* room preview */
+.room-preview{font-size:11px;width:100%;border-collapse:collapse;margin-top:4px}
+.room-preview th{padding:5px 8px;background:var(--bg);border-bottom:1px solid var(--border);font-weight:700;color:var(--muted);text-transform:uppercase;font-size:11px;text-align:left}
+.room-preview td{padding:4px 8px;border-bottom:1px solid #f0f4f8}
+.fl-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700}
+.fl1{background:var(--l1);color:var(--l1t)}.fl2{background:var(--l2);color:var(--l2t)}.fl3{background:var(--l3);color:var(--l3t)}
+.fl4{background:var(--l4);color:var(--l4t)}.fl5{background:var(--l5);color:var(--l5t)}
+.flx{background:var(--lx);color:var(--lxt)}
+
+/* timetable */
+.tt-scroll{overflow-x:auto}
+table.tt{border-collapse:collapse;width:max-content!important;min-width:max-content!important;font-size:12px;table-layout:fixed}
+table.tt th:not(.hc),table.tt td:not(.dc){width:60px!important;min-width:60px!important;max-width:60px!important}
+table.tt th{padding:6px 3px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);background:#f8fafc;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:2}
+table.tt th.hc{position:sticky;left:0;z-index:3;background:#f0f4f8;border-right:2px solid var(--border);width:60px!important;min-width:60px!important;max-width:60px!important;text-align:left}
+table.tt td{border-right:1px solid #eef2f7;border-bottom:1px solid #eef2f7;padding:0;vertical-align:middle;min-width:40px!important;max-width:40px!important}
+table.tt td.dc{position:sticky;left:0;background:#f8fafc;z-index:1;border-right:2px solid var(--border);font-weight:700;font-size:11px;padding:5px 4px;white-space:nowrap;min-width:60px!important;max-width:60px!important;width:60px!important}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:44px;padding:3px 2px;text-align:center;position:relative}
+.cell:hover{filter:brightness(.93)}
+.cell .cl{font-weight:800;font-size:11px;line-height:1.08}
+.cell .lv{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.2px;margin-top:1px;opacity:.75}
+.cell.err{background:var(--lx)!important;color:var(--lxt)!important;cursor:pointer;position:relative;border:1.5px dashed var(--lxb)}
+.cell.err .cl{font-size:11px;line-height:1.3;color:var(--lxt)!important}
+.cell.lvx{cursor:pointer;position:relative}
+.cell.lvx:hover{filter:brightness(.93)}
+.cart-name-edit{font-weight:700;font-size:12px;outline:none;border-radius:3px;padding:1px 3px;min-width:40px;cursor:text}
+.cart-name-edit:hover{background:rgba(0,0,0,.06)}
+.cart-name-edit:focus{background:#fff;box-shadow:0 0 0 2px var(--accent)}
+/* stacked conflict cells */
+.stack-cell{display:flex;flex-direction:column;gap:2px;padding:2px}
+.stack-cell .cell{min-height:38px;border-radius:5px}
+.cell.conflict-stack{outline:2px solid #f59e0b;outline-offset:-2px}
+.conflict-banner{background:#fef3c7;border:1.5px solid #f59e0b;border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px}
+.conflict-banner strong{font-weight:700}
+/* drag and drop */
+.drop-target:hover::after{content:'+';display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:800;font-size:14px;min-height:44px}
+
+.drop-target{min-width:60px!important;min-height:44px;cursor:pointer}
+.drop-target.drag-over,.drag-over{background:rgba(26,86,219,.12)!important;outline:2px dashed var(--accent)}
+.drag-reject{animation:flash-red .5s ease}
+@keyframes flash-red{0%,100%{background:transparent}50%{background:#fee2e2;outline:2px solid #fc8181}}
+.cell[draggable]{transition:opacity .15s}
+.cell[draggable]:hover{filter:brightness(.9);cursor:grab}
+.cell.batt-warn{outline:2px solid #f59e0b!important}
+/* summary bar */
+.tt-summary{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;font-size:12px;color:var(--muted)}
+/* cart name change count */
+.dc .ch{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.cell .batt{position:absolute;top:3px;left:4px;font-size:11px;line-height:1}
+.cell .chg{position:absolute;bottom:3px;right:4px;font-size:11px;font-weight:700;opacity:.6}
+.toggle-bar{display:flex;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin-left:auto}
+.toggle-bar button{padding:6px 16px;font-size:12px;font-weight:700;border:none;cursor:pointer;background:var(--bg);color:var(--muted);transition:.15s}
+.toggle-bar button.active{background:var(--accent);color:#fff}
+.opt-badge{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;background:#d1fae5;color:#065f46;margin-left:6px;vertical-align:middle}
+.warn-badge{background:#fef3c7;color:#92400e}
+.lv1{background:var(--l1);color:var(--l1t)}.lv2{background:var(--l2);color:var(--l2t)}.lv3{background:var(--l3);color:var(--l3t)}
+.lv4{background:var(--l4);color:var(--l4t)}.lv5{background:var(--l5);color:var(--l5t)}
+.lvx{background:var(--lx);color:var(--lxt)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;padding:10px 18px;border-top:1px solid var(--border);align-items:center}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.leg-sw{width:13px;height:13px;border-radius:3px}
+
+/* error panel */
+.err-panel{background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:0;margin-bottom:18px;display:none;overflow:hidden}
+.err-panel-head{padding:12px 18px;background:#fee2e2;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.err-panel-head h3{font-size:13px;font-weight:700;color:#9b1c1c;margin:0}
+.err-panel-head p{font-size:11px;color:#9b1c1c;margin:0}
+.err-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid #fed7d7}
+.err-row:last-child{border:none}
+.err-row:hover{background:#fff0f0}
+.err-raw{font-size:12px;font-weight:700;color:#9b1c1c;margin-bottom:2px;word-break:break-word}
+.err-meta{font-size:11px;color:var(--muted)}
+.err-input-wrap{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.err-input-wrap input{border:2px solid #fc8181;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:800;width:90px;text-align:center;text-transform:uppercase;color:var(--text);background:#fff}
+.err-input-wrap input:focus{outline:none;border-color:var(--accent)}
+.err-input-wrap input::placeholder{font-weight:400;font-size:11px;text-transform:none}
+.btn-apply{padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-apply:hover{filter:brightness(.9)}
+.err-info{flex:1;font-size:12px;color:#7f1d1d}
+.err-info strong{font-size:13px;font-weight:800;color:#9b1c1c}
+.err-edit{display:flex;align-items:center;gap:6px;margin-top:6px}
+.err-edit input{border:1.5px solid #fca5a5;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:700;width:100px;background:#fff;color:var(--text)}
+.err-edit input:focus{outline:none;border-color:var(--accent)}
+
+/* modal / overlay */
+
+.cell-fix-popover{
+  position:fixed;left:0;top:0;transform:none;
+  z-index:10050;background:#fff;border:2px solid var(--accent);
+  border-radius:10px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.24);
+  width:260px;max-width:calc(100vw - 20px);text-align:left;color:var(--text);
+}
+.cell-fix-popover label{display:block;font-size:11px;font-weight:800;margin-bottom:5px;color:var(--text)}
+.cell-fix-popover input{width:100%;border:1.5px solid var(--border);border-radius:5px;padding:5px 7px;font-size:12px;font-weight:700}
+.cell-fix-popover input:focus{outline:none;border-color:var(--accent)}
+
+.cell-fix-popover select{
+  width:100%;border:1.5px solid var(--border);border-radius:5px;
+  padding:5px 7px;font-size:12px;font-weight:700;background:#fff;color:var(--text);
+  margin-top:5px;
+}
+.cell-fix-popover select:focus{outline:none;border-color:var(--accent)}
+
+.fix-btns{display:flex;justify-content:flex-end;gap:5px;margin-top:6px}
+.fix-btns button{border:1px solid var(--border);border-radius:5px;padding:4px 7px;font-size:11px;font-weight:700;cursor:pointer}
+.fix-ok{background:var(--accent);color:#fff}
+.fix-cancel{background:var(--bg);color:var(--text)}
+
+
+
+/* tooltip */
+#tip{display:none;position:fixed;z-index:9998;background:#1a2332;color:#fff;font-size:12px;padding:10px 14px;border-radius:8px;max-width:290px;line-height:1.5;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+#tip.on{display:block}
+#tip strong{display:block;font-size:13px;margin-bottom:4px;color:#a0c4ff}
+/* toast */
+#toast{position:fixed;bottom:24px;right:24px;background:#1a2332;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
+#toast.show{opacity:1}
+.empty{padding:50px 24px;text-align:center;color:var(--muted)}
+.empty .ei{font-size:52px;margin-bottom:10px}
+.empty h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:5px}
+.empty p{font-size:12px;max-width:340px;margin:0 auto}
+@media print{
+  header,.card:not(.tt-card),.err-panel,.btn-row,#toast,#tip,#modalOverlay{display:none!important}
+  .cell{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+
+/* v9 readability + Classroom Setup */
+html,body,button,input,select,textarea{font-family:Arial,sans-serif}
+body{font-size:12px}
+header .sub,.drop p,.file-status,.card-head p,.tt-summary,.conflict-banner,.err-panel-head p,.err-meta,.err-info,.err-edit input,.cell-fix-popover label,.cell-fix-popover input,.cell-fix-popover select,.fix-btns button,.leg-item,.setup-strip-sub{font-size:11px!important}
+.btn,.btn-fix,.btn-apply{font-size:11px!important}
+table.tt{font-size:12px!important}
+table.tt th{font-size:11px!important;white-space:normal;line-height:1.15;padding:7px 4px}
+table.tt th:not(.hc),table.tt td:not(.dc){width:68px!important;min-width:68px!important;max-width:68px!important}
+table.tt th.hc,table.tt td.dc{width:88px!important;min-width:88px!important;max-width:88px!important;white-space:normal;overflow-wrap:anywhere}
+table.tt td{min-width:68px!important;max-width:68px!important}
+.cell{min-height:50px;padding:4px 3px;overflow:hidden}
+.cell .cl,.cell.err .cl{font-size:11px!important;line-height:1.15;overflow-wrap:anywhere;max-width:100%}
+.cell .lv,.cell .batt,.cell .chg,.dc .ch{font-size:11px!important;line-height:1.1}
+.cart-name-edit{font-size:11px!important;white-space:normal;overflow-wrap:anywhere}
+.drop-target{min-width:68px!important;min-height:50px}
+.tt-scroll{overflow-x:auto;overflow-y:visible}
+
+.classroom-setup-strip{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 14px;margin-bottom:16px;border:1.5px solid #bfdbfe;border-radius:10px;background:#eff6ff;flex-wrap:wrap}
+.setup-strip-copy{flex:1;min-width:260px}.setup-strip-title{font-size:14px;font-weight:800;margin-bottom:3px}.setup-strip-sub{color:var(--muted);line-height:1.35}.setup-strip-actions{margin-left:auto}.setup-mini-badge,.cs-count{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#e5e7eb;color:#4b5563;font-size:11px;font-weight:700}.setup-mini-badge.ready{background:#d1fae5;color:#065f46}.setup-mini-badge.warn{background:#fef3c7;color:#92400e}
+
+.cs-overlay{position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.56);display:none;padding:18px;overflow:auto}.cs-overlay.open{display:block}.cs-shell{width:min(1500px,100%);min-height:calc(100vh - 36px);margin:0 auto;background:#f8fafc;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.28);padding:16px;display:flex;flex-direction:column;gap:12px}.cs-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}.cs-topbar h2{font-size:22px;margin:0 0 4px}.cs-topbar p{font-size:12px;color:var(--muted);margin:0;max-width:800px;line-height:1.45}.cs-top-actions{display:flex;gap:8px;flex-wrap:wrap}.cs-school-row{display:grid;grid-template-columns:auto minmax(240px,520px) 1fr;gap:9px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px}.cs-school-row label{font-size:11px;font-weight:800}.cs-school-row input{font-size:12px;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px}.cs-school-row span{font-size:11px;color:var(--muted)}
+.cs-grid{flex:1;min-height:590px;display:grid;grid-template-columns:minmax(230px,.85fr) minmax(320px,1.12fr) minmax(390px,1.55fr);gap:12px}.cs-panel{min-width:0;background:#fff;border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden}.cs-panel-head{padding:12px 13px;border-bottom:1px solid var(--border);background:#f8fafc}.cs-panel-head>div{display:flex;align-items:center;gap:5px}.cs-panel-head strong{font-size:13px}.cs-panel-head small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:4px}.cs-floor-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cs-tag-bank{flex:1;padding:10px;overflow:auto;display:flex;flex-direction:column;gap:7px}.cs-raw-tag{border:1.5px solid #cbd5e1;background:#e5e7eb;color:#475569;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:700;line-height:1.3;cursor:grab;overflow-wrap:anywhere}.cs-raw-tag:hover,.cs-raw-tag.selected{border-color:#64748b;background:#dbe1e8}.cs-empty{padding:22px 14px;color:var(--muted);font-size:11px;line-height:1.45;text-align:center}.cs-location-detail{flex:1;padding:12px;overflow:auto}.cs-empty-detail{display:grid;place-items:center;color:var(--muted);text-align:center}.cs-detail-card{display:flex;flex-direction:column;gap:11px}.cs-field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px}.cs-field input,.cs-field select{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 9px;font-size:12px;background:#fff}.cs-alias-drop{border:2px dashed #94a3b8;border-radius:9px;padding:10px;min-height:94px}.cs-alias-drop.drag-over{border-color:var(--accent);background:#eff6ff}.cs-alias-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.cs-alias-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;border-radius:999px;background:#eef2f7;color:#334155;padding:5px 8px;font-size:11px;font-weight:700}.cs-alias-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}.cs-alias-chip button{border:0;background:transparent;color:#64748b;cursor:pointer;font-size:13px;line-height:1;padding:0}.cs-detail-actions{display:flex;gap:8px;flex-wrap:wrap}.cs-selected-hint{font-size:11px;color:var(--muted);line-height:1.4}.cs-floor-list{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:9px}.cs-floor-card{border:1.5px solid var(--border);border-left:8px solid var(--floor-color,#cbd5e1);border-radius:10px;padding:9px;background:#fff}.cs-floor-card.drag-over{outline:2px dashed var(--accent);background:#eff6ff}.cs-floor-tools{display:grid;grid-template-columns:minmax(110px,1fr) 42px auto;gap:7px;align-items:center}.cs-floor-name{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;font-weight:800}.cs-floor-color{width:42px;height:34px;border:1px solid var(--border);border-radius:6px;padding:2px;background:#fff}.cs-location-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;min-height:32px}.cs-location-chip{border:1.5px solid rgba(15,23,42,.12);border-radius:8px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cs-location-chip.selected{outline:2px solid #2563eb;outline-offset:1px}.cs-footer-note{font-size:11px;color:var(--muted);padding:2px 3px}.cs-warning{padding:8px 10px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;color:#92400e;font-size:11px;line-height:1.4}
+@media(max-width:1000px){.cs-grid{grid-template-columns:1fr;min-height:0}.cs-panel{min-height:330px}.cs-school-row{grid-template-columns:1fr}.cs-shell{min-height:auto}.setup-strip-actions{margin-left:0}}
+
+.pencil-badge{display:inline-block;margin-top:3px;padding:2px 5px;border-radius:5px;background:#fff7cc;color:#6b4f00;border:1px solid #e6c84f;font-size:11px!important;font-weight:800;line-height:1.15;white-space:normal}
+.cell.pencil-request{box-shadow:inset 0 0 0 2px #e6c84f}
+.pencil-banner{background:#fffbea;border:1.5px solid #e6c84f;border-radius:8px;padding:9px 14px;margin-bottom:10px;font-size:11px;color:#6b4f00;line-height:1.4}
+.pencil-summary{background:#fff7cc;border:1px solid #e6c84f;border-radius:999px;padding:3px 8px;color:#6b4f00;font-size:11px;font-weight:700}
+
+.page-credit{padding:2px 4px 16px;text-align:center;font-size:11px;color:var(--muted);font-family:Arial,sans-serif}
+
+</style>
+</head>
+<body>
+<header>
+<div>
+<div class="logo">📱 iPad &amp; Laptop Deployment Tool</div>
+<div class="sub" style="display:none"></div>
+</div>
+<div class="badge">Updated 27 August 2026</div>
+</header>
+<div class="main">
+<!-- STEP 1: UPLOADS -->
+<div class="card" id="uploadCard">
+<div class="card-head">
+<div>
+<h3 id="uploadTitle">📂 Upload files</h3>
+
+</div>
+</div>
+<div class="card-body">
+<!-- iTV section — visible only when room DB not yet baked in -->
+<div id="itvSection" style="display:none">
+<div style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#713f12">
+<strong>🔧 HOD setup (once a year):</strong> Upload your iTV Deployment Excel below, then click
+        <strong>"Save room database into this file"</strong>. Share the downloaded file on OneDrive —
+        daily users will never need to upload the iTV file again.
+      </div>
+<div style="font-size:12px;font-weight:700;margin-bottom:6px">🏫 Room Database <span style="font-weight:400;color:var(--muted)">— HOD only, once a year</span></div>
+<div class="drop" id="dropItv">
+<input accept=".xlsx" id="fileItv" type="file"/>
+<div class="icon">🏫</div>
+<h4>iTV Deployment Excel</h4>
+<p>Sheet1 listing all classrooms and class names.<br/>Level is read from room code (#03-xx = Level 3).</p>
+<div class="file-status ok" id="itvStatus">✓ iTV Deployment(Needs update).xlsx — 65 rooms</div>
+</div>
+<div class="btn-row" style="margin-top:10px;margin-bottom:18px">
+<button class="btn btn-primary" id="bakeBtn" onclick="bakeAndDownload()">
+          💾 Save room database into this file
+        </button>
+<span id="bakeHint" style="font-size:11px;color:var(--muted)">65 rooms ready to save</span>
+</div>
+<hr style="border:none;border-top:1px solid var(--border);margin-bottom:16px"/>
+</div>
+<!-- CLASSROOM SETUP — persistent browser profile -->
+<div class="classroom-setup-strip">
+  <div class="setup-strip-copy">
+    <div class="setup-strip-title">🏫 Classroom Setup <span id="classroomSetupBadge" class="setup-mini-badge">Not configured</span></div>
+    <div id="classroomSetupSummary" class="setup-strip-sub">Saved in this browser. Set up floors and classroom/location aliases once, then daily users only need the RBS export.</div>
+  </div>
+  <div class="btn-row setup-strip-actions">
+    <button class="btn btn-outline" type="button" onclick="openClassroomSetup()">⚙ Classroom Setup</button>
+    <button class="btn btn-outline" type="button" onclick="document.getElementById('classroomSetupFileInput').click()">↑ Upload Setup</button>
+    <button class="btn btn-outline" type="button" onclick="downloadClassroomSetup()">↓ Download Setup</button>
+  </div>
+  <input id="classroomSetupFileInput" type="file" accept=".txt,.json,text/plain,application/json" style="display:none" onchange="handleClassroomSetupUpload(event)">
+</div>
+<!-- RBS section — always visible -->
+<div style="font-size:12px;font-weight:700;margin-bottom:6px">📅 RBS Bookings Export</div>
+<div class="drop" id="dropRbs">
+<input accept=".xlsx" id="fileRbs" type="file"/>
+<div class="icon">📄</div>
+<h4>All Bookings .xlsx</h4>
+<p>Export from RBS for the day you want to plan.<br/>Location and preparation notes are read from RBS booking notes/comments.</p>
+<div class="file-status none" id="rbsStatus">No file loaded</div>
+</div>
+<div class="btn-row" style="margin-top:14px">
+<button class="btn btn-primary" disabled="" id="generateBtn" onclick="generate()">⚡ Generate Timetable</button>
+<span id="generateHint" style="font-size:11px;color:var(--muted)">Upload the RBS bookings file to enable</span>
+</div>
+</div>
+</div>
+<!-- ROOM PREVIEW -->
+<!-- ERROR PANEL -->
+<div class="err-panel" id="errPanel">
+<div class="err-panel-head">
+<div>
+<h3>⚠️ Unknown locations — type the class or room to fix</h3>
+<p>Type any class or location and press Enter or click Apply. Locations do not need to exist in the room database. The timetable updates instantly. Changes apply to the current working timetable.</p>
+</div>
+<button class="btn btn-outline" id="regenBtn" onclick="generate()" style="display:none;font-size:11px;padding:5px 12px">🔄 Re-run</button>
+</div>
+<div id="errList"></div>
+</div>
+<!-- TIMETABLE -->
+<div class="card tt-card" id="ttCard">
+<div class="card-head" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+<div><h3 id="ttTitle">iPad &amp; Laptop Deployment Tool</h3></div>
+<div class="btn-row">
+<button class="btn btn-outline" id="btnOriginalStandalone" onclick="showView('original')">Original RBS</button><button class="btn btn-success" id="optimiseBtn" onclick="optimiseSchedule()" style="">⚡ Optimise</button>
+<button class="btn btn-danger" id="deleteBookingBtn" onclick="toggleDeleteMode()" style="display:none">🗑 Delete Booking</button>
+<button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
+</div>
+</div>
+<div id="ttBody">
+<div class="empty"><div class="ei">🗓️</div><h3>No schedule loaded</h3><p>Upload the RBS file above and click Generate.</p></div>
+</div>
+</div>
+<div class="page-credit">Liew Min Yu, coded with ChatGPT.</div>
+</div><!-- /main -->
+
+<!-- CLASSROOM SETUP OVERLAY -->
+<div id="classroomSetupOverlay" class="cs-overlay" aria-hidden="true">
+  <div class="cs-shell">
+    <div class="cs-topbar">
+      <div>
+        <h2>Classroom Setup</h2>
+        
+      </div>
+      <div class="cs-top-actions">
+        <button class="btn btn-outline" type="button" onclick="newBlankClassroomSetup()">New / Clear</button>
+        <button class="btn btn-outline" type="button" onclick="downloadClassroomSetup()">↓ Download .txt</button>
+        <button class="btn btn-outline" type="button" onclick="document.getElementById('classroomSetupFileInput').click()">↑ Upload .txt</button>
+        <button class="btn btn-primary" type="button" onclick="closeClassroomSetup()">Done ✓</button>
+      </div>
+    </div>
+    <div class="cs-school-row">
+      <label for="csSchoolName">School name</label>
+      <input id="csSchoolName" type="text" placeholder="e.g. Example Primary School" oninput="updateClassroomSchoolName(this.value)">
+      <span id="csSaveState">Saved automatically</span>
+    </div>
+    <div class="cs-grid">
+      <section class="cs-panel cs-unresolved-panel">
+        <div class="cs-panel-head"><div><strong>Unidentified RBS tags</strong><span id="csUnresolvedCount" class="cs-count">0</span></div></div>
+        <div id="csUnresolvedTags" class="cs-tag-bank"></div>
+      </section>
+      <section class="cs-panel cs-detail-panel">
+        <div class="cs-panel-head"><div><strong>Detailed view</strong></div></div>
+        <div id="csLocationDetail" class="cs-location-detail cs-empty-detail">Select a classroom/location from a floor to see and edit its RBS wording.</div>
+      </section>
+      <section class="cs-panel cs-floors-panel">
+        <div class="cs-panel-head cs-floor-head"><div><strong>Floors</strong><span id="csFloorCount" class="cs-count">0</span></div><button class="btn btn-primary" type="button" onclick="addClassroomFloor()">+ Add Floor</button></div>
+        <div id="csFloors" class="cs-floor-list"></div>
+      </section>
+    </div>
+  </div>
+</div>
+<div id="tip"></div>
+<div class="show" id="toast">Room database loaded: 65 rooms ✓</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+// ═══════════════════════════════════════════════════════════
+// BAKED ROOM DATABASE
+// HOD uploads iTV file once → clicks "Save into this file"
+// → downloads updated HTML with roomDB embedded below.
+// Daily users: iTV upload section hidden, RBS only.
+// ═══════════════════════════════════════════════════════════
+const BAKED_ROOM_DB = null; /* @@ROOM_DB@@ */
+
+// Manual fixes saved from the Unrecognised bookings panel.
+// Example: {"Tamil room 1":"TAMIL1"}.
+// Click "Download Updated HTML" to bake new fixes into a fresh copy of this file.
+const BAKED_MANUAL_FIXES = {}; /* @@MANUAL_FIXES@@ */
+
+// Up-to-date location database aligned with the VBA tool.
+// These entries supplement the baked iTV room list and support common teacher wording.
+const VBA_LOCATION_DB = [];
+
+
+function inferCustomLevel(text){
+  const s = String(text || '').toUpperCase();
+
+  // Explicit level wording takes priority.
+  const explicit =
+    s.match(/\b(?:LEVEL|LVL|FLOOR)\s*([1-5])\b/) ||
+    s.match(/\bL\s*([1-5])\b/);
+  if(explicit) return Number(explicit[1]) || 0;
+
+  // Useful school-specific inference for common wording not yet in the database.
+  if(s.includes('TAMIL')) return 3;
+
+  return 0;
+}
+
+function makeCustomResolved(label, preferredLevel=0){
+  const clean = String(label || '').trim();
+  const level = Number(preferredLevel) || inferCustomLevel(clean) || 0;
+
+  return {
+    canon: clean.toUpperCase(),
+    customLabel: clean,
+    floor: level,
+    level,
+    room: level ? `L${level}` : null,
+    aka: clean,
+    classRaw: clean,
+    isCustom: true
+  };
+}
+
+function resolvedDisplay(res){
+  if(!res) return '';
+  return res.customLabel || res.displayLabel || displayCanon(res.canon);
+}
+
+function levelOptionsHtml(selectedLevel=0){
+  const selected = Number(selectedLevel) || 0;
+  const opts = [
+    [0, 'Auto / Unknown'],
+    [1, 'Level 1'],
+    [2, 'Level 2'],
+    [3, 'Level 3'],
+    [4, 'Level 4'],
+    [5, 'Level 5']
+  ];
+
+  return opts.map(([value, label]) =>
+    `<option value="${value}" ${selected===value?'selected':''}>${label}</option>`
+  ).join('');
+}
+
+
+function normaliseCanon(canon){
+  return String(canon || '').toUpperCase()
+    .replace(/^([1-6])CONF$/, '$1C')
+    .replace(/^([1-6])CON$/, '$1C');
+}
+
+function displayCanon(canon){
+  const c = normaliseCanon(canon);
+  const map = {
+    FOYER:'Foyer',
+    LEARNINGLAB:'Learning Lab',
+    TEACHINGLAB:'Teaching Lab',
+    PICASSO:'Picasso Studio',
+    GENERALOFFICE:'General Office',
+    TAMIL1:'Tamil Room 1',
+    TAMIL2:'Tamil Room 2',
+    LSMMTL3:'LSM MTL3',
+    '3PULL':'3 Pullout',
+    HALL:'MPH',
+    ISH:'ISH',
+    COMPLAB:'Comp Lab',
+    COMP1:'Comp Lab 1',
+    COMP2:'Comp Lab 2',
+    COMP3:'Comp Lab 3',
+    SCI1:'Sci Room 1',
+    SCI2:'Sci Room 2',
+    MUS2:'Music Room 2',
+    SBB1:'SBB Room 1',
+    SBB2:'SBB Room 2',
+    XROOM:'X Room'
+  };
+  return map[c] || c;
+}
+
+function mergeRoomDatabases(base, extras){
+  const map = new Map();
+  [...(base || []), ...(extras || [])].forEach(e => {
+    if(!e || !e.canon) return;
+    const copy = {...e, canon: normaliseCanon(e.canon)};
+    if(copy.floor == null && copy.level != null) copy.floor = copy.level;
+    if(copy.level == null && copy.floor != null) copy.level = copy.floor;
+    map.set(copy.canon, copy);
+  });
+  return [...map.values()];
+}
+
+
+
+// ═══════════════════════════════════════════════════════════
+// v9 CLASSROOM SETUP PROFILE
+// Community build sets COMMUNITY_MODE=true and starts blank.
+// Classroom Setup is the only school-specific mapping in the Community build.
+// ═══════════════════════════════════════════════════════════
+const COMMUNITY_MODE = true; /* @@COMMUNITY_MODE@@ */
+const CLASSROOM_SETUP_SCHEMA = 'deployment-classroom-setup';
+const CLASSROOM_SETUP_VERSION = 1;
+const FLOOR_COLOUR_SEQUENCE = ['#ddeeff','#dff7df','#fff4cc','#fce1e4','#e8d9ff','#ffe6cc','#dff7f2','#fce7f3'];
+const CLASSROOM_SETUP_KEY = COMMUNITY_MODE ? 'deploymentClassroomSetupCommunityV1' : 'deploymentClassroomSetupPGPSV1';
+let classroomSetup = null;
+let selectedSetupLocationId = null;
+let selectedRawTag = '';
+
+function blankClassroomSetup(){
+  return {schema:CLASSROOM_SETUP_SCHEMA,version:CLASSROOM_SETUP_VERSION,schoolName:'',floors:[],locations:[]};
+}
+function cloneClassroomSetup(cfg){ return JSON.parse(JSON.stringify(cfg || blankClassroomSetup())); }
+function safeSetupId(prefix='id'){
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
+}
+function normaliseSetupText(s){
+  return String(s||'').toLowerCase().replace(/&amp;#10;|&#10;|&#x0?A;|_x000D_/gi,' ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+}
+function legacyAliasVariants(canon){
+  const c=normaliseCanon(canon),m=String(c).match(/^([1-6])(INNO|C|E|I|R|S|T|V)$/);
+  if(!m) return [];
+  const y=m[1],map={INNO:['Innovation','Inno','Inn'],C:['Confidence','Conf','Con'],E:['Empathy','Emp'],I:['Integrity','Integ','Int'],R:['Responsibility','Resp'],S:['Self-Discipline','Self Discipline','Self','SD'],T:['Teamwork','Team'],V:['Valour','Valor','Val']};
+  return (map[m[2]]||[]).flatMap(x=>[`${y}${x}`,`${y} ${x}`]);
+}
+function setupFromRoomDatabase(db){
+  const cfg=blankClassroomSetup();
+  cfg.schoolName='';
+  const floors=[...new Set((db||[]).map(e=>Number(e.floor||e.level)||0).filter(Boolean))].sort((a,b)=>a-b);
+  cfg.floors=floors.map((n,i)=>({id:`floor_${n}`,name:`Level ${n}`,color:FLOOR_COLOUR_SEQUENCE[(n-1)%FLOOR_COLOUR_SEQUENCE.length]}));
+  const seen=new Set();
+  (db||[]).forEach(e=>{
+    const canon=normaliseCanon(e.canon); if(!canon||seen.has(canon)) return; seen.add(canon);
+    const floorNo=Number(e.floor||e.level)||0;
+    let floor=cfg.floors.find(f=>f.id===`floor_${floorNo}`);
+    if(!floor){ floor={id:`floor_${floorNo||cfg.floors.length+1}`,name:floorNo?`Level ${floorNo}`:`Level ${cfg.floors.length+1}`,color:FLOOR_COLOUR_SEQUENCE[cfg.floors.length%FLOOR_COLOUR_SEQUENCE.length]}; cfg.floors.push(floor); }
+    const aliases=new Set([canon,e.classRaw,e.aka,e.room,...legacyAliasVariants(canon)].filter(Boolean));
+    String(e.aka||'').split('/').forEach(x=>{if(x.trim())aliases.add(x.trim())});
+    cfg.locations.push({id:`loc_${canon.replace(/[^A-Z0-9]+/g,'_')}`,name:displayCanon(canon),floorId:floor.id,aliases:[...aliases].map(String)});
+  });
+  return cfg;
+}
+function normaliseClassroomSetup(raw){
+  if(!raw||typeof raw!=='object') return null;
+  const cfg=blankClassroomSetup();
+  cfg.schoolName=String(raw.schoolName||'').trim();
+  const seenFloors=new Set();
+  (Array.isArray(raw.floors)?raw.floors:[]).forEach((f,i)=>{
+    const id=String(f?.id||`floor_${i+1}`); if(seenFloors.has(id))return; seenFloors.add(id);
+    const color=/^#[0-9a-f]{6}$/i.test(String(f?.color||''))?String(f.color):FLOOR_COLOUR_SEQUENCE[i%FLOOR_COLOUR_SEQUENCE.length];
+    cfg.floors.push({id,name:String(f?.name||`Level ${i+1}`).trim()||`Level ${i+1}`,color});
+  });
+  const floorIds=new Set(cfg.floors.map(f=>f.id));
+  (Array.isArray(raw.locations)?raw.locations:[]).forEach((l,i)=>{
+    if(!floorIds.has(String(l?.floorId||''))) return;
+    const name=String(l?.name||'').trim(); if(!name)return;
+    const aliases=[]; const aliasSeen=new Set();
+    [name,...(Array.isArray(l.aliases)?l.aliases:[])].forEach(a=>{const s=String(a||'').trim(),k=normaliseSetupText(s);if(s&&k&&!aliasSeen.has(k)){aliasSeen.add(k);aliases.push(s)}});
+    cfg.locations.push({id:String(l?.id||safeSetupId('loc')),name,floorId:String(l.floorId),aliases});
+  });
+  return cfg;
+}
+function persistClassroomSetup(){
+  try{localStorage.setItem(CLASSROOM_SETUP_KEY,JSON.stringify(classroomSetup||blankClassroomSetup()));}catch(e){}
+  updateClassroomSetupSummary(); updateBranding();
+}
+function loadClassroomSetup(){
+  try{
+    const stored=localStorage.getItem(CLASSROOM_SETUP_KEY);
+    if(stored){ const n=normaliseClassroomSetup(JSON.parse(stored)); if(n)return n; }
+  }catch(e){}
+  return COMMUNITY_MODE ? blankClassroomSetup() : setupFromRoomDatabase(roomDB || []);
+}
+function classroomSetupReady(){ return !!(classroomSetup && classroomSetup.floors.length && classroomSetup.locations.length); }
+function floorForLocation(loc){ return (classroomSetup?.floors||[]).find(f=>f.id===loc?.floorId)||null; }
+function resolveWithClassroomSetup(raw){
+  if(!classroomSetupReady()||!raw) return null;
+  const source=normaliseSetupText(raw); if(!source)return null;
+  let best=null,bestLen=0;
+  for(const loc of classroomSetup.locations){
+    for(const alias of [loc.name,...(loc.aliases||[])]){
+      const a=normaliseSetupText(alias); if(!a||a.length<2)continue;
+      const exact=(source===a),contained=source.includes(a);
+      if((exact||contained) && a.length>bestLen){ best=loc;bestLen=a.length; }
+    }
+  }
+  if(!best)return null;
+  const floor=floorForLocation(best),idx=floor?classroomSetup.floors.indexOf(floor):-1;
+  return {canon:best.name.toUpperCase(),displayLabel:best.name,floor:idx>=0?idx+1:0,level:idx>=0?idx+1:0,floorName:floor?.name||'',floorColor:floor?.color||'',room:floor?.name||null,aka:(best.aliases||[]).join(' / '),classRaw:best.name,setupLocationId:best.id};
+}
+function allRbsLocationTags(){
+  if(!bookings?.carts)return [];
+  const map=new Map();
+  bookings.carts.forEach(cart=>Object.values(cart.slots||{}).forEach(s=>{
+    const tag=String(s.displayRemarks||s.purpose||s.remarks||'').trim();
+    const k=normaliseSetupText(tag); if(tag&&k&&!map.has(k))map.set(k,tag);
+  }));
+  return [...map.values()];
+}
+function unresolvedRbsTags(){
+  return allRbsLocationTags().filter(tag=>!resolveWithClassroomSetup(tag));
+}
+function updateClassroomSetupSummary(){
+  const badge=document.getElementById('classroomSetupBadge'),sum=document.getElementById('classroomSetupSummary'); if(!badge||!sum)return;
+  const floors=classroomSetup?.floors?.length||0,locs=classroomSetup?.locations?.length||0,unres=bookings?unresolvedRbsTags().length:0;
+  if(floors&&locs){badge.textContent=`${floors} floor${floors===1?'':'s'} · ${locs} locations`;badge.className='setup-mini-badge ready';}
+  else{badge.textContent='Not configured';badge.className='setup-mini-badge';}
+  if(bookings&&unres){badge.textContent+=` · ${unres} to fix`;badge.className='setup-mini-badge warn';}
+  sum.textContent=bookings?`${unres?unres+' unidentified RBS tag'+(unres===1?'':'s')+' remain.':'All RBS location tags are mapped.'} Setup is saved automatically in this browser.`:'Saved in this browser. Set up floors and classroom/location aliases once, then daily users only need the RBS export.';
+}
+function updateBranding(){
+  const school=String(classroomSetup?.schoolName||'').trim();
+  const logo=document.querySelector('header .logo'),sub=document.querySelector('header .sub');
+  if(logo)logo.textContent=`📱 ${school?school+' — ':''}iPad & Laptop Deployment Tool`;
+  if(sub){sub.textContent='';sub.style.display='none';}
+}
+
+// ── State ───────────────────────────────────────────────────
+let roomDB       = mergeRoomDatabases(BAKED_ROOM_DB ? JSON.parse(JSON.stringify(BAKED_ROOM_DB)) : [], VBA_LOCATION_DB);
+let bookings     = null;
+let editOverrides= {...(typeof BAKED_MANUAL_FIXES !== 'undefined' ? BAKED_MANUAL_FIXES : {})};
+let modalKey     = null;
+
+// ── Rearrange view state ────────────────────────────────────
+let editableRows   = [];   // [{name, isLaptop, slots:[...]}]
+let lastSortedCols = [];
+let lastPeriods    = {};
+let undoStack      = [];   // stores one previous state
+let dragSlot       = null; // {slot, fromRowIdx}
+let currentView    = 'optimised';
+let deleteMode     = false;
+
+// ── Helpers ─────────────────────────────────────────────────
+function minCol(s){ return Math.min(...s.cols); }
+function maxCol(s){ return Math.max(...s.cols); }
+function colsOverlap(a,b){ const sa=new Set(a); return b.some(c=>sa.has(c)); }
+function effectiveFloor(res){
+  if(!res) return 0;
+  const f = res.floor != null ? res.floor : res.level;
+  return Number(f) || 0;
+}
+function lvCls(f){ f = Number(f)||0; return f===1?'lv1':f===2?'lv2':f===3?'lv3':f===4?'lv4':f>=5?'lv5':'lvx'; }
+function floorLabel(f){ f = Number(f)||0; return f>=1&&f<=5?`L${f}`:''; }
+function deepCopy(rows){ return JSON.parse(JSON.stringify(rows)); }
+
+const BLOCKED_DEPLOYMENT_CARTS = new Set();
+
+function cartLetterForDeployment(name){
+  const u = String(name || '').toUpperCase();
+  const m =
+    u.match(/IPAD\s*SET\s*([A-H])/i) ||
+    u.match(/\bIPAD\s*([A-H])\b/i) ||
+    u.match(/^\s*([A-H])\s*$/i);
+  return m ? String(m[1]).toUpperCase() : '';
+}
+
+function isBlockedDeploymentCartName(name){
+  return BLOCKED_DEPLOYMENT_CARTS.has(cartLetterForDeployment(name));
+}
+
+function isDeployableCartName(name){
+  return !isSelfHelpCartName(name) && !isBlockedDeploymentCartName(name);
+}
+
+function isSelfHelpCartName(name){
+  const n = String(name || '').toLowerCase();
+  return n.includes('self-help') || n.includes('self help');
+}
+
+function visibleRows(rows){
+  return (rows || []).filter(r => isDeployableCartName(r.name));
+}
+
+function countFloorChanges(slots){
+  if(slots.length<2) return 0;
+  const s=[...slots].sort((a,b)=>minCol(a)-minCol(b));
+  let ch=0;
+  for(let i=1;i<s.length;i++){
+    if(effectiveFloor(s[i].resolved)!==effectiveFloor(s[i-1].resolved)) ch++;
+  }
+  return ch;
+}
+
+// ── Undo ────────────────────────────────────────────────────
+function pushUndo(){ undoStack=[deepCopy(editableRows)]; }
+function undo(){
+  if(!undoStack.length){ toast('Nothing to undo'); return; }
+  deleteMode = false;
+  editableRows=undoStack.pop();
+  currentView = 'optimised';
+  renderRearrangeTable();
+  updateRearrangeTitle();
+  updateDeleteButton();
+  toast('Undo successful ✓');
+}
+
+// ── In-cell popover fix (click directly on a NOT FOUND cell) ──
+let activeCellFix = null;
+
+let activeAddRequest = null;
+
+
+
+function openBlankAddRequest(anchorEl, rowIdx, colNo){
+  closeCellFix();
+  closeAddRequest();
+
+  const p = lastPeriods[colNo];
+  const row = editableRows[rowIdx];
+  const periodLabel = p ? `${p.id} ${p.time || ''}` : `Column ${colNo}`;
+
+  const popover = document.createElement('div');
+  popover.className = 'cell-fix-popover add-request-popover';
+  popover.innerHTML = `
+    <label>Add last-minute request</label>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:5px">${escHtml(displayCartName(row?.name || 'Cart'))} · ${escHtml(periodLabel)}</div>
+    <input id="addRequestLocation" placeholder="Any class or location" autocomplete="off"
+           autocorrect="off" autocapitalize="words" spellcheck="false"
+           onkeydown="if(event.key==='Enter')confirmAddRequest(${rowIdx},${colNo});if(event.key==='Escape')closeAddRequest()" />
+    <select id="addRequestLevel" title="Choose a level if the location is not in the database">
+      ${levelOptionsHtml(0)}
+    </select>
+    <input id="addRequestPeriods" type="number" min="1" max="20" value="1" title="Number of periods"
+           style="margin-top:5px" onkeydown="if(event.key==='Enter')confirmAddRequest(${rowIdx},${colNo});if(event.key==='Escape')closeAddRequest()" />
+    <input id="addRequestTeacher" placeholder="Teacher name (optional)" autocomplete="off"
+           style="margin-top:5px" onkeydown="if(event.key==='Enter')confirmAddRequest(${rowIdx},${colNo});if(event.key==='Escape')closeAddRequest()" />
+    <div class="fix-btns">
+      <button class="fix-cancel" onclick="closeAddRequest()">Cancel</button>
+      <button class="fix-ok" onclick="confirmAddRequest(${rowIdx},${colNo})">Add ↵</button>
+    </div>`;
+
+  document.body.appendChild(popover);
+  activeAddRequest={popover, anchorEl};
+  requestAnimationFrame(()=>positionFloatingPopover(anchorEl,popover));
+  setTimeout(()=>{ const inp=document.getElementById('addRequestLocation'); if(inp) inp.focus(); },50);
+}
+
+function confirmAddRequest(rowIdx, colNo){
+  const row = editableRows[rowIdx];
+  const locEl = document.getElementById('addRequestLocation');
+  const periodsEl = document.getElementById('addRequestPeriods');
+  const teacherEl = document.getElementById('addRequestTeacher');
+
+  const loc = (locEl ? locEl.value : '').trim();
+  const teacher = (teacherEl ? teacherEl.value : '').trim() || 'Last-minute request';
+  const levelEl = document.getElementById('addRequestLevel');
+  const preferredLevel = Number(levelEl ? levelEl.value : 0) || 0;
+  let periodCount = parseInt(periodsEl ? periodsEl.value : '1', 10);
+
+  if(!loc){ if(locEl) locEl.focus(); return; }
+  if(!periodCount || periodCount < 1) periodCount = 1;
+
+  let resolved = resolveRemarks(loc, roomDB);
+  if(!resolved){
+    resolved = makeCustomResolved(loc, preferredLevel);
+  } else if(preferredLevel){
+    resolved = {...resolved, floor:preferredLevel, level:preferredLevel};
+  }
+
+  const startIndex = lastSortedCols.indexOf(colNo);
+  const cols = lastSortedCols.slice(startIndex, startIndex + periodCount);
+  if(!cols.length){
+    toast('Could not identify the selected period.');
+    return;
+  }
+
+  const raw = `Last-minute request: ${loc} (${teacher}) ${Date.now()}`;
+
+  const slot = {
+    cols,
+    periodIds: cols.map(c => lastPeriods[c]?.id || `P${c}`),
+    remarks: raw,
+    bookedBy: teacher,
+    resolved,
+    manualAdded: true
+  };
+
+  pushUndo();
+  row.slots.push(slot);
+  closeAddRequest();
+  renderRearrangeTable();
+  updateRearrangeTitle();
+  toast(`Added ${resolvedDisplay(resolved)} to ${displayCartName(row.name)} ✓`);
+}
+
+function closeAddRequest(){
+  if(activeAddRequest){
+    try{ activeAddRequest.popover.remove(); }catch(e){}
+    activeAddRequest=null;
+  }
+}
+
+function positionFloatingPopover(anchorEl,popover){
+  if(!anchorEl || !popover || !document.body.contains(anchorEl) || !document.body.contains(popover)) return;
+  const a=anchorEl.getBoundingClientRect();
+  const margin=10, gap=8;
+  popover.style.visibility='hidden';
+  popover.style.left='0px';
+  popover.style.top='0px';
+  const p=popover.getBoundingClientRect();
+  let left=a.left + (a.width-p.width)/2;
+  left=Math.max(margin,Math.min(left,window.innerWidth-p.width-margin));
+  let top=a.bottom+gap;
+  if(top+p.height>window.innerHeight-margin){
+    top=a.top-p.height-gap;
+  }
+  top=Math.max(margin,Math.min(top,window.innerHeight-p.height-margin));
+  popover.style.left=Math.round(left)+'px';
+  popover.style.top=Math.round(top)+'px';
+  popover.style.visibility='visible';
+}
+
+function repositionFloatingPopovers(){
+  if(activeCellFix) positionFloatingPopover(activeCellFix.anchorEl,activeCellFix.popover);
+  if(activeAddRequest) positionFloatingPopover(activeAddRequest.anchorEl,activeAddRequest.popover);
+}
+
+function openCellFix(anchorEl, raw, currentValue='', currentLevel=0){
+  closeCellFix();
+  const enc = encodeURIComponent(raw||'');
+  const popover = document.createElement('div');
+  popover.className = 'cell-fix-popover';
+  popover.innerHTML = `
+    <label>Enter any class or location</label>
+    <input id="cellFixInput"
+           placeholder="e.g. 6V or Tamil Classroom"
+           value="${escHtml(currentValue || '')}"
+           autocomplete="off" autocorrect="off"
+           autocapitalize="words" spellcheck="false"
+           onkeydown="if(event.key==='Enter')confirmCellFix('${enc}');if(event.key==='Escape')closeCellFix()" />
+    <select id="cellFixLevel" title="Choose a level if this location is not in the database">
+      ${levelOptionsHtml(currentLevel)}
+    </select>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">
+      Locations outside the database are allowed. Choose a level for colour-coding, or leave it as Auto / Unknown.
+    </div>
+    <div class="fix-btns">
+      <button class="fix-cancel" onclick="closeCellFix()">Cancel</button>
+      <button class="fix-ok" onclick="confirmCellFix('${enc}')">Apply ↵</button>
+    </div>`;
+  document.body.appendChild(popover);
+  activeCellFix={popover, anchorEl};
+  requestAnimationFrame(()=>positionFloatingPopover(anchorEl,popover));
+  setTimeout(()=>{
+    const inp=document.getElementById('cellFixInput');
+    if(inp){ inp.focus(); inp.select(); }
+  },50);
+}
+
+function confirmCellFix(encodedRaw){
+  const raw=decodeURIComponent(encodedRaw);
+  const inp=document.getElementById('cellFixInput');
+  const levelEl=document.getElementById('cellFixLevel');
+  const val=(inp?inp.value:'').trim();
+  const preferredLevel=Number(levelEl?levelEl.value:0)||0;
+  if(!val){ if(inp)inp.focus(); return; }
+  closeCellFix();
+  applyManualLocationFix(raw, val, preferredLevel);
+}
+
+function closeCellFix(){
+  if(activeCellFix){
+    try{ activeCellFix.popover.remove(); }catch(e){}
+    activeCellFix=null;
+  }
+}
+
+window.addEventListener('resize',repositionFloatingPopovers);
+document.addEventListener('scroll',repositionFloatingPopovers,true);
+
+document.addEventListener('click', e=>{
+  if(activeCellFix&&!activeCellFix.popover.contains(e.target)&&!activeCellFix.anchorEl.contains(e.target)){
+    closeCellFix();
+  }
+  if(activeAddRequest&&!activeAddRequest.popover.contains(e.target)&&!activeAddRequest.anchorEl.contains(e.target)){
+    closeAddRequest();
+  }
+});
+
+// ── Quick-edit: apply a class code to an unresolved remark ──
+function applyCode(encodedKey){
+  const raw = decodeURIComponent(encodedKey);
+  const inp = document.getElementById('inp_'+encodedKey);
+  const val = (inp ? inp.value : '').trim();
+  if(!val){ inp&&inp.focus(); toast('Please type a class or room first'); return; }
+  applyManualLocationFix(raw, val);
+}
+
+function applyManualLocationFix(raw, val, preferredLevel=0){
+  const cleanVal = String(val || '').trim();
+  if(!cleanVal){ toast('Please type a class or location first'); return; }
+
+  let resolved = resolveRemarks(cleanVal, roomDB);
+
+  // Anything typed by the DE is accepted. If it is not in the room database,
+  // create a custom location and keep the exact wording entered.
+  if(!resolved){
+    resolved = makeCustomResolved(cleanVal, preferredLevel);
+  } else if(preferredLevel){
+    resolved = {...resolved, floor:preferredLevel, level:preferredLevel};
+  }
+
+  const finalLevel = Number(preferredLevel) || effectiveFloor(resolved) || 0;
+  editOverrides[raw] = {
+    label: cleanVal,
+    level: finalLevel
+  };
+
+  // Update the source bookings.
+  if(bookings && bookings.carts){
+    bookings.carts.forEach(cart=>{
+      Object.values(cart.slots || {}).forEach(s=>{
+        if(s.remarks === raw) s.resolved = resolved;
+      });
+    });
+  }
+
+  // Update the current optimised/rearranged timetable without resetting cart placements.
+  if(editableRows && editableRows.length){
+    editableRows.forEach(row=>{
+      (row.slots || []).forEach(s=>{
+        if(s.remarks === raw) s.resolved = resolved;
+      });
+    });
+  }
+
+  refreshUnknownPanel();
+
+  if(currentView === 'original'){
+    renderOriginalTable();
+  } else {
+    renderRearrangeTable();
+    updateRearrangeTitle();
+  }
+
+  toast(`Updated to ${resolvedDisplay(resolved)} ✓`);
+}
+
+function refreshUnknownPanel(){
+  if(!bookings || !bookings.carts) return;
+
+  const errors=[];
+  const sourceRows = editableRows && editableRows.length
+    ? visibleRows(editableRows)
+    : bookings.carts.filter(cart=>isDeployableCartName(cart.name));
+
+  sourceRows.forEach(cart=>{
+    Object.values(cart.slots || {}).forEach(s=>{
+      if(s.remarks && !s.resolved){
+        errors.push({cart:cart.name,periods:(s.periodIds||[]).join('+'),raw:s.remarks,bookedBy:s.bookedBy});
+      }
+    });
+  });
+
+  const ep=document.getElementById('errPanel');
+  const list=document.getElementById('errList');
+  if(!ep || !list) return;
+
+  if(errors.length){
+    ep.style.display='';
+    list.innerHTML=errors.map(e=>`
+      <div class="err-row">
+        <div>
+          <div class="err-raw">"${escHtml(e.raw)}"</div>
+          <div class="err-meta">${escHtml(displayCartName(e.cart))} · ${escHtml(e.periods)} · ${escHtml(e.bookedBy||'?')}</div>
+        </div>
+        <div class="err-input-wrap">
+          <input id="inp_${encodeURIComponent(e.raw)}"
+                 placeholder="e.g. 6V, 3S"
+                 value="${escHtml(editOverrides[e.raw] && typeof editOverrides[e.raw]==='object' ? (editOverrides[e.raw].label||'') : (editOverrides[e.raw]||''))}"
+                 onkeydown="if(event.key==='Enter')applyCode('${encodeURIComponent(e.raw)}')"
+                 autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+          <button class="btn-apply" onclick="applyCode('${encodeURIComponent(e.raw)}')">Apply ↵</button>
+        </div>
+      </div>`).join('');
+  } else {
+    ep.style.display='none';
+    list.innerHTML='';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — Rearrange view (editable, drag-drop)
+// ═══════════════════════════════════════════════════════════
+
+function updateDeleteButton(){
+  const btn = document.getElementById('deleteBookingBtn');
+  if(!btn) return;
+
+  if(deleteMode){
+    btn.textContent = '✖ Cancel Delete';
+    btn.className = 'btn btn-danger';
+    btn.title = 'Delete mode is active. Click a booking block to remove it.';
+  } else {
+    btn.textContent = '🗑 Delete Booking';
+    btn.className = 'btn btn-danger';
+    btn.title = 'Click, then select a booking block to remove it.';
+  }
+}
+
+function toggleDeleteMode(){
+  if(!editableRows || !editableRows.length){
+    toast('Generate the timetable first');
+    return;
+  }
+
+  // Deletion is performed only in the editable timetable.
+  if(currentView !== 'optimised'){
+    currentView = 'optimised';
+  }
+
+  deleteMode = !deleteMode;
+  renderRearrangeTable();
+  updateRearrangeTitle();
+  updateDeleteButton();
+
+  if(deleteMode){
+    toast('Delete mode: click the booking you want to remove');
+  } else {
+    toast('Delete mode cancelled');
+  }
+}
+
+function recomputeVisibleColumnsFromEditableRows(){
+  const usedCols = new Set();
+
+  visibleRows(editableRows).forEach(row=>{
+    (row.slots || []).forEach(slot=>{
+      (slot.cols || []).forEach(col=>usedCols.add(Number(col)));
+    });
+  });
+
+  if(!usedCols.size){
+    lastSortedCols = [];
+    return;
+  }
+
+  const minUsed = Math.min(...usedCols);
+  const maxUsed = Math.max(...usedCols);
+  const allPeriodCols = Object.keys(lastPeriods || {})
+    .map(Number)
+    .filter(x=>!isNaN(x))
+    .sort((a,b)=>a-b);
+
+  const visible = allPeriodCols.filter(x=>x>=minUsed && x<=maxUsed);
+  lastSortedCols = visible.length ? visible : [...usedCols].sort((a,b)=>a-b);
+}
+
+function deleteBookingSlot(rowIdx, slot){
+  const row = editableRows[rowIdx];
+  if(!row || !slot) return;
+
+  const location = slot.resolved
+    ? resolvedDisplay(slot.resolved)
+    : 'Unknown location';
+  const periods = (slot.periodIds || []).join(', ') || 'selected period';
+  const cart = displayCartName(row.name);
+
+  const ok = window.confirm(
+    `Delete this booking?\n\n${location}\nCart ${cart}\n${periods}\n\nYou can use “Undo last move” immediately afterwards.`
+  );
+  if(!ok){
+    deleteMode = false;
+    renderRearrangeTable();
+    updateRearrangeTitle();
+    updateDeleteButton();
+    return;
+  }
+
+  pushUndo();
+  row.slots = (row.slots || []).filter(s=>s!==slot);
+
+  deleteMode = false;
+  recomputeVisibleColumnsFromEditableRows();
+  refreshUnknownPanel();
+  renderRearrangeTable();
+  updateRearrangeTitle();
+  updateDeleteButton();
+
+  toast(`Deleted ${location} from Cart ${cart} ✓`);
+}
+
+function handleBookingClick(e, div, slot, rowIdx, currentValue='', currentLevel=0){
+  e.stopPropagation();
+
+  if(deleteMode){
+    deleteBookingSlot(rowIdx, slot);
+    return;
+  }
+
+  openCellFix(div, slot.remarks, currentValue, currentLevel);
+}
+
+
+function makeSlotChip(s, rowIdx, isConflict){
+  // Build a single draggable chip for a slot.
+  // In the optimised/rearrange view, every block can be clicked to change its detected class/room.
+  const res=s.resolved;
+  const div=document.createElement('div');
+
+  if(!res){
+    div.className='cell err';
+    div.innerHTML=`<div class="cl">Click to Fix</div>`;
+    div.title=`Check location with ${s.bookedBy || 'teacher'}.`;
+    div.style.cursor='pointer';
+    div.addEventListener('click', e=>handleBookingClick(e, div, s, rowIdx));
+    div.draggable = !deleteMode;
+    div.style.cursor = deleteMode ? 'not-allowed' : 'pointer';
+    return div;
+  }
+
+  const f=effectiveFloor(res);
+  div.className=`cell ${lvCls(f)}${isConflict?' conflict-stack':''}`;
+  div.innerHTML=`
+    ${isConflict?'<div style="font-size:11px;font-weight:800;color:#92400e;margin-bottom:1px">⚠ OVERLAP</div>':''}
+    <div class="cl">${resolvedDisplay(res)}</div>
+    ${f?`<div class="lv">${floorLabel(f)}</div>`:''}`;
+  div.title=[
+    'Click to edit location',
+    resolvedDisplay(res)+(res.aka?' · '+res.aka:''),
+    'Level: '+f,
+    'Booked by: '+(s.bookedBy||'?'),
+    'Remarks: '+(s.remarks||''),
+    'Periods: '+(s.periodIds||[]).join(', '),
+    isConflict?'⚠ Overlapping — drag one away':''
+  ].filter(Boolean).join('\n');
+
+  div.addEventListener('click', e=>
+    handleBookingClick(e, div, s, rowIdx, resolvedDisplay(res), effectiveFloor(res))
+  );
+
+  div.draggable=!deleteMode;
+  div.style.cursor=deleteMode?'not-allowed':'grab';
+  div.addEventListener('dragstart',e=>{
+    if(deleteMode){ e.preventDefault(); return; }
+    onDragStart(e,s,rowIdx);
+  });
+  div.addEventListener('dragend',  onDragEnd);
+  return div;
+}
+
+function hasConflicts(row){
+  // Check if any two slots in the row overlap
+  for(let i=0;i<row.slots.length;i++)
+    for(let j=i+1;j<row.slots.length;j++)
+      if(colsOverlap(row.slots[i].cols,row.slots[j].cols)) return true;
+  return false;
+}
+
+
+function addTimetableColGroup(table){
+  const old = table.querySelector('colgroup');
+  if(old) old.remove();
+
+  const colgroup = document.createElement('colgroup');
+
+  const cartCol = document.createElement('col');
+  cartCol.style.width = '60px';
+  colgroup.appendChild(cartCol);
+
+  (lastSortedCols || []).forEach(() => {
+    const col = document.createElement('col');
+    col.style.width = '60px';
+    colgroup.appendChild(col);
+  });
+
+  table.insertBefore(colgroup, table.firstChild);
+}
+
+
+function displayCartName(name){
+  const n = String(name || '');
+  const u = n.toUpperCase();
+
+  if(u.includes('LAPTOP')) return 'Laptop';
+
+  const m = u.match(/IPAD\s*SET\s*([A-F])/i) || u.match(/\bIPAD\s*([A-F])\b/i);
+  if(m) return m[1].toUpperCase();
+
+  if(/\bA\b/i.test(n) && u.includes('IPAD')) return 'A';
+  if(/\bB\b/i.test(n) && u.includes('IPAD')) return 'B';
+  if(/\bC\b/i.test(n) && u.includes('IPAD')) return 'C';
+  if(/\bD\b/i.test(n) && u.includes('IPAD')) return 'D';
+  if(/\bE\b/i.test(n) && u.includes('IPAD')) return 'E';
+  if(/\bF\b/i.test(n) && u.includes('IPAD')) return 'F';
+
+  return n;
+}
+
+function renderRearrangeTable(){
+  const wrap=document.getElementById('ttBody');
+  wrap.innerHTML='';
+
+  const rowsToRender=visibleRows(editableRows);
+  const ipadRows=rowsToRender.filter(r=>!r.isLaptop);
+  const totalChanges=ipadRows.reduce((s,r)=>s+countFloorChanges(r.slots),0);
+  const anyConflicts=ipadRows.some(r=>hasConflicts(r));
+
+  // Delete-mode banner
+  if(deleteMode){
+    const deleteBanner=document.createElement('div');
+    deleteBanner.className='conflict-banner';
+    deleteBanner.style.background='#fee2e2';
+    deleteBanner.style.borderColor='#ef4444';
+    deleteBanner.style.color='#991b1b';
+    deleteBanner.innerHTML='🗑️ <strong>Delete mode is active.</strong> Click one booking block to remove it. Original RBS remains unchanged.';
+    wrap.appendChild(deleteBanner);
+  }
+
+  // Conflict banner
+  if(anyConflicts){
+    const banner=document.createElement('div');
+    banner.className='conflict-banner';
+    banner.innerHTML=`⚠️ <strong>Overlapping bookings detected.</strong>
+      Drag one of the stacked blocks to another cart to resolve.`;
+    wrap.appendChild(banner);
+  }
+
+  // Summary bar
+  const bar=document.createElement('div');
+  bar.className='tt-summary';
+  bar.innerHTML=`
+    <span>Level changes: <strong>${totalChanges}</strong></span>
+    ${anyConflicts?`<span style="color:#92400e;font-size:11px;font-weight:700">⚠ ${ipadRows.filter(r=>hasConflicts(r)).length} cart(s) have overlaps</span>`:'<span style="color:#065f46;font-size:11px;font-weight:700">✓ No overlaps</span>'}
+    <button class="btn btn-outline" id="undoBtn" onclick="undo()"
+      style="font-size:11px;padding:4px 12px"
+      ${undoStack.length?'':'disabled'}>↩ Undo last move</button>
+    <span style="margin-left:auto">
+      <button class="btn btn-outline" onclick="downloadImage()" style="font-size:11px;padding:5px 12px">⬇ Save as Image</button>
+    </span>`;
+  wrap.appendChild(bar);
+
+  const scroll=document.createElement('div');
+  scroll.className='tt-scroll';
+  const table=document.createElement('table');
+  table.className='tt'; table.id='mainTable';
+  addTimetableColGroup(table);
+
+  // Header
+  const thead=table.createTHead();
+  const hrow=thead.insertRow();
+  const th0=document.createElement('th');
+  th0.className='hc'; th0.textContent='Cart';
+  hrow.appendChild(th0);
+  lastSortedCols.forEach(c=>{
+    const p=lastPeriods[c];
+    const th=document.createElement('th');
+    th.innerHTML=`${p?p.id:'?'}<br><span style="font-size:11px;font-weight:400">${p?p.time.split('-')[0]:''}</span>`;
+    if(p) th.title=p.label;
+    hrow.appendChild(th);
+  });
+
+  // Rows
+  const tbody=table.createTBody();
+  rowsToRender.forEach((row)=>{
+    const rowIdx=editableRows.indexOf(row);
+    const tr=tbody.insertRow();
+
+    // Cart name cell
+    const td0=tr.insertCell(); td0.className='dc';
+    if(!row.isLaptop){
+      const ch=countFloorChanges(row.slots);
+      const conflict=hasConflicts(row);
+      td0.innerHTML=`
+        <div class="cart-name-edit" title="${escHtml(row.name)}">${escHtml(displayCartName(row.name))}</div>
+        ${ch>0?`<div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:2px">${ch} change${ch>1?'s':''}</div>`:''}
+        ${conflict?`<div style="font-size:11px;color:#92400e;font-weight:700">⚠ overlap</div>`:''}`;
+    } else {
+      td0.textContent=displayCartName(row.name);
+    }
+
+    // Build col→[slots] map (array to support stacking)
+    const colMap={};  // col → [slot, ...]
+    row.slots.forEach(s=>s.cols.forEach(c=>{
+      if(!colMap[c]) colMap[c]=[];
+      colMap[c].push(s);
+    }));
+
+    // Track which cols have been rendered for colspan calculation
+    // For stacked cells, colspan = 1 (each col gets its own td)
+    // For single-slot cells, calculate colspan normally
+    const rendered=new Set();
+    lastSortedCols.forEach(c=>{
+      if(rendered.has(c)) return;
+      const slotsHere=colMap[c]||[];
+      const td=tr.insertCell();
+
+      if(!slotsHere.length){
+        // Empty editable target: click to add a last-minute request.
+        td.className='drop-target';
+        td.title='Click to add a last-minute request';
+        td.addEventListener('click', e=>{ e.stopPropagation(); openBlankAddRequest(td,rowIdx,c); });
+        if(!row.isLaptop){
+          td.addEventListener('dragover',  onDragOver);
+          td.addEventListener('dragleave', onDragLeave);
+          td.addEventListener('drop',      e=>onDrop(e,rowIdx));
+        }
+        return;
+      }
+
+      if(slotsHere.length===1){
+        // Single slot — calculate colspan (consecutive cols all mapping to same slot)
+        const s=slotsHere[0];
+        let span=1;
+        for(let j=lastSortedCols.indexOf(c)+1;j<lastSortedCols.length;j++){
+          const nc=lastSortedCols[j];
+          const nextSlots=colMap[nc]||[];
+          if(nextSlots.length===1&&nextSlots[0]===s){
+            span++; rendered.add(nc);
+          } else break;
+        }
+        td.colSpan=span;
+
+        const chip=makeSlotChip(s,rowIdx,false);
+        if(!row.isLaptop){
+          td.addEventListener('dragover',  onDragOver);
+          td.addEventListener('dragleave', onDragLeave);
+          td.addEventListener('drop',      e=>onDrop(e,rowIdx));
+        }
+        td.appendChild(chip);
+
+      } else {
+        // Multiple slots stacked — colspan stays 1, show all chips
+        td.colSpan=1;
+        td.style.verticalAlign='top';
+        td.style.padding='0';
+        if(row.isLaptop===false){
+          td.addEventListener('dragover',  onDragOver);
+          td.addEventListener('dragleave', onDragLeave);
+          td.addEventListener('drop',      e=>onDrop(e,rowIdx));
+        }
+        const stack=document.createElement('div');
+        stack.className='stack-cell';
+        slotsHere.forEach(s=>{
+          const chip=makeSlotChip(s,rowIdx,true);
+          stack.appendChild(chip);
+        });
+        td.appendChild(stack);
+      }
+    });
+  });
+
+  scroll.appendChild(table);
+  wrap.appendChild(scroll);
+
+  // Legend
+  const leg=document.createElement('div');
+  leg.className='legend';
+  leg.innerHTML=`
+    <span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Level:</span>
+    ${[1,2,3,4,5].map(l=>`<div class="leg-item"><div class="leg-sw lv${l}" style="border:1.5px solid var(--l${l}b)"></div>Level ${l}</div>`).join('')}
+    <div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div>
+    <div class="leg-item" style="margin-left:8px"><div class="leg-sw" style="background:#fef3c7;border:2px solid #f59e0b"></div>⚠ Overlapping</div>
+    <div class="leg-item" style="margin-left:12px;color:var(--muted);font-size:11px">💡 Drag any block to a different cart row; timing stays locked</div>
+    ${bookings&&bookings.date?`<span style="margin-left:auto;font-size:11px;color:var(--muted)">📅 ${bookings.date}</span>`:''}`;
+  wrap.appendChild(leg);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — Original RBS view (read-only)
+// ═══════════════════════════════════════════════════════════
+function renderOriginalTable(){
+  const wrap=document.getElementById('ttBody');
+  wrap.innerHTML='';
+  const scroll=document.createElement('div');
+  scroll.className='tt-scroll';
+  const table=document.createElement('table');
+  table.className='tt'; table.id='mainTable';
+  addTimetableColGroup(table);
+
+  const thead=table.createTHead();
+  const hrow=thead.insertRow();
+  const th0=document.createElement('th');
+  th0.className='hc'; th0.textContent='Cart';
+  hrow.appendChild(th0);
+  lastSortedCols.forEach(c=>{
+    const p=lastPeriods[c];
+    const th=document.createElement('th');
+    th.innerHTML=`${p?p.id:'?'}<br><span style="font-size:11px;font-weight:400">${p?p.time.split('-')[0]:''}</span>`;
+    hrow.appendChild(th);
+  });
+
+  const tbody=table.createTBody();
+  bookings.carts.filter(cart=>isDeployableCartName(cart.name)).forEach(cart=>{
+    const tr=tbody.insertRow();
+    const td0=tr.insertCell(); td0.className='dc'; td0.textContent=displayCartName(cart.name);
+    const colMap={};
+    Object.values(cart.slots).forEach(s=>s.cols.forEach(c=>{colMap[c]=s;}));
+    const skip=new Set();
+    lastSortedCols.forEach(c=>{
+      if(skip.has(c)) return;
+      const s=colMap[c];
+      const td=tr.insertCell();
+      if(!s) return;
+      let span=1;
+      for(let j=lastSortedCols.indexOf(c)+1;j<lastSortedCols.length;j++){
+        const nc=lastSortedCols[j];
+        if(colMap[nc]===s){span++;skip.add(nc);}else break;
+      }
+      td.colSpan=span;
+      const res=s.resolved;
+      if(!res){
+        const errDiv=document.createElement('div');
+        errDiv.className='cell err';
+        errDiv.innerHTML=`<div class="cl">Click to Fix</div>`;
+        errDiv.title=`Check location with ${s.bookedBy||'teacher'}.\nRemarks: ${s.remarks||''}`;
+        errDiv.addEventListener('click', e=>{ e.stopPropagation(); openCellFix(errDiv, s.remarks); });
+        td.appendChild(errDiv);
+        return;
+      }
+      const f=effectiveFloor(res);
+      const div=document.createElement('div');
+      div.className=`cell ${lvCls(f)}`;
+      div.innerHTML=`<div class="cl">${resolvedDisplay(res)}</div>${f?`<div class="lv">${floorLabel(f)}</div>`:`<div class="lv">Unknown</div>`}`;
+      div.title=`${resolvedDisplay(res)}\nLevel: ${f||'Unknown — click to fix'}\nBooked by: ${s.bookedBy||'?'}`;
+      div.addEventListener('click', e=>{e.stopPropagation();openCellFix(div,s.remarks,resolvedDisplay(res),f);});
+      td.appendChild(div);
+    });
+  });
+
+  scroll.appendChild(table);
+  wrap.appendChild(scroll);
+
+  const leg=document.createElement('div');
+  leg.className='legend';
+  leg.innerHTML=`
+    <span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Level:</span>
+    ${[1,2,3,4,5].map(l=>`<div class="leg-item"><div class="leg-sw lv${l}" style="border:1.5px solid var(--l${l}b)"></div>Level ${l}</div>`).join('')}
+    <div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div>
+    <span style="margin-left:auto;font-size:11px;color:var(--muted);font-style:italic">Read-only — switch to ✏️ Rearrange to edit</span>`;
+  wrap.appendChild(leg);
+}
+
+// ═══════════════════════════════════════════════════════════
+// DRAG AND DROP
+// ═══════════════════════════════════════════════════════════
+function onDragStart(e,slot,rowIdx){
+  dragSlot={slot,rowIdx};
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>{if(e.target)e.target.style.opacity='0.4';},0);
+  hideTip();
+}
+function onDragEnd(e){ if(e.target)e.target.style.opacity=''; dragSlot=null; }
+function onDragOver(e){
+  e.preventDefault(); e.dataTransfer.dropEffect='move';
+  const td=e.currentTarget.tagName==='TD'?e.currentTarget:e.currentTarget.closest('td');
+  if(td) td.classList.add('drag-over');
+}
+function onDragLeave(e){
+  const td=e.currentTarget.tagName==='TD'?e.currentTarget:e.currentTarget.closest('td');
+  if(td) td.classList.remove('drag-over');
+}
+function onDrop(e,toRowIdx){
+  e.preventDefault();
+  const td=e.currentTarget.tagName==='TD'?e.currentTarget:e.currentTarget.closest('td');
+  if(td) td.classList.remove('drag-over');
+  if(!dragSlot) return;
+
+  const {slot:fromSlot,rowIdx:fromRowIdx}=dragSlot;
+  dragSlot=null;
+
+  if(toRowIdx===fromRowIdx) return;
+
+  const toRow  =editableRows[toRowIdx];
+  const fromRow=editableRows[fromRowIdx];
+
+  if(toRow.isLaptop){ toast('⛔ Laptop cannot be changed'); return; }
+
+  // Always allow the move — stacking is permitted
+  // Conflicts are shown visually with ⚠ badges and a banner
+  const conflicts=toRow.slots.filter(s=>colsOverlap(s.cols,fromSlot.cols));
+
+  pushUndo();
+  fromRow.slots=fromRow.slots.filter(s=>s!==fromSlot);
+  toRow.slots.push(fromSlot);
+  renderRearrangeTable();
+  updateRearrangeTitle();
+
+  if(conflicts.length){
+    const names=conflicts.map(s=>s.resolved?.canon||'?').join(', ');
+    toast(`⚠ Stacked with ${names} on ${toRow.name} — drag one away to resolve`);
+  } else {
+    toast(`Moved ${fromSlot.resolved?.canon||'block'} → ${toRow.name} ✓`);
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// VBA-STYLE AGGRESSIVE OPTIMISER
+// Treat iPad Set A–F as one shared pool, but never allow a cart
+// to take two blocks in the same period.
+// ═══════════════════════════════════════════════════════════
+function isSharedIpadCart(row){
+  if(isBlockedDeploymentCartName(row && row.name)) return false;
+  const n = (row.name || '').toLowerCase();
+  return n.includes('ipad') && !n.includes('self-help') && !n.includes('self help') && /\b(a|b|c|d|e|f)\b/i.test(row.name);
+}
+
+function rowHomeFloors(row, poolIndex){
+  const n = (row.name || '').toLowerCase();
+  if(/\ba\b/i.test(row.name) || poolIndex === 0) return [2,1];
+  if(/\bb\b/i.test(row.name) || poolIndex === 1) return [3];
+  if(/\bc\b/i.test(row.name) || poolIndex === 2) return [4];
+  if(/\bd\b/i.test(row.name) || poolIndex === 3) return [4];
+  if(/\be\b/i.test(row.name) || poolIndex === 4) return [5];
+  if(/\bf\b/i.test(row.name) || poolIndex === 5) return [5];
+  return [];
+}
+
+function slotFloor(slot){
+  return slot && slot.resolved ? effectiveFloor(slot.resolved) : 0;
+}
+
+function cartFreeForSlot(row, slot){
+  return !row.slots.some(existing => colsOverlap(existing.cols, slot.cols));
+}
+
+function optimiserScore(row, slot, poolIndex, usage){
+  const f = slotFloor(slot);
+  let score = 0;
+  const homes = rowHomeFloors(row, poolIndex);
+  const lastLevel = row._lastLevel || 0;
+
+  if(lastLevel && f){
+    if(lastLevel === f) score -= 1000;
+    else score += 250 + Math.abs(lastLevel - f) * 80;
+  } else {
+    score += 50;
+  }
+
+  if(f && homes.includes(f)) score -= 500;
+  else if(f && homes.length){
+    const nearest = Math.min(...homes.map(h => Math.abs(h - f)));
+    score += nearest * 40;
+  }
+
+  score += usage * 5;
+  return score;
+}
+
+function optimiseSchedule(showToast=true){
+  if(!editableRows.length || !bookings){ toast('Generate the timetable first'); return; }
+
+  pushUndo();
+
+  const pool = editableRows
+    .map((row, idx) => ({row, idx}))
+    .filter(x => isSharedIpadCart(x.row));
+
+  if(!pool.length){ toast('No movable iPad/tablet resource rows found'); return; }
+
+  const poolIndexByRow = new Map(pool.map((x, i) => [x.idx, i]));
+
+  // Collect all active shared iPad/tablet slots; Laptop and Self-Help remain excluded.
+  const slotsToOptimise = [];
+  pool.forEach(({row, idx}) => {
+    row.slots.forEach(slot => slotsToOptimise.push({...slot, _originalRowIdx: idx}));
+    row.slots = [];
+    row._lastLevel = 0;
+    row._usage = 0;
+  });
+
+  slotsToOptimise.sort((a,b) =>
+    minCol(a) - minCol(b) ||
+    slotFloor(a) - slotFloor(b) ||
+    (b.cols.length - a.cols.length)
+  );
+
+  for(const slot of slotsToOptimise){
+    let best = null;
+    let bestScore = Infinity;
+
+    for(const item of pool){
+      if(!cartFreeForSlot(item.row, slot)) continue;
+      const usage = item.row._usage || 0;
+      const idx = poolIndexByRow.get(item.idx);
+      const score = optimiserScore(item.row, slot, idx, usage);
+      if(score < bestScore){
+        bestScore = score;
+        best = item;
+      }
+    }
+
+    // If all carts clash, place it on the least-bad home/nearest cart.
+    // The UI will show the stack as an overlap for manual correction.
+    if(!best){
+      for(const item of pool){
+        const usage = item.row._usage || 0;
+        const idx = poolIndexByRow.get(item.idx);
+        const score = optimiserScore(item.row, slot, idx, usage) + 10000;
+        if(score < bestScore){
+          bestScore = score;
+          best = item;
+        }
+      }
+    }
+
+    best.row.slots.push(slot);
+    const f = slotFloor(slot);
+    if(f) best.row._lastLevel = f;
+    best.row._usage = (best.row._usage || 0) + 1;
+  }
+
+  pool.forEach(({row}) => {
+    delete row._lastFloor;
+    delete row._usage;
+  });
+
+  renderRearrangeTable();
+  updateRearrangeTitle();
+  if(showToast) toast('Optimised using active iPad/tablet resource pool ✓');
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW TOGGLE
+// ═══════════════════════════════════════════════════════════
+function showView(view){
+  deleteMode = false;
+  updateDeleteButton();
+  currentView = (view === 'original') ? 'original' : 'optimised';
+  if(currentView === 'original'){
+    renderOriginalTable();
+  } else {
+    renderRearrangeTable();
+    updateRearrangeTitle();
+  }
+}
+
+function updateRearrangeTitle(){
+  document.getElementById('ttTitle').innerHTML=`iPad &amp; Laptop Deployment Tool`;
+  const btn=document.getElementById('undoBtn');
+  if(btn){ btn.disabled=!undoStack.length; btn.style.opacity=undoStack.length?'1':'0.35'; }
+}
+
+// ── Image export ─────────────────────────────────────────────
+function downloadImage(){
+  const tbl=document.getElementById('mainTable');
+  if(!tbl){ toast('No table to capture'); return; }
+  toast('Preparing image…');
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload=()=>{
+    html2canvas(tbl,{backgroundColor:'#ffffff',scale:2,useCORS:true}).then(canvas=>{
+      const a=document.createElement('a');
+      a.download=`deployment_${(bookings?.date||'plan').replace(/\s+/g,'_')}.png`;
+      a.href=canvas.toDataURL('image/png');
+      a.click(); toast('Image downloaded ✓');
+    });
+  };
+  document.head.appendChild(s);
+}
+
+// ═══════════════════════════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════════════════════════
+function generate(){
+  if(!roomDB||!bookings) return;
+
+  // 1. Resolve all remarks
+  bookings.carts.forEach(cart=>{
+    Object.values(cart.slots).forEach(s=>{
+      s.resolved=resolveRemarks(s.remarks,roomDB);
+    });
+  });
+
+  // 2. Collect period cols
+  // Show every timetable period between the first and last booking of the day.
+  // This keeps blank periods visible, so DEs can gauge free time between bookings.
+  const allCols=new Set();
+  bookings.carts
+    .filter(c=>isDeployableCartName(c.name))
+    .forEach(c=>Object.values(c.slots).forEach(s=>s.cols.forEach(x=>allCols.add(Number(x)))));
+
+  lastPeriods=bookings.periods || {};
+
+  if(allCols.size){
+    const minUsedCol = Math.min(...allCols);
+    const maxUsedCol = Math.max(...allCols);
+
+    // Use the full set of period columns read from the RBS sheet, but trim to first and last booking.
+    const allPeriodCols = Object.keys(lastPeriods)
+      .map(x=>Number(x))
+      .filter(x=>!isNaN(x))
+      .sort((a,b)=>a-b);
+
+    const visiblePeriodCols = allPeriodCols
+      .filter(x=>x>=minUsedCol && x<=maxUsedCol);
+
+    // Fallback: if period metadata is incomplete, use the columns that actually contain bookings.
+    lastSortedCols = visiblePeriodCols.length
+      ? visiblePeriodCols
+      : [...allCols].sort((a,b)=>a-b);
+  } else {
+    lastSortedCols=[];
+  }
+
+  // 3. Build editable rows — exact copy of RBS, reset any previous edits
+  editableRows=bookings.carts
+    .filter(cart=>isDeployableCartName(cart.name))
+    .map(cart=>({
+      name:cart.name,
+      isLaptop:!cart.name.toLowerCase().includes('ipad'),
+      slots:Object.values(cart.slots).map(s=>({...s})),
+    }));
+  undoStack=[];
+  deleteMode=false;
+
+  // 4. Error panel
+  refreshUnknownPanel();
+
+  // 5. Show toggle, start on Rearrange view
+  document.getElementById('optimiseBtn').style.display='';
+  document.getElementById('deleteBookingBtn').style.display='';
+  updateDeleteButton();
+  renderRearrangeTable();
+  updateRearrangeTitle();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ON-LOAD INIT
+// ═══════════════════════════════════════════════════════════
+(function onLoad(){
+  if(BAKED_ROOM_DB){
+    document.getElementById('itvSection').style.display='none';
+    document.getElementById('uploadTitle').textContent='📂 Upload RBS Bookings';
+    document.getElementById('uploadSubtitle').textContent=
+      'Classroom Setup is saved in this browser. Upload the daily RBS export and generate.';
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════
+// PREFIX RULES  (longest/most-specific prefixes first)
+// ═══════════════════════════════════════════════════════════
+const PREFIX_RULES = [
+  {pfx:['integrity','integ','int'],             suf:'I'   },
+  {pfx:['innovation','inno','inn'],              suf:'INNO'},
+  {pfx:['confidence','conf','con'],              suf:'C'},
+  {pfx:['empathy','emp'],                        suf:'E'   },
+  {pfx:['responsibility','resp'],                suf:'R'   },
+  {pfx:['self-discipline','self discipline','selfdiscipline','self','sd'], suf:'S'},
+  {pfx:['teamwork','team'],                      suf:'T'   },
+  {pfx:['valour','valor','val'],                 suf:'V'   },
+  {pfx:['pullout','pull out','pull-out','pull'],  suf:'PULL'},
+  // single letters last
+  {pfx:['e'],suf:'E'},{pfx:['r'],suf:'R'},{pfx:['s'],suf:'S'},
+  {pfx:['t'],suf:'T'},{pfx:['v'],suf:'V'},{pfx:['i'],suf:'I'},
+  {pfx:['c'],suf:'C'},
+];
+
+// Venue-only patterns (no year digit required)
+const VENUE_PATTERNS = [
+  {re:/\bfoyer\b/,                       canon:'FOYER'},
+  {re:/\blearning\s*lab\b/,              canon:'LEARNINGLAB'},
+  {re:/\bteaching\s*lab\b/,              canon:'TEACHINGLAB'},
+  {re:/\be2k\s*maths?\b/,                canon:'TEACHINGLAB'},
+  {re:/\bpicasso\s*studio\b/,            canon:'PICASSO'},
+
+  {re:/\bsbb\s*2\b/,                     canon:'SBB2' },
+  {re:/\bsbb\s*room\s*2\b/,              canon:'SBB2' },
+  {re:/\bsbb\s*1\b/,                     canon:'SBB1' },
+  {re:/\bsbb\s*room\s*1\b/,              canon:'SBB1' },
+  {re:/\bsbb\b/,                         canon:'SBB1' },
+
+  {re:/\b3\s*pull\s*out\b/,              canon:'3PULL'},
+  {re:/\bpullout\s*class\b/,             canon:'3PULL'},
+  {re:/\b3\s*pullout\b/,                 canon:'3PULL'},
+
+  {re:/\btamil\s*classroom\b/,           canon:'TAMIL1'},
+  {re:/\btamil\s*room\s*1\b/,            canon:'TAMIL1'},
+  {re:/\btamil\s*language\s*room\s*1\b/, canon:'TAMIL1'},
+  {re:/\btamil\s*room\s*-\s*level\s*3\b/,canon:'TAMIL1'},
+  {re:/\btamil\s*room\s*level\s*3\b/,    canon:'TAMIL1'},
+  {re:/\bmodular\s*cl\s*1\b/,            canon:'TAMIL1'},
+  {re:/\btamil\s*room\s*2\b/,            canon:'TAMIL2'},
+  {re:/\btamil\s*language\s*room\s*2\b/, canon:'TAMIL2'},
+  {re:/\bmodular\s*cl\s*2\b/,            canon:'TAMIL2'},
+
+  {re:/\blsm\s*room\b/,                  canon:'LSMMTL3'},
+  {re:/\bformer\s*mtl\s*3\b/,            canon:'LSMMTL3'},
+  {re:/\bmtl\s*3\b/,                     canon:'LSMMTL3'},
+  {re:/\bmtl3\b/,                        canon:'LSMMTL3'},
+
+  {re:/\bmusic\s*room\s*2\b/,            canon:'MUS2'},
+  {re:/\bmusic\s*rm\s*2\b/,              canon:'MUS2'},
+
+  {re:/\bhall\b/,                        canon:'HALL' },
+  {re:/\bmph\b/,                         canon:'HALL' },
+  {re:/\bmulti\s*purpose\s*hall\b/,      canon:'HALL' },
+  {re:/\bspot\s*programme\b/,            canon:'HALL' },
+  {re:/\bish\b/,                         canon:'ISH' },
+  {re:/\bindoor\s*sport\s*hall\b/,       canon:'ISH' },
+
+  {re:/\brecess\s*activit/,              canon:'RECESS' },
+  {re:/\bmath\s*around\s*us\b/,          canon:'RECESS' },
+  {re:/\brecess\b/,                      canon:'RECESS' },
+
+  {re:/\bcca\s*-\s*science\s*lab\s*1\b/, canon:'SCI1' },
+  {re:/\bscience\s*lab\s*1\b/,           canon:'SCI1' },
+  {re:/\bscience\s*room\s*1\b/,          canon:'SCI1' },
+  {re:/\bsci\s*r[mo]\w*\s*1\b/,          canon:'SCI1' },
+  {re:/\bscience\s*lab\s*2\b/,           canon:'SCI2' },
+  {re:/\bscience\s*room\s*2\b/,          canon:'SCI2' },
+  {re:/\bsci\s*r[mo]\w*\s*2\b/,          canon:'SCI2' },
+
+  {re:/\bcr\s*1\b/,                      canon:'COMP1'},
+  {re:/\bcomputer\s*room\s*1\b/,         canon:'COMP1'},
+  {re:/\bcomp(?:uter)?\s*lab\s*1\b/,     canon:'COMP1'},
+  {re:/\bcr\s*2\b/,                      canon:'COMP2'},
+  {re:/\bcomputer\s*room\s*2\b/,         canon:'COMP2'},
+  {re:/\bcomp(?:uter)?\s*lab\s*2\b/,     canon:'COMP2'},
+  {re:/\bcr\s*3\b/,                      canon:'COMP3'},
+  {re:/\bcomputer\s*room\s*3\b/,         canon:'COMP3'},
+  {re:/\bcomp(?:uter)?\s*lab\s*3\b/,     canon:'COMP3'},
+  {re:/\blesson\s*in\s*computer\b/,      canon:'COMPLAB'},
+  {re:/\bcomputer\s*lesson\b/,           canon:'COMPLAB'},
+
+  {re:/\bx\s*room\b/,                    canon:'XROOM'},
+  {re:/\bict\s*resource\b/,              canon:'XROOM'},
+];
+
+// Words to skip when scanning for class tokens inside sentences
+const SKIP_WORDS = new Set([
+  'ipads','ipad','sets','set','please','deliver','send','pls','classroom',
+  'class','thank','you','thanks','to','the','at','and','for','in','of',
+  'kindly','bring','push','deploy','cart','carts','units'
+]);
+
+function norm(s) {
+  return s.toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function matchSuffix(token) {
+  for (const rule of PREFIX_RULES) {
+    for (const pfx of rule.pfx) {
+      if (token === pfx || token.startsWith(pfx+' ') || token.startsWith(pfx)) {
+        return rule.suf;
+      }
+    }
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SMART RESOLVER  — finds class codes embedded in any sentence
+// ═══════════════════════════════════════════════════════════
+function findDbEntry(db, canon){
+  const wanted = normaliseCanon(canon);
+  return (db || []).find(e => normaliseCanon(e.canon) === wanted) || null;
+}
+
+function fallbackEntry(canon, level, label){
+  const f = Number(level) || 0;
+  return { canon:normaliseCanon(canon), floor:f, level:f, room:f ? `L${f}` : null, aka:label || canon, classRaw:label || canon };
+}
+
+function entryFor(db, canon, level, label){
+  return findDbEntry(db, canon) || fallbackEntry(canon, level, label);
+}
+
+function vbaContainsAny(sourceText, terms){
+  const s = String(sourceText || '').toUpperCase();
+  return terms.some(t => s.includes(String(t).toUpperCase()));
+}
+
+function resolveVbaStyle(raw, db, ignoreOverride=false){
+  if(!raw) return null;
+  const s = String(raw || '').toUpperCase()
+    .replace(/&AMP;#10;?|&#10;?|&#X0?A;?|_X000D_/g, ' ')
+    .replace(/\r|\n/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Manual / baked override first.
+  // Important: the entered fix may be a room name, not only a class code.
+  // Resolve it through the same VBA-style detector so the block gets the correct level colour.
+  if (!ignoreOverride && editOverrides[raw]) {
+    const stored = editOverrides[raw];
+    const fixedText = String(
+      stored && typeof stored === 'object' ? (stored.label || '') : stored || ''
+    ).trim();
+    const storedLevel = Number(
+      stored && typeof stored === 'object' ? stored.level : 0
+    ) || 0;
+
+    const resolvedFix = resolveVbaStyle(fixedText, db, true);
+    if (resolvedFix) {
+      if(storedLevel){
+        return {...resolvedFix, floor:storedLevel, level:storedLevel};
+      }
+      return resolvedFix;
+    }
+
+    // A saved manual value is allowed even when it does not exist in the room database.
+    return makeCustomResolved(fixedText, storedLevel);
+  }
+
+  // VBA DetectLocation order: special rooms before class codes.
+  if (s.includes('FOYER')) return entryFor(db, 'FOYER', 1, 'Foyer');
+
+  if (vbaContainsAny(s, ['CR3','CR 3','COMPUTER ROOM 3','COMPUTER LAB 3','COMP LAB 3'])) return entryFor(db, 'COMP3', 4, 'Computer Lab 3');
+  if (vbaContainsAny(s, ['CR1','CR 1','COMPUTER ROOM 1','COMPUTER LAB 1','COMP LAB 1'])) return entryFor(db, 'COMP1', 4, 'Computer Lab 1');
+  if (vbaContainsAny(s, ['CR2','CR 2','COMPUTER ROOM 2','COMPUTER LAB 2','COMP LAB 2'])) return entryFor(db, 'COMP2', 4, 'Computer Lab 2');
+  if (vbaContainsAny(s, ['LESSON IN COMPUTER','COMPUTER LESSON'])) return entryFor(db, 'COMPLAB', 4, 'Computer Lab');
+
+  if (vbaContainsAny(s, ['CCA - SCIENCE LAB 1','SCIENCE LAB 1','SCIENCE ROOM 1','SCI ROOM 1','SCI RM 1'])) return entryFor(db, 'SCI1', 4, 'Science Room 1');
+  if (vbaContainsAny(s, ['SCIENCE LAB 2','SCIENCE ROOM 2','SCI ROOM 2','SCI RM 2'])) return entryFor(db, 'SCI2', 4, 'Science Room 2');
+
+  if (vbaContainsAny(s, ['MUSIC ROOM 1','MUSIC RM 1'])) return entryFor(db, 'MUS1', 3, 'Music Room 1');
+  if (vbaContainsAny(s, ['MUSIC ROOM 2','MUSIC RM 2'])) return entryFor(db, 'MUS2', 3, 'Music Room 2');
+
+  if (vbaContainsAny(s, ['TAMIL CLASSROOM','TAMILCLASSROOM','TAMIL ROOM 1','TAMIL LANGUAGE ROOM 1','MODULAR CL1','TAMIL ROOM - LEVEL3','TAMIL ROOM - LEVEL 3','TAMIL ROOM LEVEL 3','TAMIL ROOM LEVEL3'])) return entryFor(db, 'TAMIL1', 3, 'Tamil Room 1');
+  if (vbaContainsAny(s, ['TAMIL ROOM 2','TAMIL LANGUAGE ROOM 2','MODULAR CL2'])) return entryFor(db, 'TAMIL2', 3, 'Tamil Room 2');
+
+  if (vbaContainsAny(s, ['LEARNING LAB','TEACHING LAB E2K MATHS','E2K MATHS','TEACHING LAB'])) return entryFor(db, 'LEARNINGLAB', 1, 'Learning Lab');
+  if (vbaContainsAny(s, ['LSM ROOM','FORMER MTL3','MTL3','MTL 3'])) return entryFor(db, 'LSMMTL3', 3, 'LSM MTL3');
+  if (s.includes('PICASSO STUDIO')) return entryFor(db, 'PICASSO', 1, 'Picasso Studio');
+
+  if (vbaContainsAny(s, ['SBB2','SBB ROOM 2','SBB 2'])) return entryFor(db, 'SBB2', 5, 'SBB Room 2');
+  if (vbaContainsAny(s, ['SBB1','SBB ROOM 1','SBB 1'])) return entryFor(db, 'SBB1', 5, 'SBB Room 1');
+
+  if (vbaContainsAny(s, ['3 PULLOUT','3 PULL OUT','P3 PULLOUT','PULLOUT CLASS'])) return entryFor(db, '3PULL', 3, '3 Pullout');
+
+  if (vbaContainsAny(s, ['COMPUTER LAB 1'])) return entryFor(db, 'COMP1', 4, 'Computer Lab 1');
+  if (vbaContainsAny(s, ['COMPUTER LAB 2'])) return entryFor(db, 'COMP2', 4, 'Computer Lab 2');
+  if (vbaContainsAny(s, ['COMPUTER LAB 3'])) return entryFor(db, 'COMP3', 4, 'Computer Lab 3');
+  if (vbaContainsAny(s, ['SCIENCE ROOM 1'])) return entryFor(db, 'SCI1', 4, 'Science Room 1');
+  if (vbaContainsAny(s, ['SCIENCE ROOM 2'])) return entryFor(db, 'SCI2', 4, 'Science Room 2');
+  if (/\bMPH\b/.test(s) || s.includes('MULTI-PURPOSE HALL') || s.includes('MULTIPURPOSE HALL')) return entryFor(db, 'HALL', 3, 'MPH');
+  // Use word-boundary matching for ISH so teacher names like Aisha do not become ISH.
+  if (/\bISH\b/.test(s) || s.includes('INDOOR SPORT HALL') || s.includes('INDOOR SPORTS HALL')) return entryFor(db, 'ISH', 2, 'ISH');
+  if (s.includes('LIBRARY')) return entryFor(db, 'LIBRARY', 1, 'Library');
+  if (s.includes('CANTEEN')) return entryFor(db, 'CANTEEN', 1, 'Canteen');
+  if (s.includes('GENERAL OFFICE')) return entryFor(db, 'GENERALOFFICE', 1, 'General Office');
+
+  // VBA class-code matching. Use substring logic so “P6 Innovation” still resolves as 6INNO.
+  const yearFloors = {
+    '1': 2, '2S':2, '2T':2, '2R':2,
+    '2': 3,
+    '3S':4, '3T':4, '3V':4, '3E':4, '3I':3, '3R':3,
+    '4': 4,
+    '5S':4, '5':5,
+    '6': 5
+  };
+  const suffixes = [
+    {suf:'INNO', terms:['INNO',' INNO',' INN','INNOVATION']},
+    {suf:'S', terms:['S',' SELF',' SELF-DISCIPLINE',' SELF DISCIPLINE']},
+    {suf:'T', terms:['T',' TEAM',' TEAMWORK']},
+    {suf:'R', terms:['R',' RESP',' RESPONSIBILITY']},
+    {suf:'I', terms:['I',' INT',' INTEG',' INTEGRITY']},
+    {suf:'V', terms:['V',' VAL',' VALOUR',' VALOR']},
+    {suf:'E', terms:['E',' EMP',' EMPATHY']},
+    {suf:'C', terms:['C',' CON',' CONF',' CONFIDENCE']}
+  ];
+
+  for (let y=1; y<=6; y++){
+    for (const sf of suffixes){
+      const canon = `${y}${sf.suf}`;
+      const candidates = [canon, `${y} ${sf.suf}`, ...sf.terms.map(t => `${y}${t}`), ...sf.terms.map(t => `${y} ${String(t).trim()}`)];
+      if (candidates.some(t => s.includes(String(t).toUpperCase()))){
+        let level = yearFloors[String(y)] || 0;
+        if (yearFloors[canon]) level = yearFloors[canon];
+        return entryFor(db, canon, level, canon);
+      }
+    }
+  }
+
+  if (s.includes('DANCE STUDIO')) return entryFor(db, '6S', 5, '6S');
+  if (s.includes('MATH ROOM')) return entryFor(db, '6T', 5, '6T');
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SMART RESOLVER — VBA-style location detection, with the
+// older room database resolver retained as a fallback.
+// ═══════════════════════════════════════════════════════════
+function resolveRemarks(raw, db) {
+  if (!raw || !db) return null;
+
+  const vbaResolved = resolveVbaStyle(raw, db);
+  if (vbaResolved) return vbaResolved;
+
+  const lower = norm(raw);
+
+  // Session override fallback.
+  if (editOverrides[raw]) {
+    const fixedText = String(editOverrides[raw] || '').trim();
+    const fixed = resolveVbaStyle(fixedText, db, true);
+    if (fixed) return fixed;
+    const canon = normaliseCanon(fixedText);
+    const entry = db.find(e => normaliseCanon(e.canon) === canon);
+    return entry || { canon, floor:0, level:0, room:null, aka:canon, classRaw:canon };
+  }
+
+  // Venue-only patterns fallback.
+  for (const vp of VENUE_PATTERNS) {
+    if (vp.re.test(lower)) {
+      const entry = db.find(e => normaliseCanon(e.canon) === normaliseCanon(vp.canon));
+      if (vp.canon === 'RECESS') return entry || { canon:'RECESS', floor:1, level:1, room:'L1', aka:'Recess / Canteen (Level 1)', classRaw:'RECESS' };
+      return entry || { canon:vp.canon, floor:0, level:0, room:null, aka:vp.canon, classRaw:vp.canon };
+    }
+  }
+
+  // Older scanner fallback.
+  const matches = [...lower.matchAll(/\b([1-6])\s*([a-z]+(?:\s+[a-z]+)*)/g)];
+  for (const m of matches) {
+    const year  = m[1];
+    const rest  = m[2].trim();
+    const first = rest.split(' ')[0];
+    if (SKIP_WORDS.has(first)) continue;
+    const suf = matchSuffix(rest);
+    if (suf) {
+      const canon = `${year}${suf}`;
+      const entry = db.find(e => normaliseCanon(e.canon) === normaliseCanon(canon));
+      if (entry) return entry;
+      return { canon, floor:0, level:0, room:null, aka:canon, classRaw:canon, notInDB:true };
+    }
+  }
+
+  for (const entry of db) {
+    const akaL = norm(entry.aka);
+    if (akaL.length > 4 && lower.includes(akaL)) return entry;
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PARSE iTV FILE  → roomDB
+// ═══════════════════════════════════════════════════════════
+function parseItvFile(buf) {
+  const wb = XLSX.read(buf, {type:'array'});
+  const ws = wb.Sheets['Sheet1'] || wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null});
+  const db = [];
+  const SPECIALS = {
+    'pullout':'3PULL','pull out':'3PULL','3 pullout':'3PULL',
+    'sbb 1':'SBB1','sbb1':'SBB1','sbb 2':'SBB2','sbb2':'SBB2',
+    'sci room 1':'SCI1','science room 1':'SCI1','sci room 2':'SCI2','science room 2':'SCI2',
+    'comp 1':'COMP1','comp lab 1':'COMP1','comp 2':'COMP2','comp lab 2':'COMP2',
+    'comp 3':'COMP3','comp lab 3':'COMP3',
+    'mph':'HALL','hall':'HALL','x room':'XROOM','xroom':'XROOM',
+    'recess':'RECESS','recess activity':'RECESS','math around us':'RECESS',
+    'transit room':'TRANSIT','mtl 1':'MTL1','mtl 2':'MTL2','mtl 3':'MTL3',
+    'mcl 1':'MCL1','mcl 2':'MCL2','music room 1':'MUS1','music room 2':'MUS2',
+    'pal 1':'PAL1','pal 2':'PAL2','band room':'BAND',
+  };
+
+  for (const row of rows) {
+    const loc = row[0], aka = row[1], cac = row[2];
+    if (!loc || !cac) continue;
+    const rm = String(loc).match(/^#0(\d)-(\d+)/);
+    if (!rm) continue;
+    const level = parseInt(rm[1]);
+    const room  = String(loc).trim();
+    const akaStr = aka ? String(aka).trim() : '';
+    const classRaw = String(cac).trim();
+    const lc = norm(classRaw);
+
+    // Try year+suffix
+    let canon = null;
+    const ym = lc.match(/^(\d)\s*(.+)$/);
+    if (ym) {
+      const suf = matchSuffix(ym[2].trim());
+      if (suf) canon = `${ym[1]}${suf}`;
+    }
+    if (!canon) canon = SPECIALS[lc] || classRaw.toUpperCase().replace(/\s+/g,'');
+
+    db.push({ canon: normaliseCanon(canon), floor: level, level, room, aka: akaStr || classRaw, classRaw });
+  }
+  return db;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PARSE RBS FILE  → bookings
+// ═══════════════════════════════════════════════════════════
+function parseRbsFile(buf, legacyComments = {}) {
+  const wb  = XLSX.read(buf, {type:'array', cellStyles:true, cellComments:true});
+  const ws  = wb.Sheets[wb.SheetNames[0]];
+  const rng = XLSX.utils.decode_range(ws['!ref']);
+  let headerRow=-1, periods={};
+
+  function cleanText(x){ return String(x || '').replace(/&amp;#10;|&#10;|&#x0?A;|_x000D_/gi,' ').replace(/\r/g,' ').replace(/\n/g,' ').replace(/\s+/g,' ').trim(); }
+
+  // Mirrors the VBA extraction approach: find text between labels, but keep the full
+  // comment as the main searchable text because many teachers type the location in
+  // Purpose or elsewhere instead of Remarks.
+  function extractBetweenLabel(source, startLabel, endLabels){
+    const src = String(source || '');
+    const low = src.toLowerCase();
+    const start = low.indexOf(startLabel.toLowerCase());
+    if(start < 0) return '';
+    let from = start + startLabel.length;
+    let to = src.length;
+    (endLabels || []).forEach(lbl => {
+      const pos = low.indexOf(lbl.toLowerCase(), from);
+      if(pos >= 0 && pos < to) to = pos;
+    });
+    return cleanText(src.slice(from, to));
+  }
+
+  function getCommentText(cell, addr){
+    let out = '';
+
+    // RBS exports store the hover text as legacy Excel Notes in xl/comments*.xml.
+    // Some browser builds of SheetJS do not expose those comments, so we parse them separately.
+    if(legacyComments && legacyComments[addr]){
+      out = legacyComments[addr];
+    }
+
+    // SheetJS cell comment array, when available.
+    if(!out && cell && cell.c && cell.c.length){
+      out = cell.c.map(x => x && x.t ? x.t : '').join(' ');
+    }
+
+    // Workbook-level comments, used by some RBS exports.
+    if(!out && ws['!comments']){
+      const found = ws['!comments'].find(x => x && x.ref === addr);
+      if(found){
+        if(typeof found.comment === 'string') out = found.comment;
+        else if(found.comment && found.comment.t) out = found.comment.t;
+        else if(Array.isArray(found.comment)) out = found.comment.map(x => x && x.t ? x.t : '').join(' ');
+      }
+    }
+
+    return cleanText(out);
+  }
+
+  for (let r=rng.s.r; r<=rng.e.r; r++) {
+    const c0 = ws[XLSX.utils.encode_cell({r,c:0})];
+    if (c0 && String(c0.v||'').trim()==='Resource') {
+      headerRow=r;
+      for (let c=1; c<=rng.e.c; c++) {
+        const hc=ws[XLSX.utils.encode_cell({r,c})];
+        if (hc&&hc.v) {
+          const lbl=String(hc.v).trim();
+          const m=lbl.match(/^(P\d+)\s*\(([^)]+)\)/);
+          if (m) periods[c]={id:m[1],time:m[2],label:lbl};
+        }
+      }
+      break;
+    }
+  }
+  if (headerRow<0){alert('Cannot find data. Ensure this is the RBS All Bookings export.');return null;}
+
+  let dateLabel='';
+  const t1=ws['A1'];
+  if (t1){const mv=String(t1.v||'').match(/(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+\d{2}\s+\w+\s+\d{4}/i);if(mv)dateLabel=mv[0];}
+
+  const carts=[];
+  for (let r=headerRow+1; r<=rng.e.r; r++) {
+    const c0=ws[XLSX.utils.encode_cell({r,c:0})];
+    if (!c0||!c0.v) continue;
+    const rawName=String(c0.v).trim();
+    if (!rawName.toLowerCase().includes('ipad')&&!rawName.toLowerCase().includes('laptop')) continue;
+    const shortName=rawName.replace(/^\(Equipment\)\s*/i,'').replace(/\s*\(\d+\s*(iPADs?|Sets?)\)/i,'').trim();
+    const slots={};
+    for (let c=1; c<=rng.e.c; c++) {
+      const addr=XLSX.utils.encode_cell({r,c});
+      const cell=ws[addr];
+      if (!cell||String(cell.v||'').trim().toLowerCase()!=='booked') continue;
+      if (!periods[c]) continue;
+
+      const cmt = getCommentText(cell, addr);
+      const bookedBy = extractBetweenLabel(cmt, 'Booked By:', [', Purpose:', 'Purpose:', 'Timeslots:', 'Remarks:']);
+      const purpose  = extractBetweenLabel(cmt, 'Purpose:', ['Timeslots:', 'Remarks:']);
+      const remarks  = extractBetweenLabel(cmt, 'Remarks:', []);
+
+      // VBA equivalent: searchText = commentText & " " & purpose & " " & remarks
+      // This is the key fix. It lets the HTML match the RBS exports the same way the VBA does.
+      const searchText = cleanText([cmt, purpose, remarks].filter(Boolean).join(' '));
+      const displayText = cleanText(remarks || purpose || cmt || 'No location indicated');
+      const key = `${searchText || displayText}||${bookedBy}||${rawName}`;
+
+      if (!slots[key]) slots[key]={
+        remarks: searchText || displayText,
+        displayRemarks: displayText,
+        commentText: cmt,
+        purpose,
+        bookedBy,
+        cols:[],
+        periodIds:[]
+      };
+      slots[key].cols.push(c);
+      slots[key].periodIds.push(periods[c].id);
+    }
+    carts.push({name:shortName,raw:rawName,slots});
+  }
+  return {date:dateLabel,periods,carts};
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER ROOM PREVIEW
+// ═══════════════════════════════════════════════════════════
+function floorCls(f){return f===2?'fl2':f===3?'fl3':f===4?'fl4':f>=5?'fl5':'flx';}
+function renderRoomPreview(db){}
+function toggleRoomPreview(){}
+
+// FILE UPLOAD HANDLERS
+// ═══════════════════════════════════════════════════════════
+// ON-LOAD INIT  — hide iTV section if room DB already baked
+// ═══════════════════════════════════════════════════════════
+(function onLoad(){
+  if (BAKED_ROOM_DB) {
+    // Room DB is baked in — hide the iTV upload section entirely
+    document.getElementById('itvSection').style.display = 'none';
+    document.getElementById('uploadTitle').textContent = '📂 Upload RBS Bookings';
+    const uploadSubtitle=document.getElementById('uploadSubtitle');
+    if(uploadSubtitle) uploadSubtitle.textContent='';
+    // Show room preview collapsed
+  }
+})();
+
+function checkReady(){
+  const btn=document.getElementById('generateBtn'),hint=document.getElementById('generateHint');
+  const ready = !!(roomDB && roomDB.length && bookings);
+  btn.disabled = !ready;
+  if (!roomDB || !roomDB.length) hint.textContent = 'Upload the iTV room file first';
+  else if (!bookings)            hint.textContent = 'Upload the RBS bookings file to enable';
+  else                           hint.textContent = 'Ready — click Generate!';
+}
+
+function handleItvFile(file){
+  if (!file) return;
+  const fr=new FileReader();
+  fr.onload=e=>{
+    roomDB=parseItvFile(e.target.result);
+    if (roomDB&&roomDB.length){
+      document.getElementById('itvStatus').textContent=`✓ ${file.name} — ${roomDB.length} rooms`;
+      document.getElementById('itvStatus').className='file-status ok';
+      document.getElementById('bakeBtn').disabled=false;
+      document.getElementById('bakeHint').textContent=`${roomDB.length} rooms ready to save`;
+        toast(`Room database loaded: ${roomDB.length} rooms ✓`);
+    } else {
+      document.getElementById('itvStatus').textContent='✗ Could not parse — check Sheet1 tab';
+      document.getElementById('itvStatus').className='file-status none';
+    }
+    checkReady();
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+// ── BAKE & DOWNLOAD ─────────────────────────────────────────
+// Reads current HTML source, replaces the @@ROOM_DB@@ placeholder
+// with the actual parsed roomDB JSON, downloads as a new file.
+function bakeAndDownload(){
+  if (!roomDB||!roomDB.length){ toast('No room data loaded yet'); return; }
+  const jsonStr = JSON.stringify(roomDB);
+  // Fetch our own source
+  fetch(window.location.href)
+    .then(r=>r.text())
+    .catch(()=>{
+      // If fetch fails (local file://), read from document.documentElement
+      return document.documentElement.outerHTML;
+    })
+    .then(src=>{
+      // Replace placeholder — handle both null/*@@ROOM_DB@@*/ and any previous baked value
+      let updated = src.replace(
+        /const BAKED_ROOM_DB = (?:null|(\[[\s\S]*?\])); \/\* @@ROOM_DB@@ \*\//,
+        `const BAKED_ROOM_DB = ${jsonStr}; /* @@ROOM_DB@@ */`
+      );
+      if (!updated.includes(jsonStr)) {
+        toast('Could not embed room data — try re-saving from OneDrive'); return;
+      }
+      const blob = new Blob([updated], {type:'text/html'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Punggol_Green_iPad_Deployment_Tool.html';
+      a.click();
+      toast(`Saved! ${roomDB.length} rooms baked in. Share this file on OneDrive.`);
+    });
+}
+
+
+function sourceHtmlForDownload(){
+  // For local file use, documentElement.outerHTML is the most reliable source.
+  return '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+}
+
+function downloadUpdatedHtml(){
+  const fixes = {};
+  Object.keys(editOverrides || {}).sort().forEach(k => {
+    if(editOverrides[k]) fixes[k] = editOverrides[k];
+  });
+
+  let src = sourceHtmlForDownload();
+  const roomJson = JSON.stringify(roomDB || []);
+  const fixesJson = JSON.stringify(fixes);
+
+  src = src.replace(
+    /const BAKED_ROOM_DB = \[[\s\S]*?\]; \/\* @@ROOM_DB@@ \*\//,
+    `const BAKED_ROOM_DB = ${roomJson}; /* @@ROOM_DB@@ */`
+  );
+
+  src = src.replace(
+    /const BAKED_MANUAL_FIXES = \{[\s\S]*?\}; \/\* @@MANUAL_FIXES@@ \*\//,
+    `const BAKED_MANUAL_FIXES = ${fixesJson}; /* @@MANUAL_FIXES@@ */`
+  );
+
+  const blob = new Blob([src], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Punggol_Green_iPad_Deployment_Tool_UPDATED.html';
+  a.click();
+
+  const count = Object.keys(fixes).length;
+  toast(`Downloaded updated HTML with ${count} manual fix${count===1?'':'es'} baked in ✓`);
+}
+
+
+async function extractLegacyXlsxComments(buf){
+  const commentsByRef = {};
+
+  if (typeof JSZip === 'undefined') {
+    console.warn('JSZip not available; falling back to SheetJS comments only.');
+    return commentsByRef;
+  }
+
+  try {
+    const zip = await JSZip.loadAsync(buf);
+    const commentPaths = Object.keys(zip.files).filter(name => /^xl\/comments\d+\.xml$/i.test(name));
+
+    for (const path of commentPaths) {
+      const xmlText = await zip.file(path).async('text');
+      const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+      let nodes = Array.from(doc.getElementsByTagNameNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'comment'));
+      if (!nodes.length) nodes = Array.from(doc.getElementsByTagName('comment'));
+
+      nodes.forEach(node => {
+        const ref = node.getAttribute('ref');
+        if (!ref) return;
+        let tNodes = Array.from(node.getElementsByTagNameNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 't'));
+        if (!tNodes.length) tNodes = Array.from(node.getElementsByTagName('t'));
+        let text = tNodes.map(t => t.textContent || '').join(' ');
+        text = text
+          .replace(/&amp;#10;?|&#10;?|&#x0?A;?|_x000D_/gi, ' ')
+          .replace(/\r/g, ' ')
+          .replace(/\n/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        commentsByRef[ref] = text;
+      });
+    }
+  } catch (err) {
+    console.error('Could not parse legacy Excel comments:', err);
+  }
+
+  return commentsByRef;
+}
+
+function handleRbsFile(file){
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = async e => {
+    const buf = e.target.result;
+    const legacyComments = await extractLegacyXlsxComments(buf);
+    bookings = parseRbsFile(buf, legacyComments);
+    if(bookings){
+      const commentCount = Object.keys(legacyComments || {}).length;
+      document.getElementById('rbsStatus').textContent = `✓ ${file.name}${bookings.date?' — '+bookings.date:''}${commentCount?' — '+commentCount+' notes read':''}`;
+      document.getElementById('rbsStatus').className = 'file-status ok';
+      toast(`Bookings loaded ✓ ${commentCount ? '('+commentCount+' notes read)' : ''}`);
+    }
+    checkReady();
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+function setupDrop(dropId,inputId,handler){
+  const drop=document.getElementById(dropId),inp=document.getElementById(inputId);
+  inp.addEventListener('change',e=>handler(e.target.files[0]));
+  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over');});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');handler(e.dataTransfer.files[0]);});
+}
+setupDrop('dropItv','fileItv',handleItvFile);
+setupDrop('dropRbs','fileRbs',handleRbsFile);
+checkReady();
+
+// ═══════════════════════════════════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════════════════════════════════
+const tipEl=document.getElementById('tip');
+function showTip(e,el){
+  try{
+    const d=JSON.parse(decodeURIComponent(el.dataset.tip));
+    tipEl.innerHTML=d.type==='err'
+      ?`<strong>⚠ Not recognised</strong>Check location with ${escHtml(d.bookedBy||'teacher')}.<br>Cart: ${d.cart}<br>Periods: ${d.periods}<br>Booked by: ${escHtml(d.bookedBy||'?')}<br>Remarks: "${escHtml(d.raw)}"`
+      :`<strong>${d.canon}</strong>${d.aka?d.aka+'<br>':''}${d.room?'Room: '+d.room+'<br>':''}Level: ${d.floor}<br>Cart: ${d.cart}<br>Periods: ${d.periods}<br>Booked by: ${escHtml(d.bookedBy||'?')}<br>Remarks: "${escHtml(d.raw)}"`;
+    tipEl.classList.add('on');moveTip(e);
+  }catch{}
+}
+function moveTip(e){
+  const x=e.clientX+14,y=e.clientY+14;
+  tipEl.style.left=(x+tipEl.offsetWidth>innerWidth?x-tipEl.offsetWidth-20:x)+'px';
+  tipEl.style.top=(y+tipEl.offsetHeight>innerHeight?y-tipEl.offsetHeight-20:y)+'px';
+}
+function hideTip(){tipEl.classList.remove('on');}
+document.addEventListener('mousemove',e=>{if(tipEl.classList.contains('on'))moveTip(e);});
+
+// ═══════════════════════════════════════════════════════════
+// TOAST + UTILS
+// ═══════════════════════════════════════════════════════════
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+
+
+// ═══════════════════════════════════════════════════════════
+// v9 UNIVERSAL OVERRIDES
+// ═══════════════════════════════════════════════════════════
+function levelOptionsHtml(selectedLevel=0){
+  const selected=Number(selectedLevel)||0;
+  const setupFloors=(classroomSetup?.floors||[]).map((f,i)=>[i+1,f.name]);
+  const opts=[[0,'Auto / Unknown'],...(setupFloors.length?setupFloors:[[1,'Level 1'],[2,'Level 2'],[3,'Level 3'],[4,'Level 4'],[5,'Level 5']])];
+  return opts.map(([value,label])=>`<option value="${value}" ${selected===value?'selected':''}>${escHtml(label)}</option>`).join('');
+}
+function floorLabel(f,res=null){
+  const n=Number(f)||0;
+  const name=String(res?.floorName || classroomSetup?.floors?.[n-1]?.name || '').trim();
+  const standard=name.match(/^Level\s*(\d+)$/i);
+  if(standard)return `L${standard[1]}`;
+  return name || (n>0?`L${n}`:'');
+}
+function contrastText(hex){
+  const h=String(hex||'').replace('#','');if(!/^[0-9a-f]{6}$/i.test(h))return '#1f2937';
+  const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return (r*299+g*587+b*114)/1000>155?'#1f2937':'#ffffff';
+}
+function applyResolvedColour(div,res){
+  if(res?.floorColor){div.style.background=res.floorColor;div.style.color=contrastText(res.floorColor);div.style.borderColor='rgba(15,23,42,.20)';}
+}
+function resolveRemarks(raw,db){
+  const setupResolved=resolveWithClassroomSetup(raw);
+  if(setupResolved)return setupResolved;
+  if(COMMUNITY_MODE || classroomSetupReady()) return null;
+  const vbaResolved=resolveVbaStyle(raw,db); if(vbaResolved)return vbaResolved;
+  return null;
+}
+function displayCartName(name){
+  let n=String(name||'').trim().replace(/^\(Equipment\)\s*/i,'').trim();
+  const u=n.toUpperCase();
+  if(/^LAPTOP\s*CARTS?$/i.test(n))return 'Laptop';
+  const m=u.match(/IPAD\s*SET\s*([A-H])/i)||u.match(/\bIPAD\s*([A-H])\b/i); if(m)return m[1].toUpperCase();
+  return n;
+}
+function isSharedIpadCart(row){
+  if(!row||row.isLaptop||isSelfHelpCartName(row.name)||isBlockedDeploymentCartName(row.name))return false;
+  return true;
+}
+function rowHomeFloors(row,poolIndex){
+  if(COMMUNITY_MODE)return [];
+  const n=(row.name||'').toLowerCase();
+  if(/\ba\b/i.test(row.name)||poolIndex===0)return [2,1];
+  if(/\bb\b/i.test(row.name)||poolIndex===1)return [3];
+  if(/\bc\b/i.test(row.name)||poolIndex===2)return [4];
+  if(/\bd\b/i.test(row.name)||poolIndex===3)return [4];
+  if(/\be\b/i.test(row.name)||poolIndex===4)return [5];
+  if(/\bf\b/i.test(row.name)||poolIndex===5)return [5];
+  return [];
+}
+function addTimetableColGroup(table){
+  const old=table.querySelector('colgroup');if(old)old.remove();
+  const cg=document.createElement('colgroup'),resourceCol=document.createElement('col');resourceCol.style.width='104px';cg.appendChild(resourceCol);
+  (lastSortedCols||[]).forEach(()=>{const col=document.createElement('col');col.style.width='76px';cg.appendChild(col)});table.insertBefore(cg,table.firstChild);
+}
+function makeSlotChip(s,rowIdx,isConflict){
+  const res=s.resolved,div=document.createElement('div');
+  const pencil=s.applePencil?'<div class="pencil-badge">🍎Apple Pencils</div>':'';
+  if(!res){
+    div.className='cell err';div.innerHTML=`<div class="cl">Click to Fix</div>${pencil}`;div.title=[`Check location with ${s.bookedBy||'teacher'}.`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');div.addEventListener('click',e=>handleBookingClick(e,div,s,rowIdx));div.draggable=!deleteMode;div.style.cursor=deleteMode?'not-allowed':'pointer';return div;
+  }
+  const f=effectiveFloor(res);div.className=`cell ${res.floorColor?'':lvCls(f)}${isConflict?' conflict-stack':''}${s.applePencil?' pencil-request':''}`;applyResolvedColour(div,res);
+  div.innerHTML=`${isConflict?'<div style="font-size:11px;font-weight:800;color:#92400e;margin-bottom:1px">⚠ OVERLAP</div>':''}<div class="cl">${escHtml(resolvedDisplay(res))}</div>${f?`<div class="lv">${escHtml(floorLabel(f,res))}</div>`:''}${pencil}`;
+  div.title=['Click to edit location',resolvedDisplay(res)+(res.aka?' · '+res.aka:''),'Floor: '+floorLabel(f,res),'Booked by: '+(s.bookedBy||'?'),s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'','Remarks: '+(s.displayRemarks||s.remarks||''),'Periods: '+(s.periodIds||[]).join(', '),isConflict?'⚠ Overlapping — drag one away':''].filter(Boolean).join('\n');
+  div.addEventListener('click',e=>handleBookingClick(e,div,s,rowIdx,resolvedDisplay(res),effectiveFloor(res)));div.draggable=!deleteMode;div.style.cursor=deleteMode?'not-allowed':'grab';div.addEventListener('dragstart',e=>{if(deleteMode){e.preventDefault();return;}onDragStart(e,s,rowIdx)});div.addEventListener('dragend',onDragEnd);return div;
+}
+function parseRbsFile(buf,legacyComments={}){
+  const wb=XLSX.read(buf,{type:'array',cellStyles:true,cellComments:true}),ws=wb.Sheets[wb.SheetNames[0]],rng=XLSX.utils.decode_range(ws['!ref']);let headerRow=-1,periods={};
+  const cleanText=x=>String(x||'').replace(/&amp;#10;|&#10;|&#x0?A;|_x000D_/gi,' ').replace(/\r|\n/g,' ').replace(/\s+/g,' ').trim();
+  function extractBetweenLabel(source,startLabel,endLabels){const src=String(source||''),low=src.toLowerCase(),start=low.indexOf(startLabel.toLowerCase());if(start<0)return '';let from=start+startLabel.length,to=src.length;(endLabels||[]).forEach(lbl=>{const pos=low.indexOf(lbl.toLowerCase(),from);if(pos>=0&&pos<to)to=pos});return cleanText(src.slice(from,to));}
+  function getCommentText(cell,addr){let out='';if(legacyComments?.[addr])out=legacyComments[addr];if(!out&&cell?.c?.length)out=cell.c.map(x=>x?.t||'').join(' ');if(!out&&ws['!comments']){const found=ws['!comments'].find(x=>x?.ref===addr);if(found){if(typeof found.comment==='string')out=found.comment;else if(found.comment?.t)out=found.comment.t;else if(Array.isArray(found.comment))out=found.comment.map(x=>x?.t||'').join(' ')}}return cleanText(out);}
+  for(let r=rng.s.r;r<=rng.e.r;r++){const c0=ws[XLSX.utils.encode_cell({r,c:0})];if(c0&&String(c0.v||'').trim().toLowerCase()==='resource'){headerRow=r;for(let c=1;c<=rng.e.c;c++){const hc=ws[XLSX.utils.encode_cell({r,c})];if(!hc||hc.v==null||String(hc.v).trim()==='')continue;const label=String(hc.v).trim(),m=label.match(/^(.*?)\s*\(([^()]*)\)\s*$/);periods[c]={id:(m?m[1]:label).trim()||`P${c}`,time:m?m[2].trim():'',label};}break;}}
+  if(headerRow<0){alert('Cannot find the Resource row. Ensure this is an RBS All Bookings export.');return null;}
+  let dateLabel='';const a1=cleanText(ws['A1']?.v||'');const dm=a1.match(/All Bookings(?: Today)?\s*-\s*(.+)$/i);if(dm)dateLabel=dm[1].trim();
+  const carts=[];
+  for(let r=headerRow+1;r<=rng.e.r;r++){
+    const c0=ws[XLSX.utils.encode_cell({r,c:0})];if(!c0||!c0.v)continue;const rawName=String(c0.v).trim(),shortName=rawName.replace(/^\(Equipment\)\s*/i,'').replace(/\s*\(\d+\s*[^)]*\)\s*$/i,'').trim();const slots={};
+    for(const c of Object.keys(periods).map(Number)){
+      const addr=XLSX.utils.encode_cell({r,c}),cell=ws[addr];if(!cell)continue;const marker=String(cell.v||'').trim().toLowerCase(),cmt=getCommentText(cell,addr);const isBooking=marker==='booked'||marker==='my'||/confirmed booking/i.test(cmt);if(!isBooking)continue;
+      const bookedBy=extractBetweenLabel(cmt,'Booked By:',[', Purpose:','Purpose:','Timeslots:','Remarks:']),purpose=extractBetweenLabel(cmt,'Purpose:',['Timeslots:','Remarks:']),remarks=extractBetweenLabel(cmt,'Remarks:',[]),searchText=cleanText([cmt,purpose,remarks].filter(Boolean).join(' ')),displayText=cleanText(remarks||purpose||cmt||'No location indicated'),key=`${searchText||displayText}||${bookedBy}||${rawName}`;
+      const applePencil=/\bapple\s*pencils?\b/i.test([cmt,purpose,remarks].join(' '));if(!slots[key])slots[key]={remarks:searchText||displayText,displayRemarks:displayText,commentText:cmt,purpose,bookedBy,applePencil,cols:[],periodIds:[]};slots[key].applePencil=slots[key].applePencil||applePencil;slots[key].cols.push(c);slots[key].periodIds.push(periods[c].id);
+    }
+    if(Object.keys(slots).length)carts.push({name:shortName||rawName,raw:rawName,slots});
+  }
+  return {date:dateLabel,periods,carts};
+}
+function checkReady(){
+  const btn=document.getElementById('generateBtn'),hint=document.getElementById('generateHint');const ready=!!bookings;btn.disabled=!ready;
+  if(!bookings)hint.textContent='Upload the RBS bookings file to enable';else{const n=unresolvedRbsTags().length;hint.textContent=n?`Ready — ${n} location tag${n===1?'':'s'} need setup or can be fixed after generation`:'Ready — click Generate!';}
+  updateClassroomSetupSummary();
+}
+function handleRbsFile(file){
+  if(!file)return;const fr=new FileReader();fr.onload=async e=>{const buf=e.target.result,legacyComments=await extractLegacyXlsxComments(buf);bookings=parseRbsFile(buf,legacyComments);if(bookings){const cc=Object.keys(legacyComments||{}).length;document.getElementById('rbsStatus').textContent=`✓ ${file.name}${bookings.date?' — '+bookings.date:''}${cc?' — '+cc+' notes read':''}`;document.getElementById('rbsStatus').className='file-status ok';toast(`Bookings loaded ✓ ${cc?'('+cc+' notes read)':''}`);}checkReady();if(document.getElementById('classroomSetupOverlay')?.classList.contains('open'))renderClassroomSetup();};fr.readAsArrayBuffer(file);
+}
+function generate(){
+  if(!bookings)return;
+  const unresolved=unresolvedRbsTags();
+  if(unresolved.length){const ok=window.confirm(`${unresolved.length} RBS location tag${unresolved.length===1?' is':'s are'} not mapped in Classroom Setup yet.\n\nChoose Cancel to resolve them now, or OK to generate anyway. Unresolved bookings will appear as “Click to Fix”.`);if(!ok){openClassroomSetup();return;}}
+  bookings.carts.forEach(cart=>Object.values(cart.slots).forEach(s=>{s.resolved=resolveRemarks(s.remarks,roomDB)}));
+  const allCols=new Set();bookings.carts.filter(c=>isDeployableCartName(c.name)).forEach(c=>Object.values(c.slots).forEach(s=>s.cols.forEach(x=>allCols.add(Number(x)))));lastPeriods=bookings.periods||{};
+  if(allCols.size){const minUsed=Math.min(...allCols),maxUsed=Math.max(...allCols),allPeriodCols=Object.keys(lastPeriods).map(Number).filter(x=>!isNaN(x)).sort((a,b)=>a-b),visible=allPeriodCols.filter(x=>x>=minUsed&&x<=maxUsed);lastSortedCols=visible.length?visible:[...allCols].sort((a,b)=>a-b);}else lastSortedCols=[];
+  editableRows=bookings.carts.filter(cart=>isDeployableCartName(cart.name)).map(cart=>({name:cart.name,isLaptop:/laptop|notebook|chromebook/i.test(cart.name),slots:Object.values(cart.slots).map(s=>({...s}))}));undoStack=[];deleteMode=false;refreshUnknownPanel();document.getElementById('optimiseBtn').style.display='';document.getElementById('deleteBookingBtn').style.display='';updateDeleteButton();renderRearrangeTable();updateRearrangeTitle();
+}
+function updateRearrangeTitle(){
+  const school=String(classroomSetup?.schoolName||'').trim(),prefix=school?`${escHtml(school)} — `:'';
+  document.getElementById('ttTitle').innerHTML=`${prefix}iPad &amp; Laptop Deployment Tool`;
+  const btn=document.getElementById('undoBtn');if(btn){btn.disabled=!undoStack.length;btn.style.opacity=undoStack.length?'1':'0.35';}
+}
+function optimiseSchedule(showToast=true){
+  if(!editableRows.length||!bookings){toast('Generate the timetable first');return;}pushUndo();const pool=editableRows.map((row,idx)=>({row,idx})).filter(x=>isSharedIpadCart(x.row));if(!pool.length){toast('No movable iPad/tablet resource rows found');return;}
+  const poolIndexByRow=new Map(pool.map((x,i)=>[x.idx,i])),slotsToOptimise=[];pool.forEach(({row,idx})=>{row.slots.forEach(slot=>slotsToOptimise.push({...slot,_originalRowIdx:idx}));row.slots=[];row._lastLevel=0;row._usage=0});slotsToOptimise.sort((a,b)=>minCol(a)-minCol(b)||slotFloor(a)-slotFloor(b)||(b.cols.length-a.cols.length));
+  for(const slot of slotsToOptimise){let best=null,bestScore=Infinity;for(const item of pool){if(!cartFreeForSlot(item.row,slot))continue;const score=optimiserScore(item.row,slot,poolIndexByRow.get(item.idx),item.row._usage||0);if(score<bestScore){bestScore=score;best=item}}if(!best){for(const item of pool){const score=optimiserScore(item.row,slot,poolIndexByRow.get(item.idx),item.row._usage||0)+10000;if(score<bestScore){bestScore=score;best=item}}}best.row.slots.push(slot);const f=slotFloor(slot);if(f)best.row._lastLevel=f;best.row._usage=(best.row._usage||0)+1;}pool.forEach(({row})=>{delete row._lastLevel;delete row._usage});renderRearrangeTable();updateRearrangeTitle();if(showToast)toast('Optimised across active iPad/tablet resources ✓');
+}
+
+// Classroom Setup UI
+function openClassroomSetup(){classroomSetup=classroomSetup||loadClassroomSetup();document.getElementById('classroomSetupOverlay')?.classList.add('open');document.getElementById('classroomSetupOverlay')?.setAttribute('aria-hidden','false');renderClassroomSetup();}
+function closeClassroomSetup(){document.getElementById('classroomSetupOverlay')?.classList.remove('open');document.getElementById('classroomSetupOverlay')?.setAttribute('aria-hidden','true');applyClassroomSetupToCurrentData();checkReady();}
+function updateClassroomSchoolName(v){classroomSetup.schoolName=String(v||'').trim();persistClassroomSetup();}
+function setupFloorIndex(floorId){return Math.max(0,(classroomSetup?.floors||[]).findIndex(f=>f.id===floorId));}
+function addClassroomFloor(){const i=classroomSetup.floors.length,classroomSetupFloor={id:safeSetupId('floor'),name:`Level ${i+1}`,color:FLOOR_COLOUR_SEQUENCE[i%FLOOR_COLOUR_SEQUENCE.length]};classroomSetup.floors.push(classroomSetupFloor);persistClassroomSetup();renderClassroomSetup();}
+function updateFloorName(id,v){const f=classroomSetup.floors.find(x=>x.id===id);if(f){f.name=String(v||'').trim()||`Level ${setupFloorIndex(id)+1}`;persistClassroomSetup();renderLocationDetail();}}
+function updateFloorColor(id,v){const f=classroomSetup.floors.find(x=>x.id===id);if(f&&/^#[0-9a-f]{6}$/i.test(v)){f.color=v;persistClassroomSetup();renderClassroomSetup();}}
+function addLocationToFloor(floorId,name=''){
+  const floor=classroomSetup.floors.find(f=>f.id===floorId);if(!floor)return;let clean=String(name||'').trim();if(!clean)clean=window.prompt(`Name the classroom/location for ${floor.name}:`,'')||'';clean=clean.trim();if(!clean)return;
+  const loc={id:safeSetupId('loc'),name:clean,floorId,aliases:[clean]};classroomSetup.locations.push(loc);selectedSetupLocationId=loc.id;persistClassroomSetup();renderClassroomSetup();
+}
+function selectSetupLocation(id){selectedSetupLocationId=id;renderClassroomSetup();}
+function renameSetupLocation(id,v){const loc=classroomSetup.locations.find(l=>l.id===id);if(!loc)return;const clean=String(v||'').trim();if(clean){loc.name=clean;if(!loc.aliases.some(a=>normaliseSetupText(a)===normaliseSetupText(clean)))loc.aliases.unshift(clean);persistClassroomSetup();renderClassroomSetup();}}
+function moveSetupLocation(id,floorId){const loc=classroomSetup.locations.find(l=>l.id===id);if(loc&&classroomSetup.floors.some(f=>f.id===floorId)){loc.floorId=floorId;persistClassroomSetup();renderClassroomSetup();}}
+function deleteSetupLocation(id){const loc=classroomSetup.locations.find(l=>l.id===id);if(!loc)return;if(!window.confirm(`Delete “${loc.name}” and its saved RBS aliases?`))return;classroomSetup.locations=classroomSetup.locations.filter(l=>l.id!==id);if(selectedSetupLocationId===id)selectedSetupLocationId=null;persistClassroomSetup();renderClassroomSetup();}
+function addAliasToSelected(tag){const loc=classroomSetup.locations.find(l=>l.id===selectedSetupLocationId);const clean=String(tag||selectedRawTag||'').trim();if(!loc||!clean)return;const k=normaliseSetupText(clean);if(!loc.aliases.some(a=>normaliseSetupText(a)===k))loc.aliases.push(clean);selectedRawTag='';persistClassroomSetup();applyClassroomSetupToCurrentData();renderClassroomSetup();}
+function removeSetupAlias(locId,aliasIndex){const loc=classroomSetup.locations.find(l=>l.id===locId);if(!loc)return;loc.aliases.splice(aliasIndex,1);if(!loc.aliases.length)loc.aliases=[loc.name];persistClassroomSetup();applyClassroomSetupToCurrentData();renderClassroomSetup();}
+function createLocationFromTag(floorId,tag){const clean=String(tag||selectedRawTag||'').trim();if(!clean)return;addLocationToFloor(floorId,clean);selectedRawTag='';applyClassroomSetupToCurrentData();}
+function newBlankClassroomSetup(){if(!window.confirm('Clear the saved Classroom Setup in this browser and start a new school profile?'))return;classroomSetup=blankClassroomSetup();selectedSetupLocationId=null;selectedRawTag='';persistClassroomSetup();applyClassroomSetupToCurrentData();renderClassroomSetup();}
+function applyClassroomSetupToCurrentData(){if(bookings?.carts)bookings.carts.forEach(c=>Object.values(c.slots||{}).forEach(s=>s.resolved=resolveRemarks(s.remarks,roomDB)));if(editableRows?.length)editableRows.forEach(r=>(r.slots||[]).forEach(s=>s.resolved=resolveRemarks(s.remarks,roomDB)));if(editableRows?.length){refreshUnknownPanel();if(currentView==='original')renderOriginalTable();else{renderRearrangeTable();updateRearrangeTitle();}}updateClassroomSetupSummary();}
+function renderClassroomSetup(){
+  classroomSetup=classroomSetup||loadClassroomSetup();const school=document.getElementById('csSchoolName');if(school&&document.activeElement!==school)school.value=classroomSetup.schoolName||'';
+  const unresolved=unresolvedRbsTags(),bank=document.getElementById('csUnresolvedTags');document.getElementById('csUnresolvedCount').textContent=unresolved.length;bank.innerHTML='';
+  if(!bookings)bank.innerHTML='<div class="cs-empty">Upload an RBS bookings export first. Unidentified location wording will appear here as grey tags.</div>';else if(!unresolved.length)bank.innerHTML='<div class="cs-empty">✓ No unidentified RBS location tags.</div>';else unresolved.forEach(tag=>{const el=document.createElement('div');el.className='cs-raw-tag'+(selectedRawTag===tag?' selected':'');el.textContent=tag;el.draggable=true;el.title='Drag to the detailed view, or drop directly onto a floor';el.onclick=()=>{selectedRawTag=selectedRawTag===tag?'':tag;renderClassroomSetup()};el.ondragstart=e=>{e.dataTransfer.setData('text/rbs-location-tag',tag);e.dataTransfer.effectAllowed='copy'};bank.appendChild(el)});
+  document.getElementById('csFloorCount').textContent=classroomSetup.floors.length;const floorsEl=document.getElementById('csFloors');floorsEl.innerHTML='';
+  if(!classroomSetup.floors.length)floorsEl.innerHTML='<div class="cs-empty">No floors yet. Click <strong>+ Add Floor</strong>. Floors are named Level 1, Level 2 and so on by default, with automatic colour coding.</div>';
+  classroomSetup.floors.forEach((f,fi)=>{const card=document.createElement('div');card.className='cs-floor-card';card.style.setProperty('--floor-color',f.color);card.ondragover=e=>{if(e.dataTransfer.types.includes('text/rbs-location-tag')||e.dataTransfer.types.includes('text/setup-location-id')){e.preventDefault();card.classList.add('drag-over')}};card.ondragleave=()=>card.classList.remove('drag-over');card.ondrop=e=>{e.preventDefault();card.classList.remove('drag-over');const locId=e.dataTransfer.getData('text/setup-location-id'),tag=e.dataTransfer.getData('text/rbs-location-tag');if(locId)moveSetupLocation(locId,f.id);else if(tag)createLocationFromTag(f.id,tag)};
+    card.innerHTML=`<div class="cs-floor-tools"><input class="cs-floor-name" value="${escHtml(f.name)}" aria-label="Floor name"><input class="cs-floor-color" type="color" value="${f.color}" aria-label="Floor colour"><button class="btn btn-outline" type="button">+ Location</button></div><div class="cs-location-list"></div>`;
+    const [nameInput,colorInput,addBtn]=card.querySelectorAll('input,button');nameInput.onchange=e=>updateFloorName(f.id,e.target.value);colorInput.oninput=e=>updateFloorColor(f.id,e.target.value);addBtn.onclick=()=>addLocationToFloor(f.id);
+    const list=card.querySelector('.cs-location-list'),locs=classroomSetup.locations.filter(l=>l.floorId===f.id).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:'base'}));if(!locs.length)list.innerHTML='<span style="font-size:11px;color:var(--muted)">Drop an RBS tag here or add a location.</span>';
+    locs.forEach(loc=>{const chip=document.createElement('div');chip.className='cs-location-chip'+(selectedSetupLocationId===loc.id?' selected':'');chip.textContent=loc.name;chip.style.background=f.color;chip.style.color=contrastText(f.color);chip.draggable=true;chip.onclick=()=>selectSetupLocation(loc.id);chip.ondragstart=e=>{e.stopPropagation();e.dataTransfer.setData('text/setup-location-id',loc.id);e.dataTransfer.effectAllowed='move'};list.appendChild(chip)});floorsEl.appendChild(card);
+  });
+  renderLocationDetail();updateClassroomSetupSummary();
+}
+function renderLocationDetail(){
+  const host=document.getElementById('csLocationDetail');if(!host)return;const loc=classroomSetup?.locations?.find(l=>l.id===selectedSetupLocationId);if(!loc){host.className='cs-location-detail cs-empty-detail';host.innerHTML=selectedRawTag?`<div><strong>“${escHtml(selectedRawTag)}” selected.</strong><br><br>Add a floor/location on the right, or drop this tag onto a floor to create one.</div>`:'Select a classroom/location from a floor to see and edit its RBS wording.';return;}
+  host.className='cs-location-detail';const floorOptions=classroomSetup.floors.map(f=>`<option value="${f.id}" ${f.id===loc.floorId?'selected':''}>${escHtml(f.name)}</option>`).join('');host.innerHTML=`<div class="cs-detail-card"><div class="cs-field"><label>Classroom / location name</label><input id="csLocName" value="${escHtml(loc.name)}"></div><div class="cs-field"><label>Floor</label><select id="csLocFloor">${floorOptions}</select></div><div class="cs-field"><label>RBS wording / aliases</label><div id="csAliasDrop" class="cs-alias-drop"><div class="cs-selected-hint">Drag unidentified location tags here. Remember to download the .txt file.</div><div id="csAliasList" class="cs-alias-list"></div></div></div>${selectedRawTag?`<button id="csAssignSelected" class="btn btn-primary" type="button">Assign selected tag: ${escHtml(selectedRawTag)}</button>`:''}<div class="cs-detail-actions"><button id="csDeleteLoc" class="btn btn-danger" type="button">Delete location</button></div></div>`;
+  document.getElementById('csLocName').onchange=e=>renameSetupLocation(loc.id,e.target.value);document.getElementById('csLocFloor').onchange=e=>moveSetupLocation(loc.id,e.target.value);document.getElementById('csDeleteLoc').onclick=()=>deleteSetupLocation(loc.id);const assign=document.getElementById('csAssignSelected');if(assign)assign.onclick=()=>addAliasToSelected(selectedRawTag);
+  const drop=document.getElementById('csAliasDrop');drop.ondragover=e=>{if(e.dataTransfer.types.includes('text/rbs-location-tag')){e.preventDefault();drop.classList.add('drag-over')}};drop.ondragleave=()=>drop.classList.remove('drag-over');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('drag-over');addAliasToSelected(e.dataTransfer.getData('text/rbs-location-tag'))};const list=document.getElementById('csAliasList');loc.aliases.forEach((a,i)=>{const chip=document.createElement('div');chip.className='cs-alias-chip';chip.innerHTML=`<span title="${escHtml(a)}">${escHtml(a)}</span><button type="button" title="Remove alias">×</button>`;chip.querySelector('button').onclick=()=>removeSetupAlias(loc.id,i);list.appendChild(chip)});
+}
+function cleanSetupField(v){return String(v??'').replace(/[\t\r\n]+/g,' ').trim();}
+function serializeClassroomSetup(cfg){const lines=['DEPLOYMENT_CLASSROOM_SETUP\t1','# Portable RBS classroom/floor mapping','# SCHOOL = school name','# FLOOR = floor id + name + colour','# LOCATION = location id + floor id + display name','# ALIAS = location id + RBS wording'];lines.push(`SCHOOL\t${cleanSetupField(cfg.schoolName||'')}`);cfg.floors.forEach(f=>lines.push(`FLOOR\t${cleanSetupField(f.id)}\t${cleanSetupField(f.name)}\t${cleanSetupField(f.color)}`));cfg.locations.forEach(l=>{lines.push(`LOCATION\t${cleanSetupField(l.id)}\t${cleanSetupField(l.floorId)}\t${cleanSetupField(l.name)}`);(l.aliases||[]).forEach(a=>lines.push(`ALIAS\t${cleanSetupField(l.id)}\t${cleanSetupField(a)}`))});return lines.join('\n')+'\n';}
+function parseClassroomSetupText(text){
+  const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith('#'));if(!lines.length||!/^DEPLOYMENT_CLASSROOM_SETUP(?:\t|\s)+1$/i.test(lines[0]))return null;const raw=blankClassroomSetup(),locMap=new Map();for(const line of lines.slice(1)){const p=line.split('\t'),type=(p.shift()||'').toUpperCase();if(type==='SCHOOL')raw.schoolName=p.join('\t').trim();else if(type==='FLOOR'&&p.length>=3)raw.floors.push({id:p[0].trim(),name:p[1].trim(),color:p[2].trim()});else if(type==='LOCATION'&&p.length>=3){const l={id:p[0].trim(),floorId:p[1].trim(),name:p.slice(2).join('\t').trim(),aliases:[]};raw.locations.push(l);locMap.set(l.id,l)}else if(type==='ALIAS'&&p.length>=2){const l=locMap.get(p[0].trim());if(l)l.aliases.push(p.slice(1).join('\t').trim())}}return normaliseClassroomSetup(raw);
+}
+function parseCompatibleClassroomSetup(text){const p=parseClassroomSetupText(text);if(p)return p;try{return normaliseClassroomSetup(JSON.parse(text))}catch(e){}return null;}
+function downloadClassroomSetup(){classroomSetup=classroomSetup||loadClassroomSetup();if(!classroomSetup.floors.length){toast('Add at least one floor before downloading Classroom Setup');return;}const blob=new Blob([serializeClassroomSetup(classroomSetup)],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Classroom_Setup.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Classroom_Setup.txt downloaded ✓');}
+async function handleClassroomSetupUpload(event){const file=event.target.files?.[0];if(!file)return;try{const cfg=parseCompatibleClassroomSetup(await file.text());if(!cfg)throw new Error('invalid');classroomSetup=cfg;selectedSetupLocationId=null;selectedRawTag='';persistClassroomSetup();applyClassroomSetupToCurrentData();if(document.getElementById('classroomSetupOverlay')?.classList.contains('open'))renderClassroomSetup();checkReady();toast(`Classroom Setup loaded: ${cfg.floors.length} floors · ${cfg.locations.length} locations ✓`);}catch(e){alert('This is not a compatible Classroom_Setup.txt file.');}finally{event.target.value='';}}
+
+// Patch timetable labels/legend dynamically after legacy render functions run.
+const _legacyRenderRearrangeTable=renderRearrangeTable;
+renderRearrangeTable=function(){
+  _legacyRenderRearrangeTable();
+  const th=document.querySelector('#mainTable th.hc');if(th)th.textContent='Resource';
+  const pencilCount=visibleRows(editableRows).reduce((n,r)=>n+(r.slots||[]).filter(s=>s.applePencil).length,0);
+  const summary=document.querySelector('#ttBody .tt-summary');
+  if(summary&&pencilCount){
+    const s=document.createElement('span');s.className='pencil-summary';s.innerHTML=`🍎Apple Pencils: <strong>${pencilCount}</strong> booking${pencilCount===1?'':'s'}`;summary.insertBefore(s,summary.firstChild);
+  }
+  const legend=document.querySelector('#ttBody .legend');if(legend){const items=(classroomSetup?.floors||[]).map((f,i)=>`<div class="leg-item"><div class="leg-sw" style="background:${f.color};border:1.5px solid rgba(15,23,42,.24)"></div>${escHtml(f.name)}</div>`).join('');legend.innerHTML=`<span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Floor:</span>${items}<div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div><div class="leg-item" style="margin-left:8px"><div class="leg-sw" style="background:#fef3c7;border:2px solid #f59e0b"></div>⚠ Overlapping</div><div class="leg-item"><span class="pencil-badge">🍎Apple Pencils</span></div><div class="leg-item" style="margin-left:12px;color:var(--muted);font-size:11px">💡 Drag any block to a different resource row; timing stays locked</div>${bookings?.date?`<span style="margin-left:auto;font-size:11px;color:var(--muted)">📅 ${escHtml(bookings.date)}</span>`:''}`;}
+};
+
+renderOriginalTable=function(){
+  const wrap=document.getElementById('ttBody');wrap.innerHTML='';
+  const pencilCount=(bookings?.carts||[]).filter(c=>isDeployableCartName(c.name)).reduce((n,c)=>n+Object.values(c.slots||{}).filter(s=>s.applePencil).length,0);
+  const scroll=document.createElement('div');scroll.className='tt-scroll';const table=document.createElement('table');table.className='tt';table.id='mainTable';addTimetableColGroup(table);
+  const thead=table.createTHead(),hrow=thead.insertRow(),th0=document.createElement('th');th0.className='hc';th0.textContent='Resource';hrow.appendChild(th0);
+  lastSortedCols.forEach(c=>{const p=lastPeriods[c],th=document.createElement('th');const start=p?.time?p.time.split('-')[0]:'';th.innerHTML=`${escHtml(p?p.id:'?')}<br><span style="font-size:11px;font-weight:400">${escHtml(start)}</span>`;if(p)th.title=p.label;hrow.appendChild(th)});
+  const tbody=table.createTBody();
+  bookings.carts.filter(cart=>isDeployableCartName(cart.name)).forEach(cart=>{
+    const tr=tbody.insertRow(),td0=tr.insertCell();td0.className='dc';td0.textContent=displayCartName(cart.name);const colMap={};Object.values(cart.slots).forEach(s=>s.cols.forEach(c=>{colMap[c]=s;}));const skip=new Set();
+    lastSortedCols.forEach(c=>{if(skip.has(c))return;const s=colMap[c],td=tr.insertCell();if(!s)return;let span=1;for(let j=lastSortedCols.indexOf(c)+1;j<lastSortedCols.length;j++){const nc=lastSortedCols[j];if(colMap[nc]===s){span++;skip.add(nc)}else break;}td.colSpan=span;const res=s.resolved,pencil=s.applePencil?'<div class="pencil-badge">🍎Apple Pencils</div>':'';
+      if(!res){const d=document.createElement('div');d.className='cell err'+(s.applePencil?' pencil-request':'');d.innerHTML=`<div class="cl">Click to Fix</div>${pencil}`;d.title=[`Check location with ${s.bookedBy||'teacher'}.`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');d.addEventListener('click',e=>{e.stopPropagation();openCellFix(d,s.remarks)});td.appendChild(d);return;}
+      const f=effectiveFloor(res),d=document.createElement('div');d.className=`cell ${res.floorColor?'':lvCls(f)}${s.applePencil?' pencil-request':''}`;applyResolvedColour(d,res);d.innerHTML=`<div class="cl">${escHtml(resolvedDisplay(res))}</div>${f?`<div class="lv">${escHtml(floorLabel(f,res))}</div>`:'<div class="lv">Unknown</div>'}${pencil}`;d.title=[resolvedDisplay(res),`Floor: ${floorLabel(f,res)||'Unknown'}`,`Booked by: ${s.bookedBy||'?'}`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');d.addEventListener('click',e=>{e.stopPropagation();openCellFix(d,s.remarks,resolvedDisplay(res),f)});td.appendChild(d);
+    });
+  });
+  scroll.appendChild(table);wrap.appendChild(scroll);const leg=document.createElement('div');leg.className='legend';const items=(classroomSetup?.floors||[]).map(f=>`<div class="leg-item"><div class="leg-sw" style="background:${f.color};border:1.5px solid rgba(15,23,42,.24)"></div>${escHtml(f.name)}</div>`).join('');leg.innerHTML=`<span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Floor:</span>${items}<div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div><div class="leg-item"><span class="pencil-badge">🍎Apple Pencils</span></div><span style="margin-left:auto;font-size:11px;color:var(--muted);font-style:italic">Read-only — switch to the optimised view to edit</span>`;wrap.appendChild(leg);
+};
+
+// Initial profile + branding. Community starts blank; a saved/uploaded setup makes it school-ready.
+(function initClassroomSetupV10(){classroomSetup=loadClassroomSetup();persistClassroomSetup();updateBranding();updateClassroomSetupSummary();const title=document.getElementById('ttTitle');if(title)title.textContent=(classroomSetup.schoolName?classroomSetup.schoolName+' — ':'')+'iPad & Laptop Deployment Tool';const overlay=document.getElementById('classroomSetupOverlay');if(overlay)overlay.addEventListener('click',e=>{if(e.target===overlay)closeClassroomSetup()});})();
+
+</script>
+</body></html>
+<!-- Updated 27 August 2026: compact timetable, Apple Pencil indicator, simplified title and footer credit. -->
