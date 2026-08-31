@@ -63,6 +63,24 @@ table.tt th:not(.hc),table.tt td:not(.dc){width:60px!important;min-width:60px!im
 table.tt th{padding:6px 3px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);background:#f8fafc;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:2}
 table.tt th.hc{position:sticky;left:0;z-index:3;background:#f0f4f8;border-right:2px solid var(--border);width:60px!important;min-width:60px!important;max-width:60px!important;text-align:left}
 table.tt td{border-right:1px solid #eef2f7;border-bottom:1px solid #eef2f7;padding:0;vertical-align:middle;min-width:40px!important;max-width:40px!important}
+table.tt td.occupied-cell{
+  border-right-color:var(--occupied-bg)!important;
+  border-bottom-color:var(--occupied-bg)!important;
+  background:var(--occupied-bg)!important;
+  box-shadow:0 0 0 1px var(--occupied-bg);
+  position:relative;
+}
+/* Thin vertical separator only between neighbouring booking blocks.
+   Drawn over the visible booking block so it is never hidden by its cell background. */
+table.tt td.occupied-divider-left > .cell::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:1px;
+  background:rgba(255,255,255,.95);
+  pointer-events:none;
+  z-index:3;
+}
 table.tt td.dc{position:sticky;left:0;background:#f8fafc;z-index:1;border-right:2px solid var(--border);font-weight:700;font-size:11px;padding:5px 4px;white-space:nowrap;min-width:60px!important;max-width:60px!important;width:60px!important}
 .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:44px;padding:3px 2px;text-align:center;position:relative}
 .cell:hover{filter:brightness(.93)}
@@ -214,7 +232,7 @@ table.tt td{min-width:68px!important;max-width:68px!important}
 <div class="logo">📱 iPad &amp; Laptop Deployment Tool</div>
 <div class="sub" style="display:none"></div>
 </div>
-<div class="badge">Updated 27 August 2026</div>
+<div class="badge">Updated 31 August 2026</div>
 </header>
 <div class="main">
 <!-- STEP 1: UPLOADS -->
@@ -303,7 +321,7 @@ table.tt td{min-width:68px!important;max-width:68px!important}
 <div class="empty"><div class="ei">🗓️</div><h3>No schedule loaded</h3><p>Upload the RBS file above and click Generate.</p></div>
 </div>
 </div>
-<div class="page-credit">Liew Min Yu, coded with ChatGPT.</div>
+<div class="page-credit">Designed by Liew Min Yu · Built with ChatGPT</div>
 </div><!-- /main -->
 
 <!-- CLASSROOM SETUP OVERLAY -->
@@ -1292,6 +1310,7 @@ function renderRearrangeTable(){
           td.addEventListener('drop',      e=>onDrop(e,rowIdx));
         }
         td.appendChild(chip);
+        paintOccupiedCell(td,s);
 
       } else {
         // Multiple slots stacked — colspan stays 1, show all chips
@@ -2437,6 +2456,27 @@ function addTimetableColGroup(table){
   const cg=document.createElement('colgroup'),resourceCol=document.createElement('col');resourceCol.style.width='104px';cg.appendChild(resourceCol);
   (lastSortedCols||[]).forEach(()=>{const col=document.createElement('col');col.style.width='76px';cg.appendChild(col)});table.insertBefore(cg,table.firstChild);
 }
+function occupiedCellBackground(slot){
+  const res=slot?.resolved;
+  if(!res)return 'var(--lx)';
+  if(res.floorColor)return res.floorColor;
+  const f=effectiveFloor(res);
+  if(f===1)return 'var(--l1)';
+  if(f===2)return 'var(--l2)';
+  if(f===3)return 'var(--l3)';
+  if(f===4)return 'var(--l4)';
+  if(f===5)return 'var(--l5)';
+  return 'var(--lx)';
+}
+function paintOccupiedCell(td,slot){
+  if(!td||!slot)return;
+  const bg=occupiedCellBackground(slot);
+  const prev=td.previousElementSibling;
+  td.classList.add('occupied-cell');
+  if(prev?.classList?.contains('occupied-cell'))td.classList.add('occupied-divider-left');
+  td.style.setProperty('--occupied-bg',bg);
+  td.style.background=bg;
+}
 function makeSlotChip(s,rowIdx,isConflict){
   const res=s.resolved,div=document.createElement('div');
   const pencil=s.applePencil?'<div class="pencil-badge">🍎Apple Pencils</div>':'';
@@ -2576,8 +2616,8 @@ renderOriginalTable=function(){
   bookings.carts.filter(cart=>isDeployableCartName(cart.name)).forEach(cart=>{
     const tr=tbody.insertRow(),td0=tr.insertCell();td0.className='dc';td0.textContent=displayCartName(cart.name);const colMap={};Object.values(cart.slots).forEach(s=>s.cols.forEach(c=>{colMap[c]=s;}));const skip=new Set();
     lastSortedCols.forEach(c=>{if(skip.has(c))return;const s=colMap[c],td=tr.insertCell();if(!s)return;let span=1;for(let j=lastSortedCols.indexOf(c)+1;j<lastSortedCols.length;j++){const nc=lastSortedCols[j];if(colMap[nc]===s){span++;skip.add(nc)}else break;}td.colSpan=span;const res=s.resolved,pencil=s.applePencil?'<div class="pencil-badge">🍎Apple Pencils</div>':'';
-      if(!res){const d=document.createElement('div');d.className='cell err'+(s.applePencil?' pencil-request':'');d.innerHTML=`<div class="cl">Click to Fix</div>${pencil}`;d.title=[`Check location with ${s.bookedBy||'teacher'}.`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');d.addEventListener('click',e=>{e.stopPropagation();openCellFix(d,s.remarks)});td.appendChild(d);return;}
-      const f=effectiveFloor(res),d=document.createElement('div');d.className=`cell ${res.floorColor?'':lvCls(f)}${s.applePencil?' pencil-request':''}`;applyResolvedColour(d,res);d.innerHTML=`<div class="cl">${escHtml(resolvedDisplay(res))}</div>${f?`<div class="lv">${escHtml(floorLabel(f,res))}</div>`:'<div class="lv">Unknown</div>'}${pencil}`;d.title=[resolvedDisplay(res),`Floor: ${floorLabel(f,res)||'Unknown'}`,`Booked by: ${s.bookedBy||'?'}`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');d.addEventListener('click',e=>{e.stopPropagation();openCellFix(d,s.remarks,resolvedDisplay(res),f)});td.appendChild(d);
+      if(!res){const d=document.createElement('div');d.className='cell err'+(s.applePencil?' pencil-request':'');d.innerHTML=`<div class="cl">Click to Fix</div>${pencil}`;d.title=[`Check location with ${s.bookedBy||'teacher'}.`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');d.addEventListener('click',e=>{e.stopPropagation();openCellFix(d,s.remarks)});td.appendChild(d);paintOccupiedCell(td,s);return;}
+      const f=effectiveFloor(res),d=document.createElement('div');d.className=`cell ${res.floorColor?'':lvCls(f)}${s.applePencil?' pencil-request':''}`;applyResolvedColour(d,res);d.innerHTML=`<div class="cl">${escHtml(resolvedDisplay(res))}</div>${f?`<div class="lv">${escHtml(floorLabel(f,res))}</div>`:'<div class="lv">Unknown</div>'}${pencil}`;d.title=[resolvedDisplay(res),`Floor: ${floorLabel(f,res)||'Unknown'}`,`Booked by: ${s.bookedBy||'?'}`,s.applePencil?'APPLE PENCILS REQUESTED — charge and prepare.':'',`Remarks: ${s.displayRemarks||s.remarks||''}`].filter(Boolean).join('\n');d.addEventListener('click',e=>{e.stopPropagation();openCellFix(d,s.remarks,resolvedDisplay(res),f)});td.appendChild(d);paintOccupiedCell(td,s);
     });
   });
   scroll.appendChild(table);wrap.appendChild(scroll);const leg=document.createElement('div');leg.className='legend';const items=(classroomSetup?.floors||[]).map(f=>`<div class="leg-item"><div class="leg-sw" style="background:${f.color};border:1.5px solid rgba(15,23,42,.24)"></div>${escHtml(f.name)}</div>`).join('');leg.innerHTML=`<span style="font-size:11px;font-weight:700;color:var(--muted);margin-right:4px">Floor:</span>${items}<div class="leg-item"><div class="leg-sw lvx" style="border:1.5px solid var(--lxb)"></div>Unknown</div><div class="leg-item"><span class="pencil-badge">🍎Apple Pencils</span></div><span style="margin-left:auto;font-size:11px;color:var(--muted);font-style:italic">Read-only — switch to the optimised view to edit</span>`;wrap.appendChild(leg);
@@ -2588,4 +2628,4 @@ renderOriginalTable=function(){
 
 </script>
 </body></html>
-<!-- Updated 27 August 2026 v6: timetable date moved to header; neutral Apple Pencil pills; Pencil cell outline removed. -->
+<!-- Updated v10: booking-to-booking separators rendered as visible 1px overlays; credit refined. -->
