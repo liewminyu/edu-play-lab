@@ -976,7 +976,6 @@
     const unitFlows = {
       Fractions: {
         subtitle: "6 lessons · Primary 2 Mathematics",
-        note: "SLS lesson links are not included yet. They can be added later without changing the lesson sequence.",
         lessons: [
           {
             title: "Equal Parts and Fractions",
@@ -1410,6 +1409,7 @@
         button.setAttribute("aria-pressed", String(unitName === activeUnit));
         button.addEventListener("click", () => {
           activeUnit = unitName;
+          history.replaceState(null, "", `#unit-flow-${slugify(unitName)}`);
           renderUnitTabs();
           renderUnitFlow();
         });
@@ -1470,7 +1470,7 @@
       filtersEl.classList.remove("open");
     }
 
-    function switchSection(section) {
+    function switchSection(section, updateUrl = true) {
       activeSection = section;
       const isUnitFlow = section === "Unit Flow";
 
@@ -1494,9 +1494,15 @@
       if (isUnitFlow) {
         renderUnitTabs();
         renderUnitFlow();
+        if (updateUrl) {
+          history.replaceState(null, "", `#unit-flow-${slugify(activeUnit)}`);
+        }
       } else {
         renderFilters();
         renderCards();
+        if (updateUrl && window.location.hash) {
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
       }
     }
 
@@ -1520,7 +1526,23 @@
 
     searchInput.addEventListener("input", renderCards);
 
-    switchSection("Games");
+    function applyHashRoute() {
+      const match = window.location.hash.match(/^#unit-flow-(.+)$/i);
+      if (match) {
+        const requestedUnit = Object.keys(unitFlows).find(
+          unitName => slugify(unitName) === match[1].toLowerCase()
+        );
+        if (requestedUnit) {
+          activeUnit = requestedUnit;
+          switchSection("Unit Flow", false);
+          return;
+        }
+      }
+      switchSection("Games", false);
+    }
+
+    window.addEventListener("hashchange", applyHashRoute);
+    applyHashRoute();
   </script>
 </body>
 </html>
