@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta
     name="description"
-    content="Edu Play Lab — interactive classroom games, activities and tools for primary school educators."
+    content="Edu Play Lab — interactive classroom games, activities, tools and unit flows for primary school educators."
   />
   <title>Edu Play Lab</title>
 
@@ -32,13 +32,8 @@
       --pill: 999px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -50,18 +45,13 @@
       font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
     }
 
-    a {
-      color: inherit;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    [hidden] { display: none !important; }
 
     .app-layout {
       display: grid;
-      grid-template-columns: minmax(230px, 20vw) minmax(0, 1fr);
+      grid-template-columns: minmax(250px, 21vw) minmax(0, 1fr);
       min-height: 100vh;
     }
 
@@ -75,7 +65,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: clamp(28px, 3vw, 46px) clamp(22px, 2.4vw, 36px) 26px;
+      padding: clamp(28px, 3vw, 46px) clamp(20px, 2.2vw, 34px) 26px;
       overflow: hidden;
       border-right: 1px solid rgba(70, 70, 100, 0.08);
       background:
@@ -118,11 +108,11 @@
 
     .section-switcher {
       width: 100%;
-      max-width: 210px;
+      max-width: 300px;
       margin: 26px auto 0;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
       padding: 6px;
       border-radius: 18px;
       background: rgba(255,255,255,0.38);
@@ -130,13 +120,17 @@
     }
 
     .section-btn {
-      min-height: 42px;
+      min-width: 0;
+      min-height: 44px;
+      padding: 8px 7px;
       border: 0;
       border-radius: 13px;
       background: transparent;
       color: #596074;
       cursor: pointer;
+      font-size: 0.86rem;
       font-weight: 900;
+      line-height: 1.1;
       transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
     }
 
@@ -160,9 +154,7 @@
       text-align: center;
     }
 
-    .sidebar-footer strong {
-      color: #333b4e;
-    }
+    .sidebar-footer strong { color: #333b4e; }
 
     /* RIGHT CONTENT PANE */
     .content {
@@ -210,10 +202,7 @@
       color: #38304e;
     }
 
-    .filter-toggle svg {
-      width: 20px;
-      height: 20px;
-    }
+    .filter-toggle svg { width: 20px; height: 20px; }
 
     .search-wrap {
       position: relative;
@@ -391,14 +380,8 @@
 
     .preview-placeholder-icon { font-size: 2rem; }
     .preview-placeholder strong { font-size: .95rem; }
-    .preview-placeholder span {
-      font-size: .76rem;
-      color: #697184;
-    }
-
-    .card:hover .preview {
-      transform: scale(1.015);
-    }
+    .preview-placeholder span { font-size: .76rem; color: #697184; }
+    .card:hover .preview { transform: scale(1.015); }
 
     .preview-label {
       position: absolute;
@@ -458,31 +441,11 @@
       font-weight: 900;
     }
 
-    .tag.subject {
-      border-color: transparent;
-      background: var(--accent, var(--lavender));
-      color: #414759;
-    }
-
-    .tag.type-competitive {
-      border-color: transparent;
-      background: var(--peach);
-    }
-
-    .tag.type-cooperative {
-      border-color: transparent;
-      background: var(--mint);
-    }
-
-    .tag.type-tool {
-      border-color: transparent;
-      background: var(--yellow);
-    }
-
-    .tag.type-independent-practice {
-      border-color: transparent;
-      background: var(--aqua);
-    }
+    .tag.subject { border-color: transparent; background: var(--accent, var(--lavender)); color: #414759; }
+    .tag.type-competitive { border-color: transparent; background: var(--peach); }
+    .tag.type-cooperative { border-color: transparent; background: var(--mint); }
+    .tag.type-tool { border-color: transparent; background: var(--yellow); }
+    .tag.type-independent-practice { border-color: transparent; background: var(--aqua); }
 
     .card-actions {
       margin-top: auto;
@@ -491,12 +454,11 @@
       gap: 9px;
     }
 
-    .card-actions.has-download {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
+    .card-actions.has-download { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
     .play-btn,
-    .download-btn {
+    .download-btn,
+    .resource-btn {
       min-height: 44px;
       display: inline-flex;
       align-items: center;
@@ -515,19 +477,18 @@
       box-shadow: 0 8px 16px rgba(44,52,73,0.13);
     }
 
-    .play-btn:hover {
-      transform: translateY(-1px);
-      background: #1e263a;
-    }
+    .play-btn:hover { transform: translateY(-1px); background: #1e263a; }
 
-    .download-btn {
+    .download-btn,
+    .resource-btn {
       border: 1.5px solid #cdd6e7;
       background: #fff;
       color: #2c3449;
       box-shadow: 0 8px 16px rgba(44,52,73,0.07);
     }
 
-    .download-btn:hover {
+    .download-btn:hover,
+    .resource-btn:hover {
       transform: translateY(-1px);
       border-color: #aebbd2;
       background: #f7f9fc;
@@ -583,29 +544,245 @@
       object-fit: cover;
     }
 
-    .game-setup-copy {
-      text-align: left;
-      padding: 4px 8px 4px 2px;
+    .game-setup-copy { text-align: left; padding: 4px 8px 4px 2px; }
+    .game-setup-copy h2 { margin: 0 0 7px; font-size: 1.05rem; letter-spacing: -0.015em; }
+    .game-setup-copy p { margin: 0; color: #596074; font-size: 0.88rem; line-height: 1.6; }
+
+    /* UNIT FLOW */
+    .unit-flow {
+      max-width: 1040px;
+      margin: 0 auto;
     }
 
-    .game-setup-copy h2 {
+    .unit-flow-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .unit-flow-header h2 {
       margin: 0 0 7px;
-      font-size: 1.05rem;
-      letter-spacing: -0.015em;
+      font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+      letter-spacing: -0.035em;
     }
 
-    .game-setup-copy p {
+    .unit-flow-header p {
       margin: 0;
-      color: #596074;
-      font-size: 0.88rem;
+      max-width: 62ch;
+      color: var(--muted);
       line-height: 1.6;
+    }
+
+    .sample-setup {
+      min-width: 225px;
+      display: grid;
+      gap: 7px;
+      justify-items: stretch;
+    }
+
+    .sample-setup small {
+      max-width: 28ch;
+      color: #697184;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .topic-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 22px;
+    }
+
+    .topic-btn {
+      min-height: 42px;
+      padding: 9px 18px;
+      border: 1px solid #dde2ec;
+      border-radius: var(--pill);
+      background: rgba(255,255,255,0.9);
+      color: #596074;
+      cursor: pointer;
+      font-weight: 900;
+      box-shadow: 0 6px 16px rgba(61,67,92,0.06);
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+    .topic-btn:hover { transform: translateY(-1px); }
+
+    .topic-btn.active {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--blue), var(--lavender));
+      color: #333b4e;
+      box-shadow: 0 8px 20px rgba(96,92,150,0.12);
+    }
+
+    .unit-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px 18px;
+      margin: 0 0 16px;
+    }
+
+    .unit-heading-copy {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .unit-heading h2 {
+      margin: 0;
+      font-size: clamp(1.55rem, 2.4vw, 2rem);
+      letter-spacing: -0.035em;
+    }
+
+    .unit-heading-copy span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .sls-package-btn {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border: 1.5px solid #cfc4ed;
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(233,224,255,.78), rgba(220,234,255,.82));
+      color: #4e4469;
+      box-shadow: 0 7px 17px rgba(96,92,150,.08);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 900;
+      white-space: nowrap;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .sls-package-btn:hover {
+      transform: translateY(-1px);
+      border-color: #b9a6ef;
+      box-shadow: 0 9px 20px rgba(96,92,150,.13);
+    }
+
+    .lesson-list {
+      display: grid;
+      gap: 17px;
+    }
+
+    .lesson-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 10px 26px rgba(61,67,92,0.075);
+    }
+
+    .lesson-head {
+      padding: 16px 19px;
+      background: linear-gradient(135deg, rgba(220,234,255,.62), rgba(233,224,255,.48));
+      border-bottom: 1px solid rgba(45,52,75,0.08);
+    }
+
+    .lesson-kicker {
+      margin-bottom: 3px;
+      color: #697184;
+      font-size: 0.69rem;
+      font-weight: 1000;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .lesson-title {
+      margin: 0;
+      font-size: 1.14rem;
+      line-height: 1.3;
+      letter-spacing: -0.018em;
+    }
+
+    .walt {
+      margin: 9px 0 0;
+      padding: 9px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.72);
+      color: #566075;
+      font-size: 0.88rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .lesson-items {
+      margin: 0;
+      padding: 12px 19px 15px 48px;
+    }
+
+    .lesson-items li {
+      padding: 5px 0 5px 2px;
+      color: #3f475a;
+      line-height: 1.5;
+    }
+
+    .flow-link {
+      color: #245f9f;
+      font-weight: 900;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 2px;
+    }
+
+    .flow-link:hover { color: #174b82; }
+
+    .flow-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      margin-left: 7px;
+      padding: 3px 8px;
+      vertical-align: 1px;
+      border-radius: var(--pill);
+      background: #f2f4f8;
+      color: #687083;
+      font-size: 0.64rem;
+      font-weight: 1000;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .flow-tag.game { background: var(--peach); color: #70513d; }
+    .flow-tag.tool { background: var(--yellow); color: #6a5b29; }
+    .flow-tag.sls { background: var(--lavender); color: #5e507b; }
+    .flow-tag.download { background: var(--mint); color: #416a54; }
+    .flow-tag.classroom { background: var(--aqua); color: #46686d; }
+    .flow-tag.interactive { background: var(--blue); color: #45617e; }
+    .flow-tag.from-cpdd { background: var(--aqua); color: #46686d; }
+
+    .unit-note {
+      margin: 17px 0 0;
+      padding: 13px 15px;
+      border-radius: 15px;
+      border: 1px solid #e4e7ef;
+      background: rgba(255,255,255,.7);
+      color: #687083;
+      font-size: 0.82rem;
+      line-height: 1.5;
     }
 
     /* RESPONSIVE */
     @media (max-width: 980px) {
-      .app-layout {
-        grid-template-columns: 1fr;
-      }
+      .app-layout { grid-template-columns: 1fr; }
 
       .sidebar {
         position: relative;
@@ -616,24 +793,11 @@
         border-bottom: 1px solid rgba(70, 70, 100, 0.08);
       }
 
-      .brand h1 {
-        max-width: none;
-        font-size: clamp(1.9rem, 6vw, 2.8rem);
-      }
-
-      .brand p {
-        max-width: 54ch;
-        margin-top: 10px;
-      }
-
-      .sidebar-footer {
-        margin-top: 16px;
-        padding-top: 0;
-      }
-
-      .content {
-        padding-top: 22px;
-      }
+      .brand h1 { max-width: none; font-size: clamp(1.9rem, 6vw, 2.8rem); }
+      .brand p { max-width: 54ch; margin-top: 10px; }
+      .section-switcher { max-width: 340px; }
+      .sidebar-footer { margin-top: 16px; padding-top: 0; }
+      .content { padding-top: 22px; }
     }
 
     @media (max-width: 700px) {
@@ -643,34 +807,33 @@
         padding: 14px;
       }
 
-      .game-setup-copy {
-        text-align: center;
-        padding: 2px 4px 4px;
-      }
+      .game-setup-copy { text-align: center; padding: 2px 4px 4px; }
+      .content { padding: 18px 12px 38px; }
+      .cards { grid-template-columns: 1fr; gap: 18px; }
+      .filter-row { grid-template-columns: 1fr; gap: 7px; }
+      .filters.open { max-height: 330px; }
+      #searchInput::placeholder { font-size: 0.86rem; }
 
-      .content {
-        padding: 18px 12px 38px;
-      }
-
-      .cards {
+      .unit-flow-header {
         grid-template-columns: 1fr;
-        gap: 18px;
+        padding: 18px;
       }
 
-      .filter-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-      }
+      .sample-setup { min-width: 0; }
+      .sample-setup small { max-width: none; }
+      .topic-tabs { gap: 7px; }
+      .topic-btn { flex: 1 1 30%; padding-inline: 12px; }
+      .lesson-items { padding-left: 42px; padding-right: 15px; }
+      .flow-tag { margin-left: 5px; }
+    }
 
-      .filters.open {
-        max-height: 330px;
-      }
-
-      #searchInput::placeholder {
-        font-size: 0.86rem;
-      }
+    @media (max-width: 430px) {
+      .section-switcher { grid-template-columns: 1fr; max-width: 220px; }
+      .section-btn { min-height: 38px; }
+      .topic-btn { flex-basis: 100%; }
     }
   </style>
+
   <script data-goatcounter="https://eduplaylab.goatcounter.com/count"
           async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -685,6 +848,7 @@
         <nav class="section-switcher" aria-label="Choose resource type">
           <button class="section-btn active" type="button" data-section="Games">Games</button>
           <button class="section-btn" type="button" data-section="Tools">Tools</button>
+          <button class="section-btn" type="button" data-section="Unit Flow">Unit Flow</button>
         </nav>
       </div>
 
@@ -695,7 +859,7 @@
     </aside>
 
     <main class="content">
-      <section class="toolbar" aria-label="Search and filter interactives">
+      <section class="toolbar" id="toolbar" aria-label="Search and filter interactives">
         <div class="search-row">
           <button
             class="filter-toggle"
@@ -707,13 +871,7 @@
             title="Filters"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M4 6h16M7 12h10M10 18h4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
+              <path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
 
@@ -723,12 +881,7 @@
               <path d="M16 16l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
             </svg>
             <label for="searchInput" style="position:absolute;left:-9999px;">Search interactives</label>
-            <input
-              id="searchInput"
-              type="search"
-              placeholder="Search interactives..."
-              autocomplete="off"
-            />
+            <input id="searchInput" type="search" placeholder="Search interactives..." autocomplete="off" />
           </div>
         </div>
 
@@ -737,13 +890,9 @@
 
       <section class="cards" id="cards" aria-live="polite"></section>
 
-      <section class="game-setup-bar" aria-label="Game Setup privacy information">
+      <section class="game-setup-bar" id="gameSetupBar" aria-label="Game Setup privacy information">
         <div class="game-setup-preview">
-          <img
-            src="previews/game-setup.gif"
-            alt="Animated preview of the Game Setup interface"
-            loading="lazy"
-          />
+          <img src="previews/game-setup.gif" alt="Animated preview of the Game Setup interface" loading="lazy" />
         </div>
 
         <div class="game-setup-copy">
@@ -753,6 +902,34 @@
             Student names and group information stay on the teacher's device and are not uploaded to Edu Play Lab or stored in an online database.
           </p>
         </div>
+      </section>
+
+      <section class="unit-flow" id="unitFlow" hidden aria-live="polite">
+        <div class="unit-flow-header">
+          <div>
+            <h2>Unit Flow</h2>
+            <p>
+              See how games, tools, SLS activities, classroom tasks and practice can fit together across a unit.
+              Adapt the sequence to suit your students and classroom context.
+            </p>
+          </div>
+
+          <div class="sample-setup">
+            <a
+              class="resource-btn"
+              href="downloads/Game_Setup.txt"
+              download
+              data-goatcounter-click="download-sample-game-setup"
+              data-goatcounter-title="Download sample Game Setup"
+            >
+              Sample Game_Setup.txt <span aria-hidden="true">↓</span>
+            </a>
+            <small>Use the sample character names to test compatible multiplayer games before class.</small>
+          </div>
+        </div>
+
+        <nav class="topic-tabs" id="topicTabs" aria-label="Choose unit"></nav>
+        <div id="unitFlowContent"></div>
       </section>
     </main>
   </div>
@@ -768,6 +945,16 @@
       { title:"Class vs the 3D-Shape Dinosaur", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Cooperative", file:"games/Class_vs_the_3D-Shape_Dinosaur.html", preview:"previews/class-vs-the-3d-shape-dinosaur.gif" },
       { title:"Triple Jeopardy", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Triple_Jeopardy.html", preview:"previews/triple-jeopardy.gif" },
       { title:"Triple Jeopardy Rematch", section:"Games", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Competitive", file:"games/Triple_Jeopardy_Rematch.html", preview:"previews/triple-jeopardy-rematch.gif" },
+
+      { title:"Fractions Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Equal Parts and Fractions", type:"Competitive", file:"games/fractions-battle-royale.html", preview:"previews/fractions-battle-royale.gif" },
+      { title:"Fractions Battle Royale Recall", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Building and Representing Fractions", type:"Competitive", file:"games/fractions-battle-royale-recall.html", preview:"previews/fractions-battle-royale-recall.gif" },
+      { title:"Tetris Battle", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Fractions and Unit Fractions", type:"Competitive", file:"games/fractions-tetris-battle.html", preview:"previews/fractions-tetris-battle.gif" },
+      { title:"Class vs the Fraction Dragon", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Comparing and Ordering Fractions", type:"Cooperative", file:"games/fractions-class-vs-the-fraction-dragon.html", preview:"previews/fractions-class-vs-the-fraction-dragon.gif" },
+      { title:"Triple Jeopardy", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Comparing Fractions", type:"Competitive", file:"games/fractions-triple-jeopardy.html", preview:"previews/fractions-triple-jeopardy.gif" },
+      { title:"Tetris Battle Rematch", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Comparing Fractions", type:"Competitive", file:"games/fractions-tetris-battle-rematch.html", preview:"previews/fractions-tetris-battle-rematch.gif" },
+      { title:"Addition Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Adding Fractions", type:"Competitive", file:"games/fractions-addition-battle-royale.html", preview:"previews/fractions-addition-battle-royale.gif" },
+      { title:"Subtraction Battle Royale", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Subtracting Fractions", type:"Competitive", file:"games/fractions-subtraction-battle-royale.html", preview:"previews/fractions-subtraction-battle-royale.gif" },
+
       { title:"Word Order Race", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/Word_Order_Race.html", preview:"previews/word-order-race.gif" },
       { title:"Conjunction And Battle Royale", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 10", unitName:"Snake in the Garden", type:"Competitive", file:"games/Conjunction_And_Battle_Royale.html", preview:"previews/conjunction-and-battle-royale.gif" },
       { title:"Future Verb Letter Race", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/Future_Verb_Letter_Race.html", preview:"previews/future-verb-letter-race.gif" },
@@ -776,8 +963,243 @@
       { title:"Picture Graphs Scale Explorer", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 13", unitName:"Picture Graphs", type:"Tool", file:"tools/Picture_Graphs_Scale_Explorer.html", preview:"previews/picture-graphs-scale-explorer.gif" },
       { title:"Is a Cube a Cuboid?", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Is_a_Cube_a_Cuboid.html", preview:"previews/is-a-cube-a-cuboid.gif" },
       { title:"Make a Pattern", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Make_a_Pattern.html", preview:"previews/make-a-pattern.gif" },
-      { title:"Shape Architect", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Shape_Architect.html", preview:"previews/shape-architect.gif" }
+      { title:"Shape Architect", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Chapter 14", unitName:"Shapes", type:"Tool", file:"tools/Shape_Architect.html", preview:"previews/shape-architect.gif" },
+
+      { title:"Equal Parts Explorer", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Equal Parts and Fractions", type:"Tool", file:"tools/fractions-equal-parts-explorer.html", preview:"previews/fractions-equal-parts-explorer.gif" },
+      { title:"Fraction Builder", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Building and Representing Fractions", type:"Tool", file:"tools/fractions-builder.html", preview:"previews/fractions-builder.gif" },
+      { title:"Fraction Translator", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Unit Fractions, Comparing and Ordering", type:"Tool", file:"tools/fractions-translator.html", preview:"previews/fractions-translator.gif" },
+      { title:"Fraction Face-Off", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Comparing Fractions", type:"Tool", file:"tools/fractions-face-off.html", preview:"previews/fractions-face-off.gif" },
+      { title:"Fraction Addition Builder", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Adding Fractions", type:"Tool", file:"tools/fractions-addition-builder.html", preview:"previews/fractions-addition-builder.gif" },
+      { title:"Fraction Subtraction Builder", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Subtracting Fractions", type:"Tool", file:"tools/fractions-subtraction-builder.html", preview:"previews/fractions-subtraction-builder.gif" }
     ];
+
+    const unitFlows = {
+      Fractions: {
+        subtitle: "6 lessons · Primary 2 Mathematics",
+        note: "SLS lesson links are not included yet. They can be added later without changing the lesson sequence.",
+        lessons: [
+          {
+            title: "Equal Parts and Fractions",
+            walt: "Recognise fractions as equal parts of a whole.",
+            items: [
+              { text:"Poll on SLS", kind:"SLS" },
+              { text:"Folding Worksheet", kind:"Download", href:"downloads/fractions-folding-worksheet.pdf", download:true },
+              { text:"Equal Parts Explorer", kind:"Tool", href:"tools/fractions-equal-parts-explorer.html" },
+              { text:"Fractions Battle Royale", kind:"Game", href:"games/fractions-battle-royale.html" },
+              { text:"Key Concept on SLS", kind:"SLS" },
+              { text:"Fractions Explorers on SLS", kind:"SLS" },
+              { text:"Complete textbook page 54" },
+              { text:"Complete workbook pages 51 to 54" }
+            ]
+          },
+          {
+            title: "Building and Representing Fractions",
+            walt: "Represent fractions using pictures and fraction notation.",
+            items: [
+              { text:"Fractions Battle Royale Recall", kind:"Game", href:"games/fractions-battle-royale-recall.html" },
+              { text:"Fraction Builder", kind:"Tool", href:"tools/fractions-builder.html" },              { text:"Key Concept on SLS", kind:"SLS" },
+              { text:"Fraction Builder on SLS", kind:"SLS" },
+              { text:"Tetris Battle — Races 1 to 5", kind:"Game", href:"games/fractions-tetris-battle.html" },
+              { text:"Complete textbook page 56" },
+              { text:"Complete workbook pages 55 to 58" }
+            ]
+          },
+          {
+            title: "Unit Fractions, Comparing and Ordering Fractions",
+            walt: "Compare and order fractions with the same numerator.",
+            items: [
+              { text:"Tetris Battle — Races 6 to 7", kind:"Game", href:"games/fractions-tetris-battle.html" },
+              { text:"Activity Sheet 1 (E5)", kind:"From CPDD" },
+              { text:"Fraction Translator", kind:"Tool", href:"tools/fractions-translator.html" },
+              { text:"Key Concept on SLS", kind:"SLS" },
+              { text:"Comparing and Ordering Fractions on SLS", kind:"SLS" },
+              { text:"Class vs the Fraction Dragon", kind:"Game", href:"games/fractions-class-vs-the-fraction-dragon.html" },
+              { text:"Complete textbook page 59" },
+              { text:"Complete workbook pages 59 to 62" }
+            ]
+          },
+          {
+            title: "Comparing Fractions",
+            walt: "Compare and order fractions with the same denominator.",
+            items: [
+              { text:"Triple Jeopardy", kind:"Game", href:"games/fractions-triple-jeopardy.html" },
+              { text:"Fraction Face-Off", kind:"Tool", href:"tools/fractions-face-off.html" },
+              { text:"Key Concept on SLS", kind:"SLS" },
+              { text:"Fraction Face-Off on SLS", kind:"SLS" },
+              { text:"Tetris Battle Rematch", kind:"Game", href:"games/fractions-tetris-battle-rematch.html" },
+              { text:"Complete textbook page 62" },
+              { text:"Complete worksheet pages 63 to 66" }
+            ]
+          },
+          {
+            title: "Adding Fractions",
+            walt: "Add fractions with the same denominator.",
+            items: [
+              { text:"Fraction Addition Builder", kind:"Tool", href:"tools/fractions-addition-builder.html" },
+              { text:"Addition Battle Royale", kind:"Game", href:"games/fractions-addition-battle-royale.html" },
+              { text:"Key Concept on SLS", kind:"SLS" },
+              { text:"Adding Fractions Challenge on SLS", kind:"SLS" },
+              { text:"Complete textbook page 63" },
+              { text:"Complete worksheet pages 67 to 69" }
+            ]
+          },
+          {
+            title: "Subtracting Fractions",
+            walt: "Subtract fractions with the same denominator.",
+            items: [
+              { text:"Fraction Subtraction Builder", kind:"Tool", href:"tools/fractions-subtraction-builder.html" },
+              { text:"Subtraction Battle Royale", kind:"Game", href:"games/fractions-subtraction-battle-royale.html" },
+              { text:"Key Concept on SLS", kind:"SLS" },
+              { text:"Subtracting Fractions Challenge on SLS", kind:"SLS" },
+              { text:"Complete textbook page 64" },
+              { text:"Complete worksheet pages 70 to 72" }
+            ]
+          }
+        ]
+      },
+
+      Shapes: {
+        subtitle: "4 lessons · Primary 2 Mathematics",
+        slsPackage: "https://vle.learning.moe.edu.sg/community-gallery/module/view/88140003-aa7d-4891-bb09-8b7410254ca3",
+        lessons: [
+          {
+            title: "Patterns that change in one way",
+            walt: "Recognise, describe and continue patterns that change in one way.",
+            items: [
+              { text:"Which Shape Comes Next? poll", kind:"SLS" },
+              { text:"Explicit teaching of size, shape, colour and orientation", kind:"Classroom" },
+              { text:"Quick Shape Sort Battle Royale", kind:"Game", href:"games/Quick_Shape_Sort_Battle_Royale.html" },
+              { text:"Quick Shape Sort", kind:"SLS" },
+              { text:"Make a Pattern Discussion Board", kind:"SLS" },
+              { text:"Class vs the Pattern Dragon", kind:"Game", href:"games/Class_vs_the_Pattern_Dragon.html" },
+              { text:"Pattern X-Ray", kind:"SLS" },
+              { text:"Complete textbook pages 104 to 108" },
+              { text:"Complete worksheet pages 99 to 100" }
+            ]
+          },
+          {
+            title: "Patterns that change in two ways",
+            walt: "Complete and repair patterns that change in two ways.",
+            items: [
+              { text:"Triple Jeopardy", kind:"Game", href:"games/Triple_Jeopardy.html" },
+              { text:"Which Tile Has Broken the Pattern? poll", kind:"SLS" },
+              { text:"Pattern Sabotage Discussion Board", kind:"SLS" },
+              { text:"Pattern Repair Shop", kind:"SLS" },
+              { text:"Complete textbook pages 105 to 110" },
+              { text:"Complete worksheet pages 101 to 104" }
+            ]
+          },
+          {
+            title: "Describing 3D shapes",
+            walt: "Describe and classify 3D shapes using their faces, edges and vertices.",
+            items: [
+              { text:"Triple Jeopardy Rematch", kind:"Game", href:"games/Triple_Jeopardy_Rematch.html" },
+              { text:"The Great Solid Challenge", kind:"Classroom" },
+              { text:"Solid Investigation Stations worksheet", kind:"Download", href:"downloads/solid-investigation-stations.pdf", download:true },
+              { text:"Solid Investigation Stations SLS interactives", kind:"SLS" },
+              { text:"Is a Cube a Cuboid?", kind:"Tool", href:"tools/Is_a_Cube_a_Cuboid.html" },
+              { text:"Is a Cube a Cuboid? poll", kind:"SLS" },
+              { text:"Complete textbook page 116" },
+              { text:"Complete worksheet pages 105 to 107" }
+            ]
+          },
+          {
+            title: "Building and patterning with 3D shapes",
+            walt: "Build figures and make repeating patterns using 3D shapes.",
+            items: [
+              { text:"Class vs the 3D-Shape Dinosaur", kind:"Game", href:"games/Class_vs_the_3D-Shape_Dinosaur.html" },
+              { text:"What 3D Shapes Do You See? poll", kind:"SLS" },
+              { text:"Shape Architect Discussion Board", kind:"SLS" },
+              { text:"Make a 3D Shape Pattern Discussion Board", kind:"SLS" },
+              { text:"Pattern Repair Shop in 3D", kind:"SLS" },
+              { text:"3D Shapes Battle Royale", kind:"Game", href:"games/3D_Shapes_Battle_Royale.html" }
+            ]
+          }
+        ]
+      },
+
+      Volume: {
+        subtitle: "6 lessons · Primary 2 Mathematics",
+        slsPackage: "https://vle.learning.moe.edu.sg/community-gallery/module/view/e041bf96-bf2a-46f8-8175-830f422bd6ff",
+        lessons: [
+          {
+            title: "What is Volume?",
+            walt: "Understand volume as the amount of liquid in a container.",
+            items: [
+              { text:"Poll and water-level demonstration", kind:"SLS" },
+              { text:"Key concept: volume is the amount of liquid in a container", kind:"Classroom" },
+              { text:"Say It Like a Mathematician", kind:"SLS" },
+              { text:"Build the Container Challenge", kind:"Classroom" },
+              { text:"Water-Level Lab", kind:"Interactive" },
+              { text:"Reflection", kind:"SLS" },
+              { text:"Complete textbook page 71" },
+              { text:"Complete mathematics worksheet pages 81 to 82" }
+            ]
+          },
+          {
+            title: "Measure with Cups",
+            walt: "Measure and compare volume using identical cups as units.",
+            items: [
+              { text:"Poll 1: How can volume be measured?", kind:"SLS" },
+              { text:"Measure It!", kind:"Interactive" },
+              { text:"Poll 2: Why water level alone can be misleading", kind:"SLS" },
+              { text:"Don't Trust the Water Level", kind:"Interactive" },
+              { text:"Measurement Detective", kind:"SLS" },
+              { text:"Reflection", kind:"SLS" },
+              { text:"Complete textbook page 73" },
+              { text:"Complete mathematics worksheet pages 83 to 84" }
+            ]
+          },
+          {
+            title: "Meet One Litre",
+            walt: "Recognise one litre and estimate the volume of familiar containers.",
+            items: [
+              { text:"Poll: Which containers hold about 1 litre?", kind:"SLS" },
+              { text:"1-Litre Challenge", kind:"Classroom" },
+              { text:"Litre Rush", kind:"Interactive" },
+              { text:"One-Litre Ninja", kind:"Interactive" },
+              { text:"Reflection: 1 litre in differently shaped containers", kind:"SLS" }
+            ]
+          },
+          {
+            title: "Comparing and Ordering Volume",
+            walt: "Compare and order volumes.",
+            items: [
+              { text:"Recall poll", kind:"SLS" },
+              { text:"Tank Sorter", kind:"Interactive" },
+              { text:"Comparison and difference questions", kind:"SLS" },
+              { text:"Mia's Mistake", kind:"SLS" },
+              { text:"Reflection", kind:"SLS" },
+              { text:"Complete textbook page 78" },
+              { text:"Complete mathematics worksheet pages 85 to 86" }
+            ]
+          },
+          {
+            title: "Addition and Subtraction Word Problems",
+            walt: "Solve addition and subtraction word problems involving volume.",
+            items: [
+              { text:"Hook question", kind:"SLS" },
+              { text:"Build the Model", kind:"Interactive" },
+              { text:"Ben's Error", kind:"SLS" },
+              { text:"Two-Step Thinking Routine", kind:"SLS" },
+              { text:"Complete textbook page 81" },
+              { text:"Complete mathematics worksheet pages 87 to 90" }
+            ]
+          },
+          {
+            title: "Multiplication and Division Word Problems",
+            walt: "Solve multiplication and division word problems involving volume.",
+            items: [
+              { text:"Fill the Delivery Van", kind:"Interactive" },
+              { text:"Share It Equally", kind:"Interactive" },
+              { text:"G–E–T: Annotate the Story", kind:"SLS" },
+              { text:"Complete textbook page 83" },
+              { text:"Complete mathematics worksheet pages 91 to 92" }
+            ]
+          }
+        ]
+      }
+    };
 
     const subjectColours = { Maths:"#dceaff", English:"#e9e0ff" };
     const filterConfig = [
@@ -788,13 +1210,18 @@
 
     const activeFilters = { level:"All", subject:"All", type:"All" };
     let activeSection = "Games";
+    let activeUnit = "Fractions";
 
     const cardsEl = document.getElementById("cards");
+    const toolbarEl = document.getElementById("toolbar");
     const filtersEl = document.getElementById("filters");
     const filterToggle = document.getElementById("filterToggle");
     const searchInput = document.getElementById("searchInput");
     const sectionButtons = [...document.querySelectorAll(".section-btn")];
-    const gameSetupBar = document.querySelector(".game-setup-bar");
+    const gameSetupBar = document.getElementById("gameSetupBar");
+    const unitFlowEl = document.getElementById("unitFlow");
+    const topicTabsEl = document.getElementById("topicTabs");
+    const unitFlowContentEl = document.getElementById("unitFlowContent");
 
     function currentSectionItems() {
       return interactives.filter(item => item.section === activeSection);
@@ -859,13 +1286,15 @@
         .replace(/^-+|-+$/g, "");
     }
 
-    function launchEventName(item) {
-      const slug = item.title
+    function slugify(value) {
+      return value
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
+    }
 
-      return `launch-${item.section.toLowerCase().replace(/s$/, "")}-${slug}`;
+    function launchEventName(item) {
+      return `launch-${item.section.toLowerCase().replace(/s$/, "")}-${slugify(item.title)}-${slugify(item.unitNumber)}`;
     }
 
     function previewMarkup(item) {
@@ -875,6 +1304,7 @@
           <span class="preview-label">Preview</span>
         `;
       }
+
       return `
         <div class="preview-placeholder" aria-label="Preview coming soon">
           <div class="preview-placeholder-inner">
@@ -931,7 +1361,7 @@
                   class="download-btn"
                   href="${item.slsDownload}"
                   download
-                  data-goatcounter-click="download-sls-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}"
+                  data-goatcounter-click="download-sls-${slugify(item.title)}"
                   data-goatcounter-title="Download for SLS: ${item.title}"
                 >
                   Download for SLS <span aria-hidden="true">↓</span>
@@ -943,31 +1373,130 @@
         cardsEl.appendChild(article);
       });
 
-      // GoatCounter binds click events on page load. Because these cards are
-      // generated dynamically, bind the newly created links whenever possible.
+      bindGoatCounterEvents();
+    }
+
+    function kindClass(kind) {
+      return String(kind || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    }
+
+    function renderFlowItem(item, unitName) {
+      const tag = item.kind ? `<span class="flow-tag ${kindClass(item.kind)}">${item.kind}</span>` : "";
+
+      if (item.href) {
+        const downloadAttr = item.download ? " download" : "";
+        const eventType = item.download ? "download" : "open";
+        return `
+          <a
+            class="flow-link"
+            href="${item.href}"
+            ${downloadAttr}
+            data-goatcounter-click="unit-flow-${eventType}-${slugify(unitName)}-${slugify(item.text)}"
+            data-goatcounter-title="Unit Flow: ${unitName} — ${item.text}"
+          >${item.text}</a>${tag}
+        `;
+      }
+
+      return `${item.text}${tag}`;
+    }
+
+    function renderUnitTabs() {
+      topicTabsEl.innerHTML = "";
+      Object.keys(unitFlows).forEach(unitName => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "topic-btn" + (unitName === activeUnit ? " active" : "");
+        button.textContent = unitName;
+        button.setAttribute("aria-pressed", String(unitName === activeUnit));
+        button.addEventListener("click", () => {
+          activeUnit = unitName;
+          renderUnitTabs();
+          renderUnitFlow();
+        });
+        topicTabsEl.appendChild(button);
+      });
+    }
+
+    function renderUnitFlow() {
+      const unit = unitFlows[activeUnit];
+      if (!unit) return;
+
+      unitFlowContentEl.innerHTML = `
+        <div class="unit-heading">
+          <div class="unit-heading-copy">
+            <h2>${activeUnit}</h2>
+            <span>${unit.subtitle || ""}</span>
+          </div>
+          ${unit.slsPackage ? `
+            <a
+              class="sls-package-btn"
+              href="${unit.slsPackage}"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-goatcounter-click="open-sls-package-${slugify(activeUnit)}"
+              data-goatcounter-title="Open SLS package: ${activeUnit}"
+            >Open SLS package <span aria-hidden="true">↗</span></a>
+          ` : ""}
+        </div>
+        <div class="lesson-list">
+          ${unit.lessons.map((lesson, index) => `
+            <article class="lesson-card">
+              <div class="lesson-head">
+                <div class="lesson-kicker">Lesson ${index + 1}</div>
+                <h3 class="lesson-title">${lesson.title}</h3>
+                ${lesson.walt ? `<p class="walt"><strong>WALT:</strong> ${lesson.walt}</p>` : ""}
+              </div>
+              <ol class="lesson-items">
+                ${lesson.items.map(item => `<li>${renderFlowItem(item, activeUnit)}</li>`).join("")}
+              </ol>
+            </article>
+          `).join("")}
+        </div>
+        ${unit.note ? `<p class="unit-note">${unit.note}</p>` : ""}
+      `;
+
+      bindGoatCounterEvents();
+    }
+
+    function bindGoatCounterEvents() {
       if (window.goatcounter && typeof window.goatcounter.bind_events === "function") {
         window.goatcounter.bind_events();
       }
     }
 
+    function closeFilters() {
+      filterToggle.setAttribute("aria-expanded", "false");
+      filterToggle.setAttribute("aria-label", "Show filters");
+      filtersEl.classList.remove("open");
+    }
+
     function switchSection(section) {
       activeSection = section;
+      const isUnitFlow = section === "Unit Flow";
+
       sectionButtons.forEach(button => {
         const on = button.dataset.section === section;
         button.classList.toggle("active", on);
         button.setAttribute("aria-pressed", String(on));
       });
 
+      closeFilters();
+      searchInput.value = "";
       activeFilters.level = "All";
       activeFilters.subject = "All";
       activeFilters.type = "All";
-      searchInput.value = "";
 
-      renderFilters();
-      renderCards();
+      toolbarEl.hidden = isUnitFlow;
+      cardsEl.hidden = isUnitFlow;
+      unitFlowEl.hidden = !isUnitFlow;
+      gameSetupBar.hidden = section !== "Games";
 
-      if (gameSetupBar) {
-        gameSetupBar.hidden = section !== "Games";
+      if (isUnitFlow) {
+        renderUnitTabs();
+        renderUnitFlow();
+      } else {
+        renderFilters();
+        renderCards();
       }
     }
 
@@ -984,9 +1513,7 @@
 
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && filterToggle.getAttribute("aria-expanded") === "true") {
-        filterToggle.setAttribute("aria-expanded", "false");
-        filterToggle.setAttribute("aria-label", "Show filters");
-        filtersEl.classList.remove("open");
+        closeFilters();
         filterToggle.focus();
       }
     });

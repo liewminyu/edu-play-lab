@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Fraction Addition Builder</title>
+<style>
+:root{
+  --navy:#083b6d;
+  --muted:#607b95;
+  --line:#d9e7ef;
+  --red:#ee6f72;
+  --red-line:#c94f56;
+  --blue:#5faee8;
+  --blue-line:#2f82c8;
+  --green:#8bd05f;
+  --green-dark:#3f7f34;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;
+  color:var(--navy);background:#fff;
+}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+.app{
+  width:100%;height:100vh;min-height:500px;
+  padding:8px 16px 10px;
+  display:grid;grid-template-rows:54px minmax(0,1fr);gap:6px;
+  background:linear-gradient(120deg,#ffddea 0%,#eadfff 48%,#d9f2fb 100%);
+}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 5px;gap:12px}
+.title{
+  font-size:clamp(29px,3vw,42px);font-weight:900;line-height:1;
+  color:var(--navy);white-space:nowrap
+}
+.top-actions{display:flex;gap:9px;align-items:center}
+.icon-btn,.new-btn{
+  height:44px;border-radius:14px;border:1.5px solid #cfe0ea;background:#fff;color:var(--navy);
+  font-weight:900;font-size:17px;padding:0 16px;cursor:pointer;min-width:46px;
+}
+.new-btn{background:#89cf61;border-color:#79bf55;color:#164920}
+.fs-btn{font-size:25px;line-height:1;padding:0 12px}
+.panel{
+  min-height:0;background:#fff;border-radius:28px;padding:10px 14px 9px;
+  display:grid;grid-template-columns:220px minmax(0,1fr);gap:13px;
+}
+.controls{
+  min-height:0;border:1.5px solid var(--line);border-radius:22px;background:#fbfdff;
+  padding:16px 14px;display:flex;flex-direction:column;gap:15px
+}
+.control-title{font-size:20px;font-weight:900;margin:0 0 4px}
+.toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toggle button{
+  min-height:50px;border-radius:15px;border:2px solid #d7e5ee;background:#fff;color:var(--navy);
+  font-weight:900;font-size:17px;cursor:pointer
+}
+.toggle button.active{
+  border-color:#4ba4e5;background:#eaf5ff;
+  box-shadow:0 0 0 4px rgba(75,164,229,.09)
+}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step-btn{
+  min-height:58px;border-radius:16px;border:2px solid #d7e5ee;background:#fff;color:var(--navy);
+  text-align:left;padding:8px 11px;font-weight:900;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;gap:10px
+}
+.step-btn .num{
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;flex:0 0 34px
+}
+.step-btn.red .num{background:var(--red)}
+.step-btn.blue .num{background:var(--blue)}
+.step-btn.sum .num{background:var(--green)}
+.step-btn.active.red{border-color:var(--red);background:#fff4f4}
+.step-btn.active.blue{border-color:var(--blue);background:#f1f8fe}
+.step-btn.active.sum{border-color:var(--green);background:#f4fbed}
+.step-btn.complete::after{
+  content:"✓";margin-left:auto;font-size:20px;color:var(--green-dark);font-weight:900;
+}
+.stage{
+  min-width:0;min-height:0;border:1.5px solid var(--line);border-radius:22px;background:#fbfdff;
+  padding:18px 14px 9px;display:grid;grid-template-rows:64px minmax(0,1fr) 154px;gap:4px
+}
+.prompt{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding-top:7px;
+  font-weight:900;font-size:clamp(22px,2.2vw,30px);text-align:center
+}
+.frac{
+  display:inline-grid;grid-template-rows:auto 3px auto;align-items:center;justify-items:center;
+  min-width:56px;font-size:36px;line-height:1;font-weight:900;color:var(--navy);vertical-align:middle
+}
+.frac .line{height:3px;width:100%;background:currentColor;border-radius:3px}
+.frac .num,.frac .den{line-height:.92}
+.frac.red{color:var(--red-line)}
+.frac.blue{color:var(--blue-line)}
+.model-area{min-height:0;display:grid;place-items:center;padding:0 8px}
+.model-wrap{width:100%;height:100%;display:grid;place-items:center}
+.model-svg{width:min(58%,420px);height:min(100%,340px);overflow:visible}
+.bar-svg{width:min(75%,650px);height:min(62%,220px)}
+.piece{cursor:pointer;touch-action:manipulation}
+.piece.locked{cursor:default}
+.bottom{
+  border-top:1px solid #e5eef3;padding-top:18px;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:center;gap:24px;min-height:126px
+}
+.equation{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:16px;min-width:0
+}
+.eq-op{font-size:32px;font-weight:900;color:var(--navy)}
+.answer-box{
+  width:88px;height:78px;border:3px dashed #b8cad8;border-radius:16px;display:grid;place-items:center;
+  background:#fff;color:#9ab0c1;font-size:28px;font-weight:900
+}
+.answer-entry{
+  width:88px;display:grid;grid-template-rows:34px 3px 34px;align-items:center;justify-items:center;
+}
+.answer-entry .entry{
+  width:66px;height:32px;border:2px solid #c8d9e5;border-radius:9px;background:#fff;
+  font-size:24px;font-weight:900;color:var(--navy);display:grid;place-items:center;cursor:pointer;
+  transition:.15s ease;
+}
+.answer-entry.inactive .entry{
+  background:#f1f4f6;border-color:#d9e1e6;color:#a7b4bf;cursor:default;
+}
+.answer-entry.inactive .fline{background:#b8c4cc}
+.answer-entry .entry.active{border-color:#4ba4e5;background:#eef7ff;box-shadow:0 0 0 3px rgba(75,164,229,.10)}
+.answer-entry .fline{width:68px;height:3px;background:var(--navy);border-radius:3px}
+.keypad{
+  width:100%;display:grid;grid-template-columns:repeat(5,46px) 72px;grid-template-rows:44px 44px;gap:6px;
+  align-items:stretch;justify-content:center;transition:.15s ease
+}
+.keypad.inactive{opacity:.38;filter:grayscale(.35)}
+.keypad.inactive button{cursor:default;pointer-events:none}
+.keypad button{
+  border:2px solid #d4e2eb;background:#fff;color:var(--navy);border-radius:11px;
+  font-size:20px;font-weight:900;cursor:pointer;min-width:44px
+}
+.keypad button:active{transform:scale(.97)}
+.keypad .back{grid-column:6;grid-row:1}
+.keypad .check{
+  grid-column:6;grid-row:2;background:#4da4e5;border-color:#4da4e5;color:#fff;font-size:15px
+}
+.feedback{
+  min-height:24px;margin-top:4px;text-align:center;font-size:16px;font-weight:900;color:var(--muted)
+}
+.feedback.good{color:#3d812f}.feedback.bad{color:#c34c50}
+
+@media(max-height:650px){
+  .app{grid-template-rows:48px minmax(0,1fr);padding:6px 12px 8px;gap:4px}
+  .title{font-size:31px}.icon-btn,.new-btn{height:40px;font-size:15px}.fs-btn{font-size:22px}
+  .panel{grid-template-columns:205px minmax(0,1fr);padding:8px 11px 7px;gap:10px}
+  .controls{padding:12px 11px;gap:11px}.control-title{font-size:18px}
+  .toggle button{min-height:44px;font-size:15px}.step-btn{min-height:50px;font-size:14px}
+  .stage{grid-template-rows:54px minmax(0,1fr) 136px;padding:12px 11px 6px}
+  .prompt{font-size:23px;padding-top:5px}.model-svg{width:min(50%,350px);height:min(100%,270px)}
+  .bar-svg{width:min(69%,540px);height:min(58%,180px)}
+  .frac{font-size:31px;min-width:48px}.equation{gap:12px}.eq-op{font-size:28px}
+  .bottom{gap:16px;padding-top:14px;min-height:112px}.keypad{grid-template-columns:repeat(5,42px) 66px;grid-template-rows:39px 39px;gap:5px}
+  .keypad button{font-size:18px}.answer-entry{width:80px}.answer-entry .entry{width:60px}
+}
+@media(max-width:900px){
+  .panel{grid-template-columns:195px minmax(0,1fr)}
+  .step-btn{font-size:14px;padding-left:8px;padding-right:8px}
+  .prompt{font-size:21px}.model-svg{width:min(66%,370px)}
+  .bar-svg{width:min(82%,520px)}
+  .bottom{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  .keypad{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="app" id="appRoot">
+  <div class="topbar">
+    <div class="title">Fraction Addition Builder</div>
+    <div class="top-actions">
+      <button type="button" class="icon-btn" id="resetBtn">↺ Reset</button>
+      <button type="button" class="new-btn" id="newBtn">New question</button>
+      <button type="button" class="icon-btn fs-btn" id="fsBtn" aria-label="Full screen" title="Full screen">⛶</button>
+    </div>
+  </div>
+
+  <main class="panel">
+    <aside class="controls">
+      <div>
+        <div class="control-title">Shape</div>
+        <div class="toggle">
+          <button type="button" id="circleBtn" class="active">Circle</button>
+          <button type="button" id="barBtn">Bar</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="control-title">Steps</div>
+        <div class="steps">
+          <button type="button" class="step-btn red" id="step1">
+            <span class="num">1</span><span>Shade red</span>
+          </button>
+          <button type="button" class="step-btn blue" id="step2">
+            <span class="num">2</span><span>Shade blue</span>
+          </button>
+          <button type="button" class="step-btn sum" id="step3">
+            <span class="num">3</span><span>Enter answer</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div class="prompt" id="prompt"></div>
+      <div class="model-area">
+        <div class="model-wrap" id="modelWrap"></div>
+      </div>
+
+      <div>
+        <div class="bottom">
+          <div class="equation" id="equationArea"></div>
+
+          <div class="keypad inactive" id="keypad" aria-label="Number pad" aria-disabled="true">
+            <button type="button" data-digit="0">0</button>
+            <button type="button" data-digit="1">1</button>
+            <button type="button" data-digit="2">2</button>
+            <button type="button" data-digit="3">3</button>
+            <button type="button" data-digit="4">4</button>
+            <button type="button" data-digit="5">5</button>
+            <button type="button" data-digit="6">6</button>
+            <button type="button" data-digit="7">7</button>
+            <button type="button" data-digit="8">8</button>
+            <button type="button" data-digit="9">9</button>
+            <button type="button" class="back" id="backBtn">⌫</button>
+            <button type="button" class="check" id="checkBtn">Check</button>
+          </div>
+        </div>
+        <div class="feedback" id="feedback" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+const E={
+  app:document.getElementById("appRoot"),
+  prompt:document.getElementById("prompt"),
+  model:document.getElementById("modelWrap"),
+  eq:document.getElementById("equationArea"),
+  keypad:document.getElementById("keypad"),
+  feedback:document.getElementById("feedback"),
+  circle:document.getElementById("circleBtn"),
+  bar:document.getElementById("barBtn"),
+  reset:document.getElementById("resetBtn"),
+  newq:document.getElementById("newBtn"),
+  fs:document.getElementById("fsBtn"),
+  s1:document.getElementById("step1"),
+  s2:document.getElementById("step2"),
+  s3:document.getElementById("step3"),
+  back:document.getElementById("backBtn"),
+  check:document.getElementById("checkBtn")
+};
+
+let state={
+  den:7,a:2,b:3,shape:"circle",mode:0,
+  red:new Set(),blue:new Set(),
+  numText:"",denText:"",activeField:"num",
+  checked:false
+};
+
+function fracHTML(n,d,cls=""){
+  return `<span class="frac ${cls}">
+    <span class="num">${n}</span><span class="line"></span><span class="den">${d}</span>
+  </span>`;
+}
+function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+
+function makeQuestion(){
+  const den=randomInt(4,12);
+  let a,b;
+  do{
+    a=randomInt(1,den-2);
+    b=randomInt(1,den-a-1);
+  }while(a+b>=den);
+  state.den=den;state.a=a;state.b=b;
+  state.mode=0;state.red=new Set();state.blue=new Set();
+  state.numText="";state.denText="";state.activeField="num";state.checked=false;
+  render();
+}
+
+function resetCurrent(){
+  state.mode=0;state.red=new Set();state.blue=new Set();
+  state.numText="";state.denText="";state.activeField="num";state.checked=false;
+  render();
+}
+
+function pieceFill(i){
+  if(state.red.has(i)) return {fill:"#ee6f72",stroke:"#c94f56"};
+  if(state.blue.has(i)) return {fill:"#5faee8",stroke:"#2f82c8"};
+  return {fill:"#fff",stroke:"#7d8fa0"};
+}
+
+function circleSVG(){
+  const d=state.den,cx=120,cy=120,r=98;
+  let s=`<svg class="model-svg" viewBox="0 0 240 240" aria-label="Circle divided into ${d} equal parts">`;
+  for(let i=0;i<d;i++){
+    const a0=(-90+i*360/d)*Math.PI/180;
+    const a1=(-90+(i+1)*360/d)*Math.PI/180;
+    const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    const c=pieceFill(i);
+    const path=`M ${cx} ${cy} L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
+    s+=`<path class="piece" data-piece="${i}" d="${path}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="3"/>`;
+  }
+  s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#526c82" stroke-width="3.5" pointer-events="none"/></svg>`;
+  return s;
+}
+
+function barSVG(){
+  const d=state.den,x=18,y=58,w=564,h=104,seg=w/d;
+  let s=`<svg class="model-svg bar-svg" viewBox="0 0 600 220" aria-label="Bar divided into ${d} equal parts">`;
+  for(let i=0;i<d;i++){
+    const c=pieceFill(i);
+    s+=`<rect class="piece" data-piece="${i}" x="${(x+i*seg).toFixed(2)}" y="${y}" width="${seg.toFixed(2)}" height="${h}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="3"/>`;
+  }
+  s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#526c82" stroke-width="3.5" pointer-events="none"/></svg>`;
+  return s;
+}
+
+function answerEntryHTML(){
+  const enabled=state.mode===3;
+  const num=state.numText || " ";
+  const den=state.denText || " ";
+  return `<div class="answer-entry ${enabled?"":"inactive"}" aria-label="Fraction answer">
+    <button type="button" class="entry ${enabled&&state.activeField==="num"?"active":""}" data-field="num" ${enabled?"":"disabled"}>${num}</button>
+    <div class="fline"></div>
+    <button type="button" class="entry ${enabled&&state.activeField==="den"?"active":""}" data-field="den" ${enabled?"":"disabled"}>${den}</button>
+  </div>`;
+}
+
+function render(){
+  E.circle.classList.toggle("active",state.shape==="circle");
+  E.bar.classList.toggle("active",state.shape==="bar");
+
+  [E.s1,E.s2,E.s3].forEach(x=>x.classList.remove("active","complete"));
+  if(state.mode===1)E.s1.classList.add("active");
+  if(state.mode===2)E.s2.classList.add("active");
+  if(state.mode===3)E.s3.classList.add("active");
+  if(state.red.size===state.a)E.s1.classList.add("complete");
+  if(state.blue.size===state.b)E.s2.classList.add("complete");
+
+  E.prompt.innerHTML=`Colour ${fracHTML(state.a,state.den,"red")} red and ${fracHTML(state.b,state.den,"blue")} blue.`;
+
+  E.model.innerHTML=state.shape==="circle"?circleSVG():barSVG();
+
+  const answer=answerEntryHTML();
+  E.keypad.classList.toggle("inactive",state.mode!==3);
+  E.keypad.setAttribute("aria-disabled",state.mode===3?"false":"true");
+
+  E.eq.innerHTML=`
+    ${fracHTML(state.a,state.den,"red")}
+    <span class="eq-op">+</span>
+    ${fracHTML(state.b,state.den,"blue")}
+    <span class="eq-op">=</span>
+    ${answer}
+  `;
+
+  E.feedback.textContent="";
+  E.feedback.className="feedback";
+}
+
+function tapPiece(index){
+  if(state.mode===1){
+    if(state.blue.has(index)) return;
+    if(state.red.has(index)){
+      state.red.delete(index);
+    }else if(state.red.size<state.a){
+      state.red.add(index);
+    }
+    render();
+    return;
+  }
+
+  if(state.mode===2){
+    if(state.red.has(index)) return;
+    if(state.blue.has(index)){
+      state.blue.delete(index);
+    }else if(state.blue.size<state.b){
+      state.blue.add(index);
+    }
+    render();
+  }
+}
+
+function setMode(mode){
+  state.mode=mode;
+  state.checked=false;
+  if(mode===3){
+    state.activeField="num";
+  }
+  render();
+}
+
+function enterDigit(d){
+  if(state.mode!==3) return;
+  const key=state.activeField==="num"?"numText":"denText";
+  if(state[key].length>=2) return;
+  state[key]+=d;
+  state.checked=false;
+  render();
+}
+
+function backspace(){
+  if(state.mode!==3) return;
+  const key=state.activeField==="num"?"numText":"denText";
+  state[key]=state[key].slice(0,-1);
+  state.checked=false;
+  render();
+}
+
+function checkAnswer(){
+  if(state.mode!==3) return;
+  const n=Number(state.numText);
+  const d=Number(state.denText);
+  const correct=(state.numText!=="" && state.denText!=="" && n===state.a+state.b && d===state.den);
+  E.feedback.textContent=correct?"Correct!":"Try again.";
+  E.feedback.className="feedback "+(correct?"good":"bad");
+  state.checked=true;
+}
+
+function toggleFullscreen(){
+  const doc=document;
+  const el=document.documentElement;
+  if(!doc.fullscreenElement){
+    const req=el.requestFullscreen || el.webkitRequestFullscreen;
+    if(req) req.call(el).catch?.(()=>{});
+  }else{
+    const exit=doc.exitFullscreen || doc.webkitExitFullscreen;
+    if(exit) exit.call(doc);
+  }
+}
+
+E.circle.addEventListener("click",()=>{state.shape="circle";render()});
+E.bar.addEventListener("click",()=>{state.shape="bar";render()});
+E.s1.addEventListener("click",()=>setMode(1));
+E.s2.addEventListener("click",()=>setMode(2));
+E.s3.addEventListener("click",()=>setMode(3));
+E.reset.addEventListener("click",resetCurrent);
+E.newq.addEventListener("click",makeQuestion);
+E.fs.addEventListener("click",toggleFullscreen);
+E.back.addEventListener("click",backspace);
+E.check.addEventListener("click",checkAnswer);
+
+E.model.addEventListener("click",(ev)=>{
+  const piece=ev.target.closest("[data-piece]");
+  if(!piece) return;
+  tapPiece(Number(piece.dataset.piece));
+});
+
+E.eq.addEventListener("click",(ev)=>{
+  const field=ev.target.closest("[data-field]");
+  if(!field || state.mode!==3) return;
+  state.activeField=field.dataset.field;
+  render();
+});
+
+E.keypad.addEventListener("click",(ev)=>{
+  const btn=ev.target.closest("[data-digit]");
+  if(!btn) return;
+  enterDigit(btn.dataset.digit);
+});
+
+render();
+</script>
+</body>
+</html>

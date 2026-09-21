@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Fraction Subtraction Builder</title>
+<style>
+:root{
+  --navy:#0b3b68;--muted:#60788f;--line:#d9e7ef;
+  --blue:#78b8ea;--blue-dark:#397eae;
+  --purple:#b68bd3;--purple-dark:#79529a;
+  --green:#6dcc84;--green-dark:#2f7b43;
+  --soft:#f7fbfd;--danger:#d85e68;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;color:var(--navy);background:#fff}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+.app{width:100%;height:100vh;min-height:560px;padding:10px 16px 12px;display:grid;grid-template-rows:58px minmax(0,1fr);gap:8px;background:linear-gradient(120deg,#ffe3ee 0%,#eadfff 50%,#def4fb 100%)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 4px}
+.title{font-size:clamp(30px,3vw,44px);font-weight:900;line-height:1;white-space:nowrap}
+.actions{display:flex;gap:9px;align-items:center}
+.btn{height:44px;border-radius:14px;border:1.5px solid #cfe0ea;background:#fff;color:var(--navy);font-weight:900;font-size:17px;padding:0 16px;cursor:pointer}
+.btn.primary{background:#6ed58c;border-color:#62c57f;color:#164b27}
+.btn.fs{font-size:25px;min-width:48px;padding:0 12px}
+.panel{min-height:0;background:#fff;border-radius:28px;padding:12px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:12px;box-shadow:0 10px 26px rgba(25,68,100,.06)}
+.controls{min-height:0;border:1.5px solid var(--line);border-radius:22px;background:#fbfdff;padding:14px;display:flex;flex-direction:column;gap:14px}
+.control-title{font-size:19px;font-weight:900;margin:0 0 7px}
+.toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toggle button{height:46px;border-radius:14px;border:2px solid #d7e5ee;background:#fff;color:var(--navy);font-weight:900;font-size:16px;cursor:pointer}
+.toggle button.active{border-color:#58a8df;background:#edf7ff}
+.steps{display:flex;flex-direction:column;gap:9px}
+.step-btn{min-height:66px;border-radius:16px;border:2px solid #d7e5ee;background:#fff;color:var(--navy);text-align:left;padding:8px 10px;font-weight:900;font-size:15px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.step-btn .n{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:20px;flex:0 0 38px}
+.step-btn.s1 .n{background:var(--purple)}.step-btn.s2 .n{background:var(--blue)}.step-btn.s3 .n{background:var(--green)}
+.step-btn.active.s1{border-color:var(--purple);background:#faf5ff}.step-btn.active.s2{border-color:var(--blue);background:#f2f9fe}.step-btn.active.s3{border-color:var(--green);background:#f1fbf4}
+.step-btn.complete::after{content:"✓";margin-left:auto;color:var(--green-dark);font-size:22px}
+.hint{font-size:13px;line-height:1.35;color:var(--muted);font-weight:800;margin-top:auto;background:#f4f8fb;border-radius:14px;padding:10px}
+.stage{min-width:0;min-height:0;border:1.5px solid var(--line);border-radius:22px;background:#fbfdff;padding:12px 14px;display:grid;grid-template-rows:64px minmax(0,1fr) 152px 28px;gap:4px}
+.prompt{display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:clamp(22px,2.3vw,31px);padding:2px 12px}
+.model-area{min-height:0;display:grid;place-items:center;position:relative;padding:0 8px}
+.model-wrap{width:100%;height:100%;display:grid;place-items:center}
+.model-svg{width:min(58%,430px);height:min(96%,350px);overflow:visible}
+.bar-svg{width:min(76%,700px);height:min(62%,220px)}
+.piece{cursor:pointer;touch-action:manipulation}
+.piece.disabled{cursor:default}
+.bottom{border-top:1px solid #e4edf3;padding-top:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;min-height:136px}
+.equation{display:flex;align-items:center;justify-content:center;gap:14px;min-width:0;white-space:nowrap}
+.frac{display:inline-grid;grid-template-rows:auto 3px auto;align-items:center;justify-items:center;min-width:58px;font-size:36px;line-height:1;font-weight:900;color:var(--navy);vertical-align:middle}
+.frac .line{height:3px;width:100%;background:currentColor;border-radius:3px}.frac .num,.frac .den{line-height:.92}
+.eq-op{font-size:31px;font-weight:900}
+.whole-label{font-size:17px;font-weight:900;color:var(--muted);margin-right:2px}
+.drop-frac{display:inline-grid;grid-template-rows:40px 3px 40px;align-items:center;justify-items:center;width:82px}
+.drop-num{width:72px;height:38px;border:3px dashed #b7c9d8;border-radius:10px;background:#fff;display:grid;place-items:center;font-size:26px;font-weight:900;color:#9db0c0;transition:.15s}
+.drop-num.dragover{border-color:var(--purple-dark);background:#f7effd;color:var(--purple-dark);transform:scale(1.03)}
+.drop-den{font-size:31px;font-weight:900}.drop-line{width:72px;height:3px;background:var(--navy);border-radius:3px}
+.answer-entry{width:88px;display:grid;grid-template-rows:34px 3px 34px;align-items:center;justify-items:center}
+.answer-entry .entry{width:66px;height:32px;border:2px solid #c8d9e5;border-radius:9px;background:#fff;font-size:24px;font-weight:900;color:var(--navy);display:grid;place-items:center;cursor:pointer}
+.answer-entry.inactive .entry{background:#f1f4f6;border-color:#d9e1e6;color:#a7b4bf;cursor:default}.answer-entry.inactive .fline{background:#b8c4cc}
+.answer-entry .entry.active{border-color:#4ba4e5;background:#eef7ff}.answer-entry .fline{width:68px;height:3px;background:var(--navy);border-radius:3px}
+.right-tools{display:grid;grid-template-rows:auto 1fr;gap:8px;align-items:center}
+.drag-tray{display:flex;justify-content:center;gap:10px;min-height:58px;align-items:center}
+.number-chip{width:68px;height:52px;border-radius:14px;border:2px solid #cdb7df;background:#fff;color:var(--purple-dark);font-size:25px;font-weight:900;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none}
+.number-chip:active{cursor:grabbing}.number-chip.used{opacity:.35;pointer-events:none}
+.drag-caption{text-align:center;color:var(--muted);font-size:14px;font-weight:900;margin-bottom:2px}
+.keypad{width:100%;display:grid;grid-template-columns:repeat(5,46px) 74px;grid-template-rows:44px 44px;gap:6px;align-items:stretch;justify-content:center}
+.keypad.inactive{opacity:.36;pointer-events:none;filter:grayscale(.2)}
+.keypad.hidden{display:none}
+.keypad button{border:2px solid #d4e2eb;background:#fff;color:var(--navy);border-radius:11px;font-size:20px;font-weight:900;cursor:pointer}
+.keypad .back{grid-column:6;grid-row:1}.keypad .check{grid-column:6;grid-row:2;background:#4da4e5;border-color:#4da4e5;color:#fff;font-size:15px}
+.feedback{text-align:center;font-size:16px;font-weight:900;color:var(--muted);min-height:24px}.feedback.good{color:#347c42}.feedback.bad{color:#c34c50}
+.removed{opacity:1}
+.ghost{position:fixed;z-index:99999;width:68px;height:52px;border-radius:14px;border:2px solid #9f7cbd;background:#fff;color:var(--purple-dark);font-size:25px;font-weight:900;display:grid;place-items:center;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(40,30,55,.18)}
+@media(max-height:700px){
+ .app{grid-template-rows:52px minmax(0,1fr);padding:7px 12px 9px;gap:5px}.title{font-size:34px}.btn{height:40px}
+ .panel{grid-template-columns:220px minmax(0,1fr);padding:9px;gap:9px}.controls{padding:11px;gap:10px}.step-btn{min-height:56px;font-size:14px}
+ .stage{grid-template-rows:54px minmax(0,1fr) 132px 24px;padding:9px 11px}.prompt{font-size:23px}.model-svg{width:min(52%,360px);height:min(96%,285px)}.bar-svg{width:min(72%,560px);height:min(58%,180px)}
+ .bottom{min-height:118px;padding-top:9px;gap:14px}.frac{font-size:31px;min-width:50px}.eq-op{font-size:27px}.keypad{grid-template-columns:repeat(5,42px) 67px;grid-template-rows:39px 39px;gap:5px}.number-chip{width:60px;height:46px;font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="appRoot">
+  <div class="topbar">
+    <div class="title">Fraction Subtraction Builder</div>
+    <div class="actions">
+      <button class="btn" id="resetBtn">↺ Reset</button>
+      <button class="btn primary" id="newBtn">New question</button>
+      <button class="btn fs" id="fsBtn" aria-label="Full screen">⛶</button>
+    </div>
+  </div>
+
+  <main class="panel">
+    <aside class="controls">
+      <div>
+        <div class="control-title">Shape</div>
+        <div class="toggle"><button id="circleBtn" class="active">Circle</button><button id="barBtn">Bar</button></div>
+      </div>
+      <div>
+        <div class="control-title">Steps</div>
+        <div class="steps">
+          <button class="step-btn s1 active" id="step1"><span class="n">1</span><span>Build the whole</span></button>
+          <button class="step-btn s2" id="step2"><span class="n">2</span><span>Subtract the fraction</span></button>
+          <button class="step-btn s3" id="step3"><span class="n">3</span><span>Write the answer</span></button>
+        </div>
+      </div>
+      <div class="hint" id="sideHint">Count the equal parts. Drag the correct numerator into the fraction.</div>
+    </aside>
+
+    <section class="stage">
+      <div class="prompt" id="prompt"></div>
+      <div class="model-area"><div class="model-wrap" id="modelWrap"></div></div>
+      <div class="bottom">
+        <div class="equation" id="equationArea"></div>
+        <div class="right-tools">
+          <div id="stepTool"></div>
+          <div class="keypad inactive" id="keypad" aria-label="Number pad">
+            <button data-digit="0">0</button><button data-digit="1">1</button><button data-digit="2">2</button><button data-digit="3">3</button><button data-digit="4">4</button>
+            <button data-digit="5">5</button><button data-digit="6">6</button><button data-digit="7">7</button><button data-digit="8">8</button><button data-digit="9">9</button>
+            <button class="back" id="backBtn">⌫</button><button class="check" id="checkBtn">Check</button>
+          </div>
+        </div>
+      </div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+    </section>
+  </main>
+</div>
+<script>
+"use strict";
+const E={prompt:document.getElementById('prompt'),model:document.getElementById('modelWrap'),eq:document.getElementById('equationArea'),tool:document.getElementById('stepTool'),keypad:document.getElementById('keypad'),feedback:document.getElementById('feedback'),circle:document.getElementById('circleBtn'),bar:document.getElementById('barBtn'),s1:document.getElementById('step1'),s2:document.getElementById('step2'),s3:document.getElementById('step3'),reset:document.getElementById('resetBtn'),newq:document.getElementById('newBtn'),fs:document.getElementById('fsBtn'),back:document.getElementById('backBtn'),check:document.getElementById('checkBtn'),hint:document.getElementById('sideHint')};
+let state={den:7,sub:5,shape:'circle',mode:1,wholeBuilt:false,removed:new Set(),numText:'',denText:'',activeField:'num'};
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function fracHTML(n,d,cls=''){return `<span class="frac ${cls}"><span class="num">${n}</span><span class="line"></span><span class="den">${d}</span></span>`}
+function makeQuestion(){state.den=rand(4,12);state.sub=rand(1,state.den-1);state.mode=1;state.wholeBuilt=false;state.removed=new Set();state.numText='';state.denText='';state.activeField='num';render()}
+function resetCurrent(){state.mode=1;state.wholeBuilt=false;state.removed=new Set();state.numText='';state.denText='';state.activeField='num';render()}
+function distractors(){const d=state.den;let vals=[d];const candidates=[d-1,d+1,d-2,d+2,Math.max(1,d-3),Math.min(12,d+3)].filter(x=>x>=1&&x<=12&&x!==d);while(vals.length<3&&candidates.length){const i=rand(0,candidates.length-1);vals.push(candidates.splice(i,1)[0])}return vals.sort(()=>Math.random()-.5)}
+function pieceStyle(i){const gone=state.removed.has(i);return gone?{fill:'#fff',stroke:'#7f9ab0',dash:'5 5'}:{fill:'#8fc5ef',stroke:'#397eae',dash:'0'}}
+function circleSVG(){
+  const d=state.den,cx=120,cy=120,r=98;
+  let s=`<svg class="model-svg" viewBox="0 0 240 240" aria-label="One whole divided into ${d} equal parts">`;
+  for(let i=0;i<d;i++){
+    const a0=(-90+i*360/d)*Math.PI/180,a1=(-90+(i+1)*360/d)*Math.PI/180;
+    const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),c=pieceStyle(i);
+    const path=`M ${cx} ${cy} L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
+    s+=`<path class="piece ${state.mode===2?'':'disabled'} ${state.removed.has(i)?'removed':''}" data-piece="${i}" d="${path}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" ${c.dash!=='0'?`stroke-dasharray="${c.dash}"`:''}/>`;
+  }
+  s+=`</svg>`;
+  return s
+}
+function barSVG(){
+  const d=state.den,x=18,y=58,w=564,h=104,seg=w/d;
+  let s=`<svg class="model-svg bar-svg" viewBox="0 0 600 220" aria-label="One whole divided into ${d} equal parts">`;
+  for(let i=0;i<d;i++){
+    const c=pieceStyle(i);
+    s+=`<rect class="piece ${state.mode===2?'':'disabled'} ${state.removed.has(i)?'removed':''}" data-piece="${i}" x="${(x+i*seg).toFixed(2)}" y="${y}" width="${seg.toFixed(2)}" height="${h}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" ${c.dash!=='0'?`stroke-dasharray="${c.dash}"`:''}/>`;
+  }
+  s+=`</svg>`;
+  return s
+}
+function dropFrac(){
+  if(state.wholeBuilt) return fracHTML(state.den,state.den);
+  return `<span class="drop-frac"><span class="drop-num" id="dropNum">?</span><span class="drop-line"></span><span class="drop-den">${state.den}</span></span>`
+}
+function answerEntry(){const enabled=state.mode===3;return `<div class="answer-entry ${enabled?'':'inactive'}"><button class="entry ${enabled&&state.activeField==='num'?'active':''}" data-field="num" ${enabled?'':'disabled'}>${state.numText||' '}</button><div class="fline"></div><button class="entry ${enabled&&state.activeField==='den'?'active':''}" data-field="den" ${enabled?'':'disabled'}>${state.denText||' '}</button></div>`}
+function render(){E.circle.classList.toggle('active',state.shape==='circle');E.bar.classList.toggle('active',state.shape==='bar');[E.s1,E.s2,E.s3].forEach(x=>x.classList.remove('active','complete'));if(state.mode===1)E.s1.classList.add('active');if(state.mode===2)E.s2.classList.add('active');if(state.mode===3)E.s3.classList.add('active');if(state.wholeBuilt)E.s1.classList.add('complete');if(state.removed.size===state.sub)E.s2.classList.add('complete');
+  E.model.innerHTML=state.shape==='circle'?circleSVG():barSVG();
+  E.keypad.classList.toggle('inactive',state.mode!==3);E.keypad.classList.toggle('hidden',state.mode!==3);
+  E.eq.innerHTML=`${dropFrac()}<span class="eq-op">−</span>${fracHTML(state.sub,state.den)}<span class="eq-op">=</span>${answerEntry()}`;
+  if(state.mode===1){E.prompt.textContent=`How many equal parts make one whole?`;E.hint.textContent='Count the equal parts. Drag the correct numerator into the fraction.';const vals=distractors();E.tool.innerHTML=`<div class="drag-caption">Drag the numerator</div><div class="drag-tray">${vals.map(v=>`<div class="number-chip" data-value="${v}">${v}</div>`).join('')}</div>`}
+  else if(state.mode===2){E.prompt.innerHTML=`Tap ${state.sub} shaded ${state.sub===1?'part':'parts'} to subtract ${fracHTML(state.sub,state.den)}.`;E.hint.textContent='Tap shaded parts.';E.tool.innerHTML=`<div class="drag-caption">Removed: ${state.removed.size} of ${state.sub}</div>`}
+  else{E.prompt.textContent='Write the fraction that remains.';E.hint.textContent='Enter the numerator and denominator, then tap Check.';E.tool.innerHTML='<div class="drag-caption">Use the number pad to complete the answer.</div>'}
+  E.feedback.textContent='';E.feedback.className='feedback';bindDrag();}
+function setMode(m){if(m===2&&!state.wholeBuilt){feedback('Build the whole first.','bad');return}if(m===3&&state.removed.size!==state.sub){feedback(`Subtract ${state.sub} ${state.sub===1?'part':'parts'} first.`,'bad');return}state.mode=m;render()}
+function feedback(t,kind=''){E.feedback.textContent=t;E.feedback.className='feedback '+kind}
+function tryDrop(v){if(state.mode!==1)return;if(Number(v)===state.den){state.wholeBuilt=true;state.mode=2;render();feedback('Correct — one whole is '+state.den+'/'+state.den+'.','good')}else feedback('Count the equal parts again.','bad')}
+function bindDrag(){document.querySelectorAll('.number-chip').forEach(chip=>{let ghost=null;chip.addEventListener('pointerdown',ev=>{if(state.mode!==1)return;chip.setPointerCapture?.(ev.pointerId);ghost=document.createElement('div');ghost.className='ghost';ghost.textContent=chip.dataset.value;document.body.appendChild(ghost);ghost.style.left=ev.clientX+'px';ghost.style.top=ev.clientY+'px';ev.preventDefault()});chip.addEventListener('pointermove',ev=>{if(!ghost)return;ghost.style.left=ev.clientX+'px';ghost.style.top=ev.clientY+'px';const dz=document.getElementById('dropNum');if(dz){const r=dz.getBoundingClientRect();dz.classList.toggle('dragover',ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom)}});const finish=ev=>{if(!ghost)return;const dz=document.getElementById('dropNum');let inside=false;if(dz){const r=dz.getBoundingClientRect();inside=ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom;dz.classList.remove('dragover')}ghost.remove();ghost=null;if(inside)tryDrop(chip.dataset.value)};chip.addEventListener('pointerup',finish);chip.addEventListener('pointercancel',()=>{ghost?.remove();ghost=null})})}
+function tapPiece(i){if(state.mode!==2)return;if(state.removed.has(i)){state.removed.delete(i);render();return}if(state.removed.size<state.sub){state.removed.add(i);if(state.removed.size===state.sub){state.mode=3;render();feedback('Subtraction complete. Now write the fraction that remains.','good')}else render()}}
+function enterDigit(d){if(state.mode!==3)return;const k=state.activeField==='num'?'numText':'denText';if(state[k].length>=2)return;state[k]+=d;render()}
+function backspace(){if(state.mode!==3)return;const k=state.activeField==='num'?'numText':'denText';state[k]=state[k].slice(0,-1);render()}
+function checkAnswer(){if(state.mode!==3)return;const n=Number(state.numText),d=Number(state.denText),correct=state.numText!==''&&state.denText!==''&&n===state.den-state.sub&&d===state.den;feedback(correct?'Correct!':'Try again.',correct?'good':'bad')}
+function toggleFullscreen(){const doc=document,el=document.documentElement;if(!doc.fullscreenElement){const req=el.requestFullscreen||el.webkitRequestFullscreen;if(req)req.call(el).catch?.(()=>{})}else{const ex=doc.exitFullscreen||doc.webkitExitFullscreen;if(ex)ex.call(doc)}}
+E.circle.addEventListener('click',()=>{state.shape='circle';render()});E.bar.addEventListener('click',()=>{state.shape='bar';render()});E.s1.addEventListener('click',()=>setMode(1));E.s2.addEventListener('click',()=>setMode(2));E.s3.addEventListener('click',()=>setMode(3));E.reset.addEventListener('click',resetCurrent);E.newq.addEventListener('click',makeQuestion);E.fs.addEventListener('click',toggleFullscreen);E.back.addEventListener('click',backspace);E.check.addEventListener('click',checkAnswer);
+E.model.addEventListener('click',ev=>{const p=ev.target.closest('[data-piece]');if(p)tapPiece(Number(p.dataset.piece))});E.eq.addEventListener('click',ev=>{const f=ev.target.closest('[data-field]');if(f&&state.mode===3){state.activeField=f.dataset.field;render()}});E.keypad.addEventListener('click',ev=>{const b=ev.target.closest('[data-digit]');if(b)enterDigit(b.dataset.digit)});
+render();
+</script>
+</body>
+</html>

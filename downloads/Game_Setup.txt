@@ -1,0 +1,71 @@
+SGLDC_GAME_SETUP	2
+# Portable classroom game setup
+# PLAYER = player id + name
+# GROUP = group id + group name + colour
+# ASSIGN = player id + group id
+PLAYER	p01	Aladdin
+PLAYER	p02	Anna
+PLAYER	p03	Ariel
+PLAYER	p04	Belle
+PLAYER	p05	Buzz
+PLAYER	p06	Carl
+PLAYER	p07	Dory
+PLAYER	p08	Elsa
+PLAYER	p09	Flynn
+PLAYER	p10	Hiccup
+PLAYER	p11	Jasmine
+PLAYER	p12	Joy
+PLAYER	p13	Judy
+PLAYER	p14	Kristoff
+PLAYER	p15	Luca
+PLAYER	p16	Maui
+PLAYER	p17	Megara
+PLAYER	p18	Merida
+PLAYER	p19	Miguel
+PLAYER	p20	Moana
+PLAYER	p21	Mulan
+PLAYER	p22	Nemo
+PLAYER	p23	Po
+PLAYER	p24	Rapunzel
+PLAYER	p25	Remy
+PLAYER	p26	Riley
+PLAYER	p27	Shrek
+PLAYER	p28	Simba
+PLAYER	p29	Toothless
+PLAYER	p30	Woody
+GROUP	red	Red	#ff7f88
+GROUP	yellow	Yellow	#ffe29a
+GROUP	green	Green	#bfdda8
+GROUP	orange	Orange	#ffc58f
+GROUP	purple	Purple	#cfa7f3
+GROUP	blue	Blue	#a9c8e8
+ASSIGN	p20	red
+ASSIGN	p14	red
+ASSIGN	p16	red
+ASSIGN	p04	red
+ASSIGN	p25	red
+ASSIGN	p24	yellow
+ASSIGN	p22	yellow
+ASSIGN	p01	yellow
+ASSIGN	p02	yellow
+ASSIGN	p13	yellow
+ASSIGN	p19	green
+ASSIGN	p28	green
+ASSIGN	p15	green
+ASSIGN	p07	green
+ASSIGN	p29	green
+ASSIGN	p08	orange
+ASSIGN	p21	orange
+ASSIGN	p11	orange
+ASSIGN	p23	orange
+ASSIGN	p09	orange
+ASSIGN	p05	purple
+ASSIGN	p10	purple
+ASSIGN	p18	purple
+ASSIGN	p03	purple
+ASSIGN	p12	purple
+ASSIGN	p27	blue
+ASSIGN	p17	blue
+ASSIGN	p26	blue
+ASSIGN	p30	blue
+ASSIGN	p06	blue

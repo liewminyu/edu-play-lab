@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Equal Parts Explorer</title>
+<style>
+  :root{
+    --navy:#0b3767;
+    --blue:#56a6e8;
+    --line:#d9e6ef;
+    --good:#67b94f;
+    --good-bg:#eef8e9;
+    --warn:#d98a31;
+    --warn-bg:#fff4e7;
+    --shadow:0 10px 28px rgba(24,61,104,.12);
+    --pink:#ffd7e8;
+    --lav:#eee0ff;
+    --sky:#dff3ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden}
+  body{
+    font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;
+    color:var(--navy);
+    background:linear-gradient(120deg,var(--pink),var(--lav) 55%,var(--sky));
+  }
+  button{font:inherit}
+  .app{
+    width:100vw;height:100vh;padding:16px 18px 18px;
+    display:grid;grid-template-rows:62px 1fr;gap:10px;
+  }
+  .topbar{
+    display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;
+  }
+  .title{font-size:34px;line-height:1;font-weight:900;letter-spacing:.2px}
+  .top-actions{display:flex;gap:10px;align-items:center}
+  .icon-btn{
+    min-width:46px;height:46px;border:0;border-radius:14px;
+    background:rgba(255,255,255,.9);color:var(--navy);
+    box-shadow:0 4px 12px rgba(38,74,112,.08);
+    cursor:pointer;font-size:22px;font-weight:900;
+  }
+  .board{
+    min-height:0;background:rgba(255,255,255,.95);border-radius:28px;
+    padding:16px;box-shadow:var(--shadow);
+    display:grid;grid-template-columns:300px 1fr;gap:16px;
+  }
+  .controls{
+    min-height:0;border:1px solid var(--line);border-radius:22px;
+    background:linear-gradient(180deg,#fbfdff,#fffaf8);
+    padding:16px;display:flex;flex-direction:column;gap:16px;
+  }
+  .control-group{display:flex;flex-direction:column;gap:8px}
+  .label{font-weight:900;font-size:18px}
+  .seg{display:grid;gap:8px}
+  .seg.shape{grid-template-columns:1fr 1fr}
+  .seg.parts{grid-template-columns:repeat(3,1fr)}
+  .seg button{
+    height:48px;border:2px solid var(--line);border-radius:14px;
+    background:#fff;color:var(--navy);font-weight:900;font-size:17px;
+    cursor:pointer;transition:.15s ease;
+  }
+  .seg button:hover,.view-btn:hover,.mode-btn:hover{transform:translateY(-1px)}
+  .seg button.active,.view-btn.active{
+    border-color:var(--blue);background:#eaf5ff;
+    box-shadow:0 0 0 3px rgba(86,166,232,.16);
+  }
+  .mode-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mode-btn{
+    height:50px;border-radius:14px;font-weight:900;cursor:pointer;font-size:16px;
+  }
+  .mode-btn.equal{background:var(--good-bg);color:#3c7d31;border:2px solid #b7dba9}
+  .mode-btn.unequal{background:var(--warn-bg);color:#9b5a18;border:2px solid #f2c894}
+  .tip{
+    margin-top:auto;padding:12px 13px;border-radius:14px;
+    background:#edf7ff;border:1px solid #d3e8f8;
+    font-size:14px;font-weight:800;line-height:1.25;color:#56718a;
+  }
+
+  .stage{min-height:0;display:grid;grid-template-rows:60px minmax(0,1fr);gap:10px}
+  .stage-head{
+    display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;
+    padding:0 4px 0 8px;
+  }
+  .prompt{font-weight:900;font-size:24px;line-height:1}
+  .view-switch{
+    display:flex;gap:6px;padding:4px;border-radius:14px;
+    background:#f4f8fb;border:1px solid var(--line);
+  }
+  .view-btn{
+    min-width:92px;height:38px;padding:0 13px;border:2px solid transparent;
+    border-radius:10px;background:transparent;color:var(--navy);
+    font-weight:900;cursor:pointer;transition:.15s ease;
+  }
+  .status{
+    min-width:168px;text-align:center;padding:10px 14px;border-radius:999px;
+    font-weight:900;font-size:16px;border:2px solid transparent;
+  }
+  .status.equal{background:var(--good-bg);color:#3f8034;border-color:#b7dba9}
+  .status.unequal{background:var(--warn-bg);color:#9b5a18;border-color:#f2c894}
+  .canvas-wrap{
+    min-height:0;border:1px solid var(--line);border-radius:22px;
+    background:#fcfeff;position:relative;overflow:hidden;
+  }
+  #mainSvg{width:100%;height:100%;display:block;touch-action:none}
+  .drag-note{
+    position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
+    padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.9);
+    border:1px solid var(--line);font-size:13px;font-weight:900;color:#71869a;
+    pointer-events:none;
+  }
+  .drag-note.hidden{display:none}
+  .piece-stroke{stroke:#0f3d6f;stroke-width:3}
+  .divider{stroke:#0f3d6f;stroke-width:6;stroke-linecap:round}
+  .handle{
+    fill:#fff;stroke:#55a6e8;stroke-width:5;
+    filter:drop-shadow(0 3px 4px rgba(23,58,95,.18));cursor:grab;
+  }
+  .handle:active{cursor:grabbing}
+  .piece-label{
+    font-family:"Trebuchet MS",Arial,sans-serif;font-size:21px;font-weight:900;
+    fill:#0b3767;text-anchor:middle;
+  }
+  @media (max-width:1050px){
+    .board{grid-template-columns:270px 1fr;padding:12px}
+    .title{font-size:29px}
+    .stage-head{grid-template-columns:1fr auto}
+    .view-switch{grid-column:1 / -1;justify-self:center;margin-top:-2px}
+    .stage{grid-template-rows:94px minmax(0,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="title">Equal Parts Explorer</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="resetBtn" title="Reset">↺</button>
+      <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="board">
+    <aside class="controls">
+      <div class="control-group">
+        <div class="label">Shape</div>
+        <div class="seg shape" id="shapeButtons">
+          <button data-shape="circle" class="active">Circle</button>
+          <button data-shape="square">Square</button>
+          <button data-shape="rectangle">Rectangle</button>
+          <button data-shape="bar">Bar</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="label">Equal parts</div>
+        <div class="seg parts" id="partButtons">
+          <button data-parts="2" class="active">2</button>
+          <button data-parts="3">3</button>
+          <button data-parts="4">4</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="label">Try</div>
+        <div class="mode-row">
+          <button class="mode-btn equal" id="makeEqualBtn">Make equal</button>
+          <button class="mode-btn unequal" id="makeUnequalBtn">Make unequal</button>
+        </div>
+      </div>
+
+      <div class="tip" id="tipText">Drag the blue handles to move the divider(s).</div>
+    </aside>
+
+    <main class="stage">
+      <div class="stage-head">
+        <div class="prompt" id="prompt">Make 2 equal parts.</div>
+        <div class="view-switch">
+          <button class="view-btn active" data-view="whole">Whole</button>
+          <button class="view-btn" data-view="separate">Separate</button>
+          <button class="view-btn" data-view="overlay">Overlay</button>
+        </div>
+        <div class="status equal" id="status">Equal parts ✓</div>
+      </div>
+
+      <div class="canvas-wrap">
+        <svg id="mainSvg" viewBox="0 0 900 590" aria-label="Equal parts explorer"></svg>
+        <div class="drag-note" id="dragNote">Drag the divider</div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const mainSvg = document.getElementById("mainSvg");
+  const statusEl = document.getElementById("status");
+  const promptEl = document.getElementById("prompt");
+  const dragNote = document.getElementById("dragNote");
+  const tipText = document.getElementById("tipText");
+
+  const state = {
+    shape: "circle",
+    parts: 2,
+    rectCuts: [0.5],
+    circleAngles: [180],
+    view: "whole",
+    dragging: null
+  };
+
+  const colors = ["#ff9e38","#7ed2d9","#9dcb4a","#b978d1"];
+
+  function el(tag, attrs={}, parent=mainSvg){
+    const n = document.createElementNS(NS, tag);
+    for(const [k,v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if(parent) parent.appendChild(n);
+    return n;
+  }
+  function clear(){ while(mainSvg.firstChild) mainSvg.removeChild(mainSvg.firstChild); }
+
+  function resetCuts(equal=true){
+    const n = state.parts;
+    if(state.shape === "circle"){
+      if(equal){
+        state.circleAngles = Array.from({length:n-1},(_,i)=>360*(i+1)/n);
+      }else{
+        const base = Array.from({length:n-1},(_,i)=>360*(i+1)/n);
+        state.circleAngles = base.map((a,i)=>{
+          const shift=(i%2===0?-1:1)*(18+i*7);
+          return Math.max(22,Math.min(338,a+shift));
+        }).sort((a,b)=>a-b);
+        enforceCircleSpacing();
+      }
+    }else{
+      if(equal){
+        state.rectCuts = Array.from({length:n-1},(_,i)=>(i+1)/n);
+      }else{
+        const base = Array.from({length:n-1},(_,i)=>(i+1)/n);
+        state.rectCuts = base.map((v,i)=>{
+          const shift=(i%2===0?-1:1)*(0.08+i*0.015);
+          return Math.max(.12,Math.min(.88,v+shift));
+        }).sort((a,b)=>a-b);
+        enforceRectSpacing();
+      }
+    }
+    render();
+  }
+
+  function enforceRectSpacing(){
+    const minGap=.10;
+    let arr=state.rectCuts.slice().sort((a,b)=>a-b);
+    for(let i=0;i<arr.length;i++){
+      const lo=i===0?minGap:arr[i-1]+minGap;
+      const hi=i===arr.length-1?1-minGap:1-(arr.length-i)*minGap;
+      arr[i]=Math.max(lo,Math.min(hi,arr[i]));
+    }
+    state.rectCuts=arr;
+  }
+  function enforceCircleSpacing(){
+    const minGap=24;
+    let arr=state.circleAngles.slice().sort((a,b)=>a-b);
+    for(let i=0;i<arr.length;i++){
+      const lo=i===0?minGap:arr[i-1]+minGap;
+      const hi=i===arr.length-1?360-minGap:360-(arr.length-i)*minGap;
+      arr[i]=Math.max(lo,Math.min(hi,arr[i]));
+    }
+    state.circleAngles=arr;
+  }
+
+  function shapeBox(){
+    if(state.shape==="square") return {x:300,y:120,w:300,h:300};
+    if(state.shape==="rectangle") return {x:230,y:145,w:440,h:250};
+    if(state.shape==="bar") return {x:170,y:185,w:560,h:170};
+    return {cx:450,cy:285,r:160};
+  }
+
+  function isEqual(){
+    const n=state.parts;
+    if(state.shape==="circle"){
+      const b=[0,...state.circleAngles,360];
+      const target=360/n;
+      for(let i=0;i<n;i++) if(Math.abs((b[i+1]-b[i])-target)>3.5) return false;
+      return true;
+    }
+    const b=[0,...state.rectCuts,1];
+    const target=1/n;
+    for(let i=0;i<n;i++) if(Math.abs((b[i+1]-b[i])-target)>.018) return false;
+    return true;
+  }
+
+  function updateChrome(){
+    const ok=isEqual();
+    statusEl.textContent=ok?"Equal parts ✓":"Not equal yet";
+    statusEl.className="status "+(ok?"equal":"unequal");
+    promptEl.textContent=`Make ${state.parts} equal parts.`;
+    dragNote.classList.toggle("hidden",state.view!=="whole");
+    tipText.textContent = state.view==="whole"
+      ? "Drag the blue handles to move the divider(s)."
+      : state.view==="separate"
+        ? "The pieces keep their original size and shape."
+        : "The pieces are lined up to compare their size.";
+  }
+
+  function polar(cx,cy,r,deg){
+    const a=(deg-90)*Math.PI/180;
+    return {x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)};
+  }
+  function arcPath(cx,cy,r,start,end){
+    const p1=polar(cx,cy,r,end), p2=polar(cx,cy,r,start);
+    const large=(end-start)>180?1:0;
+    return `M ${cx} ${cy} L ${p2.x} ${p2.y} A ${r} ${r} 0 ${large} 1 ${p1.x} ${p1.y} Z`;
+  }
+
+  function drawWhole(){
+    if(state.shape==="circle"){
+      const {cx,cy,r}=shapeBox();
+      const bounds=[0,...state.circleAngles,360];
+      for(let i=0;i<state.parts;i++){
+        el("path",{d:arcPath(cx,cy,r,bounds[i],bounds[i+1]),
+          fill:colors[i],opacity:.88,stroke:"#0f3d6f","stroke-width":3});
+      }
+      el("circle",{cx,cy,r,fill:"none",stroke:"#0f3d6f","stroke-width":6});
+      const startP=polar(cx,cy,r,0);
+      el("line",{x1:cx,y1:cy,x2:startP.x,y2:startP.y,class:"divider"});
+      state.circleAngles.forEach((ang,i)=>{
+        const p=polar(cx,cy,r,ang);
+        el("line",{x1:cx,y1:cy,x2:p.x,y2:p.y,class:"divider"});
+        const hp=polar(cx,cy,r+22,ang);
+        const h=el("circle",{cx:hp.x,cy:hp.y,r:13,class:"handle","data-index":i});
+        h.addEventListener("pointerdown",startCircleDrag);
+      });
+    }else{
+      const {x,y,w,h}=shapeBox();
+      const bounds=[0,...state.rectCuts,1];
+      for(let i=0;i<state.parts;i++){
+        const x0=x+w*bounds[i],x1=x+w*bounds[i+1];
+        el("rect",{x:x0,y,width:x1-x0,height:h,fill:colors[i],opacity:.88,
+          stroke:"#0f3d6f","stroke-width":3});
+      }
+      el("rect",{x,y,width:w,height:h,fill:"none",stroke:"#0f3d6f","stroke-width":6});
+      state.rectCuts.forEach((cut,i)=>{
+        const dx=x+w*cut;
+        el("line",{x1:dx,y1:y,x2:dx,y2:y+h,class:"divider"});
+        const hnd=el("circle",{cx:dx,cy:y-22,r:13,class:"handle","data-index":i});
+        hnd.addEventListener("pointerdown",startRectDrag);
+      });
+    }
+  }
+
+  function drawSeparate(){
+    if(state.shape==="circle"){
+      const bounds=[0,...state.circleAngles,360];
+      const n=state.parts;
+      const r=n===2?125:n===3?105:88;
+      const gap=n===2?310:n===3?250:205;
+      const startX=450-gap*(n-1)/2;
+      const cy=275;
+      for(let i=0;i<n;i++){
+        const cx=startX+i*gap;
+        const span=bounds[i+1]-bounds[i];
+        el("path",{d:arcPath(cx,cy,r,0,span),fill:colors[i],opacity:.9,
+          stroke:"#0f3d6f","stroke-width":4});
+        el("text",{x:cx,y:cy+r+42,class:"piece-label"}).textContent=String.fromCharCode(65+i);
+      }
+      return;
+    }
+
+    const {w,h}=shapeBox();
+    const bounds=[0,...state.rectCuts,1];
+    const gap=34;
+    const widths=[];
+    let total=gap*(state.parts-1);
+    for(let i=0;i<state.parts;i++){
+      const pw=w*(bounds[i+1]-bounds[i]);
+      widths.push(pw); total+=pw;
+    }
+    let cursor=450-total/2;
+    const y=state.shape==="bar"?210:state.shape==="rectangle"?170:135;
+    for(let i=0;i<state.parts;i++){
+      const pw=widths[i];
+      el("rect",{x:cursor,y,width:pw,height:h,fill:colors[i],opacity:.9,
+        stroke:"#0f3d6f","stroke-width":4});
+      el("text",{x:cursor+pw/2,y:y+h+38,class:"piece-label"}).textContent=String.fromCharCode(65+i);
+      cursor+=pw+gap;
+    }
+  }
+
+  function drawOverlay(){
+    // Overlay rule: the largest piece is always placed at the back.
+    // Smaller pieces are layered on top so the size comparison is obvious.
+    const overlayOpacity=(rank,total)=>{
+      if(total<=1) return .84;
+      return .64 + (.22 * rank/(total-1)); // back .64 → top .86
+    };
+
+    if(state.shape==="circle"){
+      const bounds=[0,...state.circleAngles,360];
+      const cx=450,cy=285,r=165;
+
+      const pieces=[];
+      for(let i=0;i<state.parts;i++){
+        pieces.push({i,span:bounds[i+1]-bounds[i]});
+      }
+
+      // Biggest sector first, smallest sector last/on top.
+      pieces.sort((a,b)=>b.span-a.span);
+
+      pieces.forEach((piece,rank)=>{
+        el("path",{
+          d:arcPath(cx,cy,r,0,piece.span),
+          fill:colors[piece.i],
+          opacity:overlayOpacity(rank,pieces.length),
+          stroke:"#0f3d6f",
+          "stroke-width":5,
+          "stroke-linejoin":"round"
+        });
+      });
+
+      // Shared anchor line: every sector starts from the same radius.
+      const p=polar(cx,cy,r,0);
+      el("line",{
+        x1:cx,y1:cy,x2:p.x,y2:p.y,
+        stroke:"#0f3d6f","stroke-width":5,"stroke-linecap":"round"
+      });
+      return;
+    }
+
+    const {w,h}=shapeBox();
+    const bounds=[0,...state.rectCuts,1];
+    const pieces=[];
+    for(let i=0;i<state.parts;i++){
+      pieces.push({i,width:w*(bounds[i+1]-bounds[i])});
+    }
+
+    const maxWidth=Math.max(...pieces.map(p=>p.width));
+    const x=450-maxWidth/2;
+    const y=state.shape==="bar"?210:state.shape==="rectangle"?170:135;
+
+    // Biggest piece first, smallest piece last/on top.
+    pieces.sort((a,b)=>b.width-a.width);
+
+    pieces.forEach((piece,rank)=>{
+      el("rect",{
+        x,y,width:piece.width,height:h,
+        rx:state.shape==="bar"?4:2,
+        fill:colors[piece.i],
+        opacity:overlayOpacity(rank,pieces.length),
+        stroke:"#0f3d6f",
+        "stroke-width":5
+      });
+    });
+
+    // Shared left edge is the comparison anchor.
+    el("line",{
+      x1:x,y1:y-14,x2:x,y2:y+h+14,
+      stroke:"#0f3d6f","stroke-width":5,"stroke-linecap":"round"
+    });
+  }
+
+  function render(){
+    clear();
+    if(state.view==="whole") drawWhole();
+    else if(state.view==="separate") drawSeparate();
+    else drawOverlay();
+    updateChrome();
+  }
+
+  function startRectDrag(e){
+    if(state.view!=="whole") return;
+    e.preventDefault();
+    state.dragging={type:"rect",index:Number(e.currentTarget.dataset.index)};
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  }
+  function startCircleDrag(e){
+    if(state.view!=="whole") return;
+    e.preventDefault();
+    state.dragging={type:"circle",index:Number(e.currentTarget.dataset.index)};
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  }
+
+  mainSvg.addEventListener("pointermove",(e)=>{
+    if(!state.dragging || state.view!=="whole") return;
+    const pt=mainSvg.createSVGPoint();
+    pt.x=e.clientX;pt.y=e.clientY;
+    const p=pt.matrixTransform(mainSvg.getScreenCTM().inverse());
+
+    if(state.dragging.type==="rect"){
+      const {x,w}=shapeBox();
+      let v=(p.x-x)/w;
+      const i=state.dragging.index,minGap=.10;
+      const lo=i===0?minGap:state.rectCuts[i-1]+minGap;
+      const hi=i===state.rectCuts.length-1?1-minGap:state.rectCuts[i+1]-minGap;
+      state.rectCuts[i]=Math.max(lo,Math.min(hi,v));
+    }else{
+      const {cx,cy}=shapeBox();
+      let deg=Math.atan2(p.y-cy,p.x-cx)*180/Math.PI+90;
+      if(deg<0)deg+=360;
+      const i=state.dragging.index,minGap=24;
+      const lo=i===0?minGap:state.circleAngles[i-1]+minGap;
+      const hi=i===state.circleAngles.length-1?360-minGap:state.circleAngles[i+1]-minGap;
+      state.circleAngles[i]=Math.max(lo,Math.min(hi,deg));
+    }
+    render();
+  });
+  window.addEventListener("pointerup",()=>state.dragging=null);
+  window.addEventListener("pointercancel",()=>state.dragging=null);
+
+  document.getElementById("shapeButtons").addEventListener("click",(e)=>{
+    const b=e.target.closest("button[data-shape]");if(!b)return;
+    state.shape=b.dataset.shape;
+    document.querySelectorAll("[data-shape]").forEach(x=>x.classList.toggle("active",x===b));
+    resetCuts(true);
+  });
+
+  document.getElementById("partButtons").addEventListener("click",(e)=>{
+    const b=e.target.closest("button[data-parts]");if(!b)return;
+    state.parts=Number(b.dataset.parts);
+    document.querySelectorAll("[data-parts]").forEach(x=>x.classList.toggle("active",x===b));
+    resetCuts(true);
+  });
+
+  document.querySelector(".view-switch").addEventListener("click",(e)=>{
+    const b=e.target.closest("[data-view]");if(!b)return;
+    state.view=b.dataset.view;
+    state.dragging=null;
+    document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x===b));
+    render();
+  });
+
+  document.getElementById("makeEqualBtn").addEventListener("click",()=>resetCuts(true));
+  document.getElementById("makeUnequalBtn").addEventListener("click",()=>resetCuts(false));
+  document.getElementById("resetBtn").addEventListener("click",()=>{
+    state.view="whole";
+    document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view==="whole"));
+    resetCuts(true);
+  });
+
+  document.getElementById("fullscreenBtn").addEventListener("click",async()=>{
+    try{
+      if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+      else await document.exitFullscreen();
+    }catch(e){}
+  });
+
+  resetCuts(true);
+})();
+</script>
+</body>
+</html>

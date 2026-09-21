@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Fraction Builder</title>
+<style>
+:root{
+  --navy:#0b3767; --navy2:#123d70; --blue:#56a6e8; --blue2:#3f8fd2;
+  --line:#d9e6ef; --soft:#f8fbfe; --panel:#fff; --muted:#6d8194;
+  --pink:#ffd7e8; --lav:#eee0ff; --sky:#dff3ff;
+  --green:#67b94f; --green-bg:#eff8e9; --orange:#d57610; --orange-fill:#ff9e33;
+  --teal:#138f9d; --teal-fill:#78cfd6; --purple:#7f4ba0; --purple-fill:#b476d0;
+  --shadow:0 12px 30px rgba(24,61,104,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{
+  font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;
+  color:var(--navy);
+  background:linear-gradient(120deg,var(--pink),var(--lav) 55%,var(--sky));
+}
+button{font:inherit;color:inherit}
+.app{width:100vw;height:100vh;padding:16px 18px 18px;display:grid;grid-template-rows:62px 1fr;gap:10px}
+.topbar{display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px}
+.title{font-size:34px;line-height:1;font-weight:900;letter-spacing:.2px}
+.top-actions{display:flex;gap:10px;align-items:center}
+.icon-btn{min-width:46px;height:46px;border:0;border-radius:14px;background:rgba(255,255,255,.92);box-shadow:0 4px 12px rgba(38,74,112,.08);cursor:pointer;font-size:22px;font-weight:900}
+.board{min-height:0;background:rgba(255,255,255,.96);border-radius:28px;padding:16px;box-shadow:var(--shadow);display:grid;grid-template-columns:310px 1fr;gap:16px}
+.controls{min-height:0;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#fbfdff,#fffaf8);padding:16px 16px 20px;display:flex;flex-direction:column;gap:12px}
+.control-group{display:flex;flex-direction:column;gap:8px}.control-label{font-size:19px;font-weight:900}.small-note{font-size:13px;color:var(--muted);font-weight:800}
+.shape-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.parts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.choice{height:48px;border:2px solid #d8e6ef;border-radius:14px;background:#fff;cursor:pointer;font-size:18px;font-weight:900;box-shadow:0 2px 0 rgba(20,55,95,.03)}
+.choice.active{border-color:var(--blue);background:#eaf5ff;box-shadow:0 0 0 4px rgba(86,166,232,.12)}
+.choice:disabled{opacity:.3;cursor:not-allowed}.parts-grid .choice,.num-grid .choice{height:43px}.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:2px;margin-bottom:4px}.quick{height:42px;border-radius:14px;border:2px solid #d8e6ef;background:#fff;font-weight:900;cursor:pointer}
+.quick.primary{background:linear-gradient(145deg,var(--blue),var(--blue2));border:0;color:#fff}.quick.green{background:var(--green-bg);border-color:#b7dba8;color:#347233}
+.stage-wrap{min-height:0;display:grid;grid-template-rows:56px 1fr;gap:10px}
+.stage-head{display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:0 8px}
+.stage-title{display:none}.reveal-bar{display:flex;gap:8px;align-items:center}.reveal-btn{height:42px;padding:0 16px;border-radius:13px;border:2px solid #d9e6ef;background:#fff;font-weight:900;cursor:pointer}.reveal-btn.active{border-color:var(--blue);background:#eaf5ff}
+.stage{min-height:0;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#fbfdff,#fff);position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(420px,1.4fr) minmax(270px,.6fr);gap:14px;padding:18px}
+.model-pane{min-width:0;min-height:0;border-radius:18px;background:#f9fcfe;display:grid;place-items:center;position:relative;overflow:hidden}
+.model-box{width:100%;height:100%;display:grid;place-items:center}.model-box svg{width:min(620px,92%);height:min(520px,92%);max-width:100%;max-height:100%;overflow:visible}
+.tap-note{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.92);border:1px solid #dce7ee;color:#71879a;font-size:13px;font-weight:900;pointer-events:none}
+.readout{min-height:0;border-radius:18px;background:linear-gradient(145deg,#f7fbff,#fff7fb);border:1px solid #e4e9ef;padding:18px;display:grid;grid-template-rows:auto auto auto auto;align-content:center;justify-items:center;gap:14px;text-align:center;position:relative}
+.cover{position:absolute;inset:0;border-radius:18px;background:linear-gradient(145deg,#f7fbff,#fff7fb);display:none;place-items:center;font-size:28px;font-weight:900;color:#8293a3}.cover.show{display:grid}
+.count-line{font-size:22px;font-weight:900;line-height:1.3;color:var(--navy)}
+.frac{display:inline-flex;flex-direction:column;align-items:stretch;justify-content:center;width:74px;font-size:45px;line-height:1;font-weight:900;font-variant-numeric:tabular-nums}
+.frac .top,.frac .bottom{display:block;width:100%;text-align:center}.frac .top{border-bottom:4px solid currentColor;padding:0 0 6px}.frac .bottom{padding:6px 0 0}
+.word{font-size:29px;font-weight:900;color:#4d4384}.labels{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-self:start}.label-card{border-radius:13px;padding:8px 7px;background:#eef8ff;border:1px solid #dbeaf3;font-size:14px;font-weight:850;line-height:1.2}.label-card b{display:block;font-size:15px;color:#2f71a5;margin-bottom:3px}
+@media(max-width:1100px){.app{padding:10px 12px;grid-template-rows:56px 1fr}.title{font-size:30px}.board{grid-template-columns:280px 1fr;padding:12px;gap:12px}.stage{grid-template-columns:1.2fr .8fr;padding:12px}.controls{padding:13px;gap:12px}.choice{height:44px}.stage-title{font-size:22px}}
+@media(max-height:720px){.app{grid-template-rows:50px 1fr;gap:7px;padding-top:8px}.title{font-size:30px}.icon-btn{height:42px;min-width:42px}.board{padding:10px}.controls{padding:10px 11px 13px;gap:8px}.choice{height:37px;font-size:16px}.parts-grid .choice,.num-grid .choice{height:34px}.parts-grid,.num-grid{gap:5px}.quick-row{margin:0 0 2px}.quick{height:35px}.control-label{font-size:17px}.stage-wrap{grid-template-rows:46px 1fr;gap:7px}.stage-title{font-size:21px}.reveal-btn{height:36px;padding:0 12px}.stage{padding:10px;gap:10px}.readout{padding:12px;gap:9px}.count-line{font-size:18px}.frac{font-size:36px;width:58px}.word{font-size:23px}.label-card{padding:7px;font-size:12px}.label-card b{font-size:14px}.tap-note{bottom:8px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="title">Fraction Builder</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="randomBtn" title="Random fraction">↻</button>
+      <button class="icon-btn" id="fullBtn" title="Fullscreen">⛶</button>
+    </div>
+  </header>
+
+  <main class="board">
+    <aside class="controls">
+      <div class="control-group">
+        <div class="control-label">Shape</div>
+        <div class="shape-grid">
+          <button class="choice active" data-shape="circle">Circle</button>
+          <button class="choice" data-shape="bar">Bar</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">Denominator</div>
+        <div class="small-note">equal parts in all</div>
+        <div class="parts-grid" id="denGrid"></div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">Numerator</div>
+        <div class="small-note">shaded parts</div>
+        <div class="num-grid" id="numGrid"></div>
+      </div>
+
+      <div class="quick-row">
+        <button class="quick green" id="allBtn">Shade all</button>
+        <button class="quick" id="clearBtn">Clear</button>
+      </div>
+
+    </aside>
+
+    <section class="stage-wrap">
+      <div class="stage-head">
+        <div class="reveal-bar">
+          <button class="reveal-btn active" id="showFraction">Fraction</button>
+          <button class="reveal-btn active" id="showWords">Words</button>
+          <button class="reveal-btn active" id="showLabels">Labels</button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="model-pane">
+          <div class="model-box" id="modelBox"></div>
+          <div class="tap-note">Tap pieces to shade</div>
+        </div>
+        <aside class="readout">
+          <div class="count-line" id="countLine">3 out of 5 equal parts</div>
+          <div class="frac" id="fractionBox"><span class="top" id="numText">3</span><span class="bottom" id="denText">5</span></div>
+          <div class="word" id="wordText">three-fifths</div>
+          <div class="labels" id="labelsBox">
+            <div class="label-card"><b>Numerator</b>shaded parts</div>
+            <div class="label-card"><b>Denominator</b>equal parts</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+const DENOMS=[2,3,4,5,6,7,8,9,10,11,12];
+const WORD_NUM={0:"zero",1:"one",2:"two",3:"three",4:"four",5:"five",6:"six",7:"seven",8:"eight",9:"nine",10:"ten",11:"eleven",12:"twelve"};
+const WORD_DEN={2:["half","halves"],3:["third","thirds"],4:["quarter","quarters"],5:["fifth","fifths"],6:["sixth","sixths"],7:["seventh","sevenths"],8:["eighth","eighths"],9:["ninth","ninths"],10:["tenth","tenths"],11:["eleventh","elevenths"],12:["twelfth","twelfths"]};
+const state={shape:"circle",den:5,shaded:new Set([0,1,2]),showFraction:true,showWords:true,showLabels:true};
+
+const $=id=>document.getElementById(id);
+const modelBox=$("modelBox"), denGrid=$("denGrid"), numGrid=$("numGrid");
+
+function fractionWords(n,d){
+  if(n===0) return "zero";
+  const den=(n===1?WORD_DEN[d][0]:WORD_DEN[d][1]);
+  return `${WORD_NUM[n]}-${den}`;
+}
+function plural(n,singular,plural){return n===1?singular:plural}
+
+function buildButtons(){
+  denGrid.innerHTML="";
+  DENOMS.forEach(d=>{
+    const b=document.createElement("button"); b.className="choice"; b.textContent=d; b.dataset.den=d;
+    b.onclick=()=>{
+      state.den=d;
+      state.shaded=new Set([...state.shaded].filter(i=>i<d));
+      renderAll();
+    }; denGrid.appendChild(b);
+  });
+  numGrid.innerHTML="";
+  for(let n=0;n<=12;n++){
+    const b=document.createElement("button"); b.className="choice"; b.textContent=n; b.dataset.num=n;
+    b.onclick=()=>{
+      if(n<=state.den){
+        // Numerator buttons remain a quick way to set a count; direct tapping can shade any pieces in any order.
+        state.shaded=new Set(Array.from({length:n},(_,i)=>i));
+        renderAll();
+      }
+    }; numGrid.appendChild(b);
+  }
+}
+
+function svgEl(name,attrs={}){const e=document.createElementNS("http://www.w3.org/2000/svg",name);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e}
+function polar(cx,cy,r,a){const t=(a-90)*Math.PI/180;return{x:cx+r*Math.cos(t),y:cy+r*Math.sin(t)}}
+function sectorPath(cx,cy,r,a0,a1){const p0=polar(cx,cy,r,a0),p1=polar(cx,cy,r,a1),large=(a1-a0)>180?1:0;return `M ${cx} ${cy} L ${p0.x} ${p0.y} A ${r} ${r} 0 ${large} 1 ${p1.x} ${p1.y} Z`}
+
+function drawCircle(){
+  const svg=svgEl("svg",{viewBox:"0 0 700 560","aria-label":`${state.shaded.size} out of ${state.den} parts shaded`});
+  const cx=350,cy=275,r=190,step=360/state.den;
+  for(let i=0;i<state.den;i++){
+    const shaded=state.shaded.has(i);
+    const p=svgEl("path",{d:sectorPath(cx,cy,r,i*step,(i+1)*step),fill:shaded?"#ff9e33":"#ffffff",stroke:"#d57610","stroke-width":"7","stroke-linejoin":"round",style:"cursor:pointer"});
+    p.addEventListener("click",()=>togglePiece(i)); svg.appendChild(p);
+  }
+  return svg;
+}
+function drawBar(){
+  const svg=svgEl("svg",{viewBox:"0 0 760 420","aria-label":`${state.shaded.size} out of ${state.den} parts shaded`});
+  const x=70,y=125,w=620,h=170,cell=w/state.den;
+  for(let i=0;i<state.den;i++){
+    const shaded=state.shaded.has(i);
+    const r=svgEl("rect",{x:x+i*cell,y,width:cell,height:h,fill:shaded?"#78cfd6":"#ffffff",stroke:"#138f9d","stroke-width":"7",style:"cursor:pointer"});
+    r.addEventListener("click",()=>togglePiece(i)); svg.appendChild(r);
+  }
+  return svg;
+}
+function togglePiece(i){
+  // Each piece toggles independently, so teachers can shade/unshade in any order.
+  if(state.shaded.has(i)) state.shaded.delete(i);
+  else state.shaded.add(i);
+  renderAll();
+}
+function renderModel(){modelBox.innerHTML="";modelBox.appendChild(state.shape==="circle"?drawCircle():drawBar())}
+
+function renderControls(){
+  document.querySelectorAll("[data-shape]").forEach(b=>b.classList.toggle("active",b.dataset.shape===state.shape));
+  document.querySelectorAll("[data-den]").forEach(b=>b.classList.toggle("active",Number(b.dataset.den)===state.den));
+  document.querySelectorAll("[data-num]").forEach(b=>{const n=Number(b.dataset.num);b.disabled=n>state.den;b.classList.toggle("active",n===state.shaded.size)});
+}
+function renderReadout(){
+  const num=state.shaded.size;
+  $("countLine").textContent=`${num} out of ${state.den} equal parts`;
+  $("numText").textContent=num; $("denText").textContent=state.den;
+  $("wordText").textContent=fractionWords(num,state.den);
+  $("fractionBox").style.visibility=state.showFraction?"visible":"hidden";
+  $("wordText").style.visibility=state.showWords?"visible":"hidden";
+  $("labelsBox").style.visibility=state.showLabels?"visible":"hidden";
+  $("showFraction").classList.toggle("active",state.showFraction);
+  $("showWords").classList.toggle("active",state.showWords);
+  $("showLabels").classList.toggle("active",state.showLabels);
+}
+function renderAll(){renderControls();renderModel();renderReadout()}
+
+buildButtons();
+document.querySelectorAll("[data-shape]").forEach(b=>b.addEventListener("click",()=>{state.shape=b.dataset.shape;renderAll()}));
+$("allBtn").onclick=()=>{state.shaded=new Set(Array.from({length:state.den},(_,i)=>i));renderAll()};
+$("clearBtn").onclick=()=>{state.shaded.clear();renderAll()};
+$("randomBtn").onclick=()=>{state.den=DENOMS[Math.floor(Math.random()*DENOMS.length)];const n=1+Math.floor(Math.random()*state.den);const picks=[...Array(state.den).keys()].sort(()=>Math.random()-.5).slice(0,n);state.shaded=new Set(picks);state.shape=Math.random()<.5?"circle":"bar";renderAll()};
+$("showFraction").onclick=()=>{state.showFraction=!state.showFraction;renderReadout()};
+$("showWords").onclick=()=>{state.showWords=!state.showWords;renderReadout()};
+$("showLabels").onclick=()=>{state.showLabels=!state.showLabels;renderReadout()};
+$("fullBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+renderAll();
+</script>
+</body>
+</html>

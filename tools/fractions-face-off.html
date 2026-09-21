@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>Fraction Face-Off</title>
+<style>
+:root{
+  --navy:#0b3d70; --blue:#55a9ea; --blue2:#dff1ff; --line:#d9e7f1;
+  --pink:#f7d7e8; --lav:#e9ddff; --mint:#d8f4e6; --peach:#ffe2c8;
+  --orange:#ff9f37; --orangeLine:#d4740a; --teal:#63c8d4; --tealLine:#168d99;
+  --green:#8fd25d; --greenLine:#4e9b34; --purple:#a873cb; --purpleLine:#7a419a;
+  --muted:#667f96; --panel:#f9fcfe; --good:#edf9e9; --bad:#fff2eb;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f6f9fc;color:var(--navy);font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif;overscroll-behavior:none;}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;}
+.app{
+  width:100vw;height:100vh;min-height:620px;
+  background:linear-gradient(125deg,#ffdcea 0%,#efe4ff 48%,#dff5ff 100%);
+  padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;
+}
+.topbar{height:68px;display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;}
+.title{font-weight:900;font-size:clamp(28px,2.8vw,44px);letter-spacing:.2px;}
+.mode-tabs,.top-actions{display:flex;gap:8px;align-items:center;}
+.tab,.icon-btn,.small-btn,.seg-btn,.num-btn,.den-btn,.shape-btn,.action-btn{
+  border:2px solid #d5e4ee;background:#fff;border-radius:16px;font-weight:900;box-shadow:0 3px 10px rgba(11,61,112,.06);
+}
+.tab{min-width:126px;height:50px;padding:0 18px;font-size:18px;}
+.tab.active,.seg-btn.active,.shape-btn.active,.num-btn.active,.den-btn.active{background:#e9f5ff;border-color:#4da5e7;box-shadow:0 0 0 4px rgba(77,165,231,.13);}
+.icon-btn{width:50px;height:50px;display:grid;place-items:center;padding:0;}
+.icon-btn svg{width:25px;height:25px;stroke:var(--navy);stroke-width:2.15;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.panel{flex:1;min-height:0;background:rgba(255,255,255,.94);border-radius:30px;padding:16px 18px;box-shadow:0 12px 35px rgba(49,71,107,.08);overflow:hidden;}
+.view{display:none;width:100%;height:100%;min-height:0;gap:14px;}
+.view.active{display:grid;}
+#faceView{grid-template-columns:1fr;}
+#faceView .controls{display:none;}
+#faceView .stage{max-width:1180px;width:100%;margin:0 auto;}
+#faceView .stage-head{max-width:1080px;margin:0 auto;width:100%;}
+#faceView .compare-area{grid-template-columns:minmax(280px,420px) 110px minmax(280px,420px);justify-content:center;max-width:1080px;width:100%;margin:0 auto;}
+#faceView .bottom-tools{justify-content:center;flex-wrap:wrap;}
+#faceView .relation-col{max-width:110px;}
+#orderView{grid-template-rows:auto 1fr auto;}
+.controls{min-height:0;border:1.5px solid var(--line);background:linear-gradient(#fbfdff,#fffaf8);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:14px;overflow:hidden;}
+.section{display:flex;flex-direction:column;gap:8px;}
+.section-title{font-size:19px;font-weight:900;line-height:1;}
+.den-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;}
+.den-btn{height:42px;border-radius:12px;font-size:17px;}
+.fraction-chooser{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.choose-box{border:1.5px solid var(--line);border-radius:17px;padding:10px;background:#fff;}
+.choose-label{font-weight:900;font-size:16px;margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.dot.a{background:var(--orange);} .dot.b{background:var(--teal);} .dot.c{background:var(--purple);}
+.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.num-btn{height:37px;border-radius:11px;font-size:15px;padding:0;}
+.shape-row,.reveal-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.shape-btn,.action-btn{height:45px;font-size:16px;}
+.teacher-note{margin-top:auto;background:#eef7fe;border:1.5px solid #d5eaf8;border-radius:16px;padding:10px 12px;font-size:14px;font-weight:800;color:#4d6f8d;line-height:1.28;}
+.stage{min-height:0;border:1.5px solid var(--line);background:linear-gradient(180deg,#fcfeff,#fff);border-radius:24px;padding:14px 16px 16px;display:grid;grid-template-rows:auto 1fr auto;gap:9px;overflow:hidden;}
+.stage-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;min-height:42px;}
+.prompt{font-size:clamp(21px,2vw,31px);font-weight:900;}
+.badge{padding:9px 18px;border:2px solid #f0c587;border-radius:999px;background:#fff9ef;color:#a25b08;font-size:17px;font-weight:900;white-space:nowrap;}
+.compare-area{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 108px minmax(0,1fr);gap:10px;align-items:center;}
+.fraction-card{height:100%;min-height:0;border:2px solid #d9e6ef;border-radius:24px;background:#fbfdff;display:grid;grid-template-rows:1fr auto;place-items:center;padding:10px 14px 12px;transition:.18s ease;overflow:hidden;}
+.fraction-card.a-card{background:linear-gradient(180deg,#fffaf3,#fff);}
+.fraction-card.b-card{background:linear-gradient(180deg,#f1fcff,#fff);}
+.model{width:min(95%,360px);height:min(100%,330px);display:grid;place-items:center;min-height:0;}
+.frac-line{display:flex;align-items:center;justify-content:center;gap:10px;padding-top:2px;}
+.frac{display:inline-grid;grid-template-rows:auto 3px auto;place-items:center;min-width:58px;line-height:1;font-weight:900;font-size:clamp(28px,3vw,44px);}
+.frac .bar{height:3px;background:currentColor;width:100%;margin:3px 0;}
+.word{font-size:clamp(15px,1.45vw,21px);font-weight:900;color:#5c5a82;}
+.relation-col{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+.relation-symbol{width:86px;height:86px;border-radius:26px;border:2px solid #d7e4ee;background:#fff;display:grid;place-items:center;font-size:52px;font-weight:900;box-shadow:0 7px 20px rgba(11,61,112,.08);}
+.relation-symbol.selected{background:#eef7ff;border-color:#7bb8e5;color:#0b3d70;}.relation-symbol.correct{background:#eef9eb;border-color:#9dd37c;color:#3f8131;}.relation-symbol.wrong{background:#fff1ee;border-color:#df8c79;color:#b34a38;}
+.same-den{font-size:14px;font-weight:900;color:#71879a;text-align:center;line-height:1.2;}
+.bottom-tools{display:flex;justify-content:flex-end;gap:9px;align-items:center;}
+.small-btn{height:43px;padding:0 16px;font-size:15px;}
+.small-btn.primary{background:#52a8e8;border-color:#52a8e8;color:#fff;}
+.small-btn.green{background:#8ed05e;border-color:#8ed05e;color:#164e27;}
+.small-btn.relation-choice{min-width:74px;font-size:29px;line-height:1;}
+.small-btn.relation-choice.active{background:#e9f5ff;border-color:#4da5e7;box-shadow:0 0 0 4px rgba(77,165,231,.13);}
+#faceView .fraction-card .frac{font-size:clamp(34px,3.1vw,46px);min-width:64px;}
+
+.faded .model svg{opacity:.18;}
+.hidden-pics .model svg{opacity:0;}
+
+.order-toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;}
+.toolbar-left,.toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.seg-btn{height:42px;padding:0 14px;border-radius:13px;font-size:15px;}
+.order-prompt{font-size:clamp(20px,1.9vw,29px);font-weight:900;}
+.order-stage{min-height:0;border:1.5px solid var(--line);border-radius:24px;background:#fbfdff;padding:16px;display:grid;grid-template-rows:auto 1fr;gap:10px;overflow:hidden;}
+.order-sub{font-size:16px;color:var(--muted);font-weight:900;text-align:center;}
+.card-row{min-height:0;display:flex;gap:14px;align-items:stretch;justify-content:center;padding:4px 6px 6px;}
+.order-card{flex:1 1 0;max-width:330px;min-width:0;border:2px solid #d9e6ef;border-radius:22px;background:#fff;display:grid;grid-template-rows:1fr auto;place-items:center;padding:10px;touch-action:none;user-select:none;position:relative;transition:transform .12s,box-shadow .12s,border-color .12s;}
+.order-card .drag-hint{position:absolute;top:7px;right:10px;font-size:18px;color:#a2b4c2;font-weight:900;}
+.order-card.dragging{opacity:.96;transform:scale(1.035);box-shadow:0 16px 32px rgba(11,61,112,.22);border-color:#4da5e7;z-index:20;}
+.order-card.touch-dragging{position:fixed!important;margin:0!important;pointer-events:none;z-index:9999;transition:none!important;}
+.drag-placeholder{flex:1 1 0;max-width:330px;border:3px dashed #9fc9ea;border-radius:22px;background:#eef7fe;}
+.order-card.correct{border-color:#64ad4a;background:#f0faec;box-shadow:0 0 0 4px rgba(100,173,74,.13);}
+.order-card.wrong{animation:shake .28s ease 0s 2;border-color:#d87c69;}
+@keyframes shake{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+.order-card .model{width:min(90%,220px);height:min(100%,210px);}
+.order-feedback{min-height:28px;text-align:center;font-weight:900;font-size:18px;}
+.order-feedback.good{color:#39822c}.order-feedback.bad{color:#b94b36}
+.order-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.order-den-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.order-den-label{font-size:16px;font-weight:900;}
+#orderDenGrid{grid-template-columns:repeat(11,40px);gap:5px;}
+#orderDenGrid .den-btn{width:40px;height:38px;}
+
+@media(max-width:980px){
+  .app{padding:10px}.topbar{height:58px}.tab{min-width:104px;height:44px;font-size:15px}.icon-btn{width:44px;height:44px}
+  #faceView{grid-template-columns:1fr}.controls{display:none}.den-grid{gap:5px}.den-btn{height:37px}
+  #faceView .compare-area{grid-template-columns:minmax(220px,1fr) 82px minmax(220px,1fr);max-width:900px;}
+  .num-grid{gap:4px}.num-btn{height:33px}.stage{padding:10px}.compare-area{grid-template-columns:1fr 84px 1fr}.relation-symbol{width:72px;height:72px;font-size:44px}
+}
+@media(max-height:720px){
+  .app{padding:8px 12px;gap:6px}.topbar{height:50px}.title{font-size:28px}.tab{height:40px}.icon-btn{width:40px;height:40px;border-radius:12px}
+  .panel{padding:10px 12px}.controls{padding:10px;gap:8px}.section{gap:5px}.section-title{font-size:16px}.den-btn{height:32px}.num-btn{height:30px}.shape-btn,.action-btn{height:37px}
+  .teacher-note{padding:7px 9px;font-size:12px}.stage{padding:9px 11px}.stage-head{min-height:34px}.prompt{font-size:22px}.badge{padding:6px 12px;font-size:14px}
+  .compare-area{grid-template-columns:minmax(210px,1fr) 82px minmax(210px,1fr);max-width:860px;justify-content:center}.fraction-card{border-radius:19px;padding:6px 10px 8px}.model{width:min(90%,290px);height:min(100%,250px)}
+  .frac{font-size:30px}.word{font-size:15px}.relation-symbol{width:68px;height:68px;font-size:40px}.small-btn{height:36px}
+  .order-stage{padding:10px}.order-card{padding:7px}.order-card .model{width:min(85%,180px);height:min(100%,160px)}
+}
+
+/* Four-card ordering keeps the same SLS-friendly viewport while fitting one extra fraction. */
+#orderView.count-4 .card-row{gap:10px;padding-left:2px;padding-right:2px;}
+#orderView.count-4 .order-card{max-width:270px;padding:8px;}
+#orderView.count-4 .order-card .model{width:min(84%,185px);height:min(100%,170px);}
+#orderView.count-4 .order-card .frac{font-size:clamp(24px,2.4vw,36px);min-width:48px;}
+#orderView.count-4 .order-card .word{font-size:clamp(13px,1.15vw,17px);}
+@media(max-width:980px){
+  #orderView.count-4 .order-card{max-width:220px;}
+  #orderView.count-4 .order-card .model{width:min(82%,150px);height:min(100%,140px);}
+}
+@media(max-height:720px){
+  #orderView.count-4 .order-card .model{width:min(80%,135px);height:min(100%,125px);}
+  #orderView.count-4 .order-card .frac{font-size:25px;}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="title">Fraction Face-Off</div>
+    <div class="mode-tabs" aria-label="Mode">
+      <button class="tab active" data-mode="face">Compare 2</button>
+      <button class="tab" data-mode="order" data-count="3">Order 3</button>
+      <button class="tab" data-mode="order" data-count="4">Order 4</button>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="randomBtn" aria-label="New question" title="New question">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6"/></svg>
+      </button>
+      <button class="icon-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="panel">
+    <section id="faceView" class="view active">
+      <aside class="controls">
+        <div class="section">
+          <div class="section-title">Same denominator</div>
+          <div class="den-grid" id="denGrid"></div>
+        </div>
+        <div class="fraction-chooser">
+          <div class="choose-box">
+            <div class="choose-label"><span class="dot a"></span>Fraction A</div>
+            <div class="num-grid" id="numGridA"></div>
+          </div>
+          <div class="choose-box">
+            <div class="choose-label"><span class="dot b"></span>Fraction B</div>
+            <div class="num-grid" id="numGridB"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Shape</div>
+          <div class="shape-row">
+            <button class="shape-btn active" data-shape="circle">○ Circle</button>
+            <button class="shape-btn" data-shape="bar">▭ Bar</button>
+          </div>
+        </div>
+        <div class="teacher-note">Same whole + same denominator → compare the numerators.</div>
+      </aside>
+
+      <section class="stage" id="faceStage">
+        <div class="stage-head">
+          <div class="prompt">Which fraction is greater?</div>
+          <div class="badge" id="statusBadge">Compare</div>
+        </div>
+        <div class="compare-area">
+          <article class="fraction-card a-card">
+            <div class="model" id="modelA"></div>
+            <div class="frac-line"><div id="fracA"></div><div class="word" id="wordA"></div></div>
+          </article>
+          <div class="relation-col">
+            <div class="relation-symbol" id="relationSymbol">?</div>
+            <div class="same-den">same<br>denominator</div>
+          </div>
+          <article class="fraction-card b-card">
+            <div class="model" id="modelB"></div>
+            <div class="frac-line"><div id="fracB"></div><div class="word" id="wordB"></div></div>
+          </article>
+        </div>
+        <div class="bottom-tools">
+          <button class="small-btn green" id="newFaceBtn">New question</button>
+          <button class="small-btn relation-choice" id="lessCompareBtn" data-relation="&lt;">&lt;</button>
+          <button class="small-btn relation-choice" id="greaterCompareBtn" data-relation="&gt;">&gt;</button>
+          <button class="small-btn primary" id="checkCompareBtn">Check</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="orderView" class="view">
+      <div class="order-toolbar">
+        <div class="toolbar-left">
+          <div class="order-prompt">Drag the fractions into order.</div>
+          <button class="seg-btn active" data-dir="desc">Greatest → Smallest</button>
+          <button class="seg-btn" data-dir="asc">Smallest → Greatest</button>
+        </div>
+        <div class="toolbar-right">
+          <button class="small-btn" id="newOrderBtn">New question</button>
+          <button class="small-btn primary" id="checkOrderBtn">Check order</button>
+        </div>
+      </div>
+      <div class="order-stage" id="orderStage">
+        <div class="order-sub" id="orderSub">All three fractions have the same denominator.</div>
+        <div class="card-row" id="cardRow"></div>
+      </div>
+      <div class="order-footer">
+        <div class="order-den-wrap"><span class="order-den-label">Denominator</span><div class="den-grid" id="orderDenGrid"></div></div>
+        <div class="order-feedback" id="orderFeedback"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+(()=>{
+  const state={mode:'face',den:5,numA:2,numB:4,shape:'circle',compareChoice:null,compareChecked:false,orderDir:'desc',orderCount:3,orderDens:8,orderNums:[3,6,1]};
+  const words={1:'one',2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine',10:'ten',11:'eleven',12:'twelve'};
+  const denNames={2:'halves',3:'thirds',4:'quarters',5:'fifths',6:'sixths',7:'sevenths',8:'eighths',9:'ninths',10:'tenths',11:'elevenths',12:'twelfths'};
+  const singular={2:'half',3:'third',4:'quarter',5:'fifth',6:'sixth',7:'seventh',8:'eighth',9:'ninth',10:'tenth',11:'eleventh',12:'twelfth'};
+
+  const denGrid=document.getElementById('denGrid'),orderDenGrid=document.getElementById('orderDenGrid');
+  function makeDenGrid(el,current,handler,minAllowed=2){
+    el.innerHTML='';
+    for(let d=2;d<=12;d++){
+      const b=document.createElement('button');
+      b.className='den-btn'+(d===current?' active':'');
+      b.textContent=d;b.dataset.den=d;
+      if(d<minAllowed){b.disabled=true;b.style.opacity='.28';b.style.cursor='default';}
+      else b.addEventListener('click',()=>handler(d));
+      el.appendChild(b);
+    }
+  }
+  function fracHTML(n,d){return `<span class="frac"><span>${n}</span><span class="bar"></span><span>${d}</span></span>`;}
+  function fractionWord(n,d){
+    if(n===1)return `one-${singular[d]}`;
+    return `${words[n]}-${denNames[d]}`;
+  }
+  function circleSVG(n,d,color,line,size=340){
+    const cx=size/2,cy=size/2,r=size*.39;let parts='';
+    for(let i=0;i<d;i++){
+      const a1=-Math.PI/2+i*2*Math.PI/d,a2=-Math.PI/2+(i+1)*2*Math.PI/d;
+      const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+      const large=(a2-a1)>Math.PI?1:0,fill=i<n?color:'#fff';
+      parts+=`<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z" fill="${fill}" stroke="${line}" stroke-width="${Math.max(3,size*.012)}"/>`;
+    }
+    return `<svg viewBox="0 0 ${size} ${size}" width="100%" height="100%" aria-label="${n} out of ${d} equal parts shaded">${parts}</svg>`;
+  }
+  function barSVG(n,d,color,line,size=340){
+    const w=size,h=size,bw=size*.88,bh=size*.38,x=(w-bw)/2,y=(h-bh)/2;let rects='';
+    for(let i=0;i<d;i++){const rw=bw/d;rects+=`<rect x="${x+i*rw}" y="${y}" width="${rw}" height="${bh}" fill="${i<n?color:'#fff'}" stroke="${line}" stroke-width="${Math.max(3,size*.012)}"/>`;}
+    return `<svg viewBox="0 0 ${size} ${size}" width="100%" height="100%" aria-label="${n} out of ${d} equal parts shaded">${rects}</svg>`;
+  }
+  function modelSVG(n,d,color,line,size=340){return state.shape==='circle'?circleSVG(n,d,color,line,size):barSVG(n,d,color,line,size);}
+
+  function buildNumGrid(el,current,handler){
+    el.innerHTML='';
+    for(let n=1;n<=state.den;n++){
+      const b=document.createElement('button');b.className='num-btn'+(n===current?' active':'');b.textContent=n;b.dataset.num=n;b.addEventListener('click',()=>handler(n));el.appendChild(b);
+    }
+  }
+  function resetCompare(){state.compareChoice=null;state.compareChecked=false;renderRelation();}
+  function setDen(d){
+    state.den=d;
+    state.numA=Math.min(state.numA,d);
+    state.numB=Math.min(state.numB,d);
+    if(state.numA===state.numB){state.numB=d>1?(state.numA===d?d-1:state.numA+1):1;}
+    state.compareChoice=null;state.compareChecked=false;
+    renderFace();
+  }
+  function relation(){return state.numA>state.numB?'>':'<';}
+  function selectCompare(rel){state.compareChoice=rel;state.compareChecked=false;renderRelation();}
+  function checkCompare(){if(!state.compareChoice)return;state.compareChecked=true;renderRelation();}
+  function renderRelation(){
+    const el=document.getElementById('relationSymbol'),badge=document.getElementById('statusBadge');
+    el.textContent=state.compareChoice||'?';
+    el.className='relation-symbol';
+    if(state.compareChoice)el.classList.add('selected');
+    if(state.compareChecked){
+      el.classList.remove('selected');
+      const ok=state.compareChoice===relation();
+      el.classList.add(ok?'correct':'wrong');
+      badge.textContent=ok?'Correct!':'Try again.';
+    }else{
+      badge.textContent=state.compareChoice?'Check your choice':'Compare';
+    }
+    document.querySelectorAll('.relation-choice').forEach(b=>{
+      b.classList.toggle('active',b.dataset.relation===state.compareChoice);
+    });
+  }
+  function renderFace(){
+    makeDenGrid(denGrid,state.den,setDen);
+    buildNumGrid(document.getElementById('numGridA'),state.numA,n=>{state.numA=n;resetCompare();renderFace();});
+    buildNumGrid(document.getElementById('numGridB'),state.numB,n=>{state.numB=n;resetCompare();renderFace();});
+    document.getElementById('modelA').innerHTML=modelSVG(state.numA,state.den,'#ffac53','#d4740a');
+    document.getElementById('modelB').innerHTML=modelSVG(state.numB,state.den,'#8bd2d9','#168d99');
+    document.getElementById('fracA').innerHTML=fracHTML(state.numA,state.den);document.getElementById('wordA').textContent=fractionWord(state.numA,state.den);
+    document.getElementById('fracB').innerHTML=fracHTML(state.numB,state.den);document.getElementById('wordB').textContent=fractionWord(state.numB,state.den);
+    document.querySelectorAll('[data-shape]').forEach(b=>b.classList.toggle('active',b.dataset.shape===state.shape));
+    renderRelation();
+  }
+  function randomFace(){
+    state.den=3+Math.floor(Math.random()*10); // 3..12
+    state.numA=1+Math.floor(Math.random()*state.den);do{state.numB=1+Math.floor(Math.random()*state.den);}while(state.numB===state.numA&&state.den>1);
+    state.compareChoice=null;state.compareChecked=false;renderFace();
+  }
+
+  function randomOrderNums(){
+    const d=state.orderDens,pool=[];for(let n=1;n<=d;n++)pool.push(n);
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    state.orderNums=pool.slice(0,state.orderCount);
+  }
+  function orderModelSVG(n,d,index){const palettes=[['#ffac53','#d4740a'],['#8bd2d9','#168d99'],['#c593df','#7a419a'],['#9fd567','#4e9b34']];const [c,l]=palettes[index%3];return state.shape==='circle'?circleSVG(n,d,c,l,240):barSVG(n,d,c,l,240);}
+  function renderOrder(){
+    if(state.orderDens<state.orderCount)state.orderDens=state.orderCount;
+    makeDenGrid(orderDenGrid,state.orderDens,d=>{state.orderDens=d;randomOrderNums();renderOrder();},state.orderCount);
+    document.querySelectorAll('[data-dir]').forEach(b=>b.classList.toggle('active',b.dataset.dir===state.orderDir));
+    const orderView=document.getElementById('orderView');
+    orderView.classList.toggle('count-4',state.orderCount===4);
+    document.getElementById('orderSub').textContent=`All ${state.orderCount} fractions have the same denominator.`;
+    const row=document.getElementById('cardRow');row.innerHTML='';
+    state.orderNums.forEach((n,i)=>{
+      const card=document.createElement('div');card.className='order-card';card.dataset.num=n;
+      card.innerHTML=`<span class="drag-hint">⋮⋮</span><div class="model">${orderModelSVG(n,state.orderDens,i)}</div><div class="frac-line"><div>${fracHTML(n,state.orderDens)}</div><div class="word">${fractionWord(n,state.orderDens)}</div></div>`;
+      enableDrag(card,row);row.appendChild(card);
+    });
+    const fb=document.getElementById('orderFeedback');fb.textContent='';fb.className='order-feedback';
+  }
+  function syncOrder(row){state.orderNums=[...row.children].filter(c=>c.classList.contains('order-card')).map(c=>Number(c.dataset.num));}
+  function enableDrag(card,row){
+    let pointerDragging=false;
+    card.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;if(e.button!==undefined&&e.button!==0)return;pointerDragging=true;card.setPointerCapture?.(e.pointerId);card.classList.add('dragging');e.preventDefault();});
+    card.addEventListener('pointermove',e=>{if(!pointerDragging)return;let target=null;for(const s of [...row.children].filter(x=>x!==card&&x.classList.contains('order-card'))){const r=s.getBoundingClientRect();if(e.clientX<r.left+r.width/2){target=s;break;}}if(target)row.insertBefore(card,target);else row.appendChild(card);});
+    const finish=()=>{if(!pointerDragging)return;pointerDragging=false;card.classList.remove('dragging');syncOrder(row);};card.addEventListener('pointerup',finish);card.addEventListener('pointercancel',finish);
+
+    let touchDragging=false,placeholder=null,offsetX=0,offsetY=0;
+    const move=(t)=>{card.style.left=(t.clientX-offsetX)+'px';card.style.top=(t.clientY-offsetY)+'px';};
+    card.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0],r=card.getBoundingClientRect();touchDragging=true;offsetX=t.clientX-r.left;offsetY=t.clientY-r.top;placeholder=document.createElement('div');placeholder.className='drag-placeholder';placeholder.style.width=r.width+'px';placeholder.style.height=r.height+'px';row.insertBefore(placeholder,card);card.classList.add('dragging','touch-dragging');card.style.width=r.width+'px';card.style.height=r.height+'px';card.style.left=r.left+'px';card.style.top=r.top+'px';document.body.appendChild(card);move(t);e.preventDefault();},{passive:false});
+    card.addEventListener('touchmove',e=>{if(!touchDragging||e.touches.length!==1)return;const t=e.touches[0];move(t);let before=null;for(const s of [...row.children].filter(x=>x.classList.contains('order-card'))){const r=s.getBoundingClientRect();if(t.clientX<r.left+r.width/2){before=s;break;}}if(before)row.insertBefore(placeholder,before);else row.appendChild(placeholder);e.preventDefault();},{passive:false});
+    const endTouch=e=>{if(!touchDragging)return;touchDragging=false;card.classList.remove('dragging','touch-dragging');card.removeAttribute('style');if(placeholder?.parentNode){row.insertBefore(card,placeholder);placeholder.remove();}else row.appendChild(card);placeholder=null;syncOrder(row);if(e.cancelable)e.preventDefault();};card.addEventListener('touchend',endTouch,{passive:false});card.addEventListener('touchcancel',endTouch,{passive:false});
+  }
+  function checkOrder(){
+    const expected=[...state.orderNums].sort((a,b)=>state.orderDir==='desc'?b-a:a-b);const ok=state.orderNums.every((n,i)=>n===expected[i]);const cards=[...document.querySelectorAll('.order-card')];cards.forEach(c=>c.classList.remove('correct','wrong'));const fb=document.getElementById('orderFeedback');
+    if(ok){cards.forEach(c=>c.classList.add('correct'));fb.textContent='Correct!';fb.className='order-feedback good';}
+    else{cards.forEach(c=>c.classList.add('wrong'));fb.textContent='Try again.';fb.className='order-feedback bad';setTimeout(()=>cards.forEach(c=>c.classList.remove('wrong')),650);}
+  }
+  function newOrder(){state.orderDens=state.orderCount+Math.floor(Math.random()*(13-state.orderCount));randomOrderNums();renderOrder();}
+
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+    state.mode=b.dataset.mode;
+    if(state.mode==='order')state.orderCount=Number(b.dataset.count||3);
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+    document.getElementById('faceView').classList.toggle('active',state.mode==='face');
+    document.getElementById('orderView').classList.toggle('active',state.mode==='order');
+    if(state.mode==='order'){if(state.orderDens<state.orderCount)state.orderDens=state.orderCount;randomOrderNums();renderOrder();}
+  }));
+  document.querySelectorAll('[data-shape]').forEach(b=>b.addEventListener('click',()=>{state.shape=b.dataset.shape;resetCompare();renderFace();if(state.mode==='order')renderOrder();}));
+  document.getElementById('newFaceBtn').addEventListener('click',randomFace);
+  document.getElementById('lessCompareBtn').addEventListener('click',()=>selectCompare('<'));
+  document.getElementById('greaterCompareBtn').addEventListener('click',()=>selectCompare('>'));
+  document.getElementById('checkCompareBtn').addEventListener('click',checkCompare);
+  document.getElementById('randomBtn').addEventListener('click',()=>state.mode==='face'?randomFace():newOrder());
+  document.querySelectorAll('[data-dir]').forEach(b=>b.addEventListener('click',()=>{state.orderDir=b.dataset.dir;renderOrder();}));
+  document.getElementById('newOrderBtn').addEventListener('click',newOrder);document.getElementById('checkOrderBtn').addEventListener('click',checkOrder);
+  document.getElementById('fullscreenBtn').addEventListener('click',async()=>{try{const active=document.fullscreenElement||document.webkitFullscreenElement;if(!active){const el=document.documentElement;if(el.requestFullscreen)await el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();}else{if(document.exitFullscreen)await document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}}catch(e){console.warn('Fullscreen unavailable',e);}});
+
+  randomOrderNums();renderFace();
+})();
+</script>
+</body>
+</html>
