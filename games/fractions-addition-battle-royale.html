@@ -922,6 +922,196 @@ main.screen.open-round .submit-btn:disabled{
   opacity:1!important;
 }
 </style>
+<style>
+
+/* === 2026-09-22 aesthetic tidy-up overrides === */
+.top-round-label{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:clamp(170px,14vw,230px)!important;
+  padding:10px 22px!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,#bdefff 0%,#d8f7ff 18%,#f8ef9d 52%,#ffd5b8 100%)!important;
+  border:3px solid rgba(255,255,255,.92)!important;
+  box-shadow:0 6px 18px rgba(84,118,148,.12)!important;
+  color:#173b68!important;
+  font-size:clamp(20px,1.6vw,30px)!important;
+  font-weight:1000!important;
+  line-height:1.05!important;
+}
+.ready-btn{
+  min-width:200px!important;
+  min-height:54px!important;
+  padding:10px 22px!important;
+  background:#eef8f1!important;
+  border:3px solid #9fd2a6!important;
+  box-shadow:none!important;
+  color:#2d724a!important;
+  font-size:clamp(21px,1.55vw,29px)!important;
+  font-weight:1000!important;
+}
+.player-card.checked .ready-btn,
+.player-card.readying .ready-btn,
+.player-card .ready-btn[disabled]{
+  background:#dff1e3!important;
+  border-color:#68c38e!important;
+  color:#2e7a4b!important;
+  opacity:1!important;
+}
+.player-name{font-size:clamp(30px,2.2vw,40px)!important;}
+.pad-paper::before{
+  font-size:clamp(15px,1.05vw,19px)!important;
+  top:8px!important;
+  color:#8fa2b0!important;
+}
+.pad-tools{
+  gap:8px!important;
+}
+.pad-tool,.submit-btn,.judge-btn{
+  min-height:48px!important;
+  border-radius:14px!important;
+  font-size:clamp(17px,1.18vw,22px)!important;
+  font-weight:1000!important;
+  box-shadow:none!important;
+}
+.pad-tool{
+  background:#ffffff!important;
+  color:#2f5c87!important;
+  border:3px solid #d8e6ee!important;
+}
+.pad-tool:disabled{
+  opacity:.5!important;
+}
+.submit-btn{
+  background:linear-gradient(135deg,#6dd08e,#4fbc73)!important;
+  color:#ffffff!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.submit-btn:disabled{
+  opacity:.55!important;
+  box-shadow:none!important;
+}
+.submit-btn.submitted{
+  background:#eef5f1!important;
+  color:#5d7c6c!important;
+  border:3px solid #d7e8dd!important;
+  box-shadow:none!important;  opacity:1!important;
+}
+.submit-badge{
+  font-size:14px!important;
+  padding:6px 10px!important;
+  border-radius:999px!important;
+  box-shadow:none!important;
+}
+.judge-btn{
+  background:#ffffff!important;
+  color:#3a5f82!important;
+  border:3px dashed #ccdde8!important;
+}
+.judge-btn.correct{
+  background:#e9f8ef!important;
+  color:#2c6e4e!important;
+  border:3px solid #67c892!important;
+  box-shadow:none!important;
+}
+.player-card.teacher-correct,
+.player-card.round-winner{
+  outline:none!important;
+  border-color:rgba(255,255,255,.95)!important;
+  box-shadow:0 7px 18px rgba(62,85,105,.13)!important;
+  filter:none!important;
+}
+.player-card.teacher-correct .pad-paper,
+.player-card.round-winner .pad-paper{
+  border-color:#67c892!important;
+  background:#fbfffc!important;
+  box-shadow:inset 0 2px 7px rgba(45,74,101,.05),0 0 0 2px rgba(103,200,146,.24)!important;
+}
+.player-card.teacher-correct .answer-canvas,
+.player-card.round-winner .answer-canvas,
+.player-card.teacher-correct .pad-paper,
+.player-card.round-winner .pad-paper,
+.player-card.teacher-correct .pad-shell,
+.player-card.round-winner .pad-shell{
+  opacity:1!important;
+  filter:none!important;
+}
+.player-card.teacher-correct .judge-btn.correct,
+.player-card.round-winner .judge-btn.correct{
+  background:#dff4e7!important;
+  border-color:#59bf84!important;
+  color:#2b6a4b!important;
+}
+.player-card.locked .pad-paper,
+.player-card.round-winner .pad-paper,
+.player-card.teacher-correct .pad-paper,
+.pad-locked .pad-paper{
+  opacity:1!important;
+}
+.player-card.locked .answer-canvas,
+.pad-locked .answer-canvas,
+.player-card.round-winner .answer-canvas,
+.player-card.teacher-correct .answer-canvas{
+  opacity:1!important;
+}
+
+</style>
+
+<style>
+/* === 2026-09-22 refinement pass: narrower Ready + pad-only correct highlight === */
+main.screen.open-round .ready-btn{
+  width:clamp(180px,16vw,230px)!important;
+  min-width:0!important;
+  max-width:230px!important;
+  align-self:center!important;
+}
+
+/* Keep the player card itself visually neutral after marking/awarding. */
+main.screen.open-round .player-card.teacher-correct,
+main.screen.open-round .player-card.round-winner,
+main.screen.open-round .player-card.winner-correct,
+main.screen.open-round .player-card.teacher-correct.winner-correct,
+main.screen.open-round .player-card.round-winner.winner-correct{
+  outline:none!important;
+  outline-offset:0!important;
+  border-color:rgba(255,255,255,.95)!important;
+  box-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+}
+
+/* Success styling belongs only to the handwriting pad and the correct indicator. */
+main.screen.open-round .player-card.teacher-correct .pad-paper,
+main.screen.open-round .player-card.round-winner .pad-paper,
+main.screen.open-round .player-card.winner-correct .pad-paper{
+  border-color:#67c892!important;
+  background:#fbfffc!important;
+  box-shadow:inset 0 2px 7px rgba(45,74,101,.05),0 0 0 2px rgba(103,200,146,.24)!important;
+}
+
+main.screen.open-round .player-card.teacher-correct .judge-btn.correct,
+main.screen.open-round .player-card.round-winner .judge-btn.correct,
+main.screen.open-round .player-card.winner-correct .judge-btn.correct{
+  background:#dff4e7!important;
+  border-color:#59bf84!important;
+  color:#2b6a4b!important;
+  box-shadow:none!important;
+}
+</style>
+
+
+<style>
+/* 2026-09-22 Ready button centering fix */
+main.screen.open-round .ready-btn{
+  justify-self:center!important;
+  align-self:center!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+</style>
+
 </head>
 <body>
 <div id="app"></div>
@@ -997,7 +1187,8 @@ function setupSignature(cfg){
   return JSON.stringify({players:n.players.map(p=>({id:p.id,name:p.name})),groups:n.groups.map(g=>({name:g.name,color:g.color,memberIds:[...g.memberIds]}))});
 }
 function rosterReady(cfg=setupDraft){
-  if(!cfg)return false;  const names=cfg.players.map(p=>p.name.trim()).filter(Boolean);
+  if(!cfg)return false;
+  const names=cfg.players.map(p=>p.name.trim()).filter(Boolean);
   return names.length===30&&!names.some(n=>[...n].length>12)&&groupSetupErrors(cfg).length===0;
 }
 function recomputeSetupValidation(){setupValidated=rosterReady(setupDraft);setupCheckedOnce=setupValidated;}
@@ -1523,7 +1714,7 @@ function renderRound(){
 function playerCard(p,i){return `<div class="player-card readying" data-lane="${i}" style="--group:${p.color};--glow:${hexToRgba(p.color,.50)}"><div class="player-head"><span class="player-name">${escapeHTML(p.player)}</span></div><button class="ready-btn" data-lane="${i}">Ready?</button><div class="response-zone hidden" id="response-${i}"></div><div class="judge-slot hidden" id="judge-${i}"></div></div>`;}
 function checkInPlayer(lane){
   if(phase!=='checkin'||readyLanes.has(lane))return;const card=document.querySelector(`.player-card[data-lane="${lane}"]`),btn=card?.querySelector('.ready-btn');if(!card||!btn)return;
-  ensureAudio();readyLanes.add(lane);btn.disabled=true;btn.textContent='Ready! 👍';card.classList.remove('readying');card.classList.add('checked');tone(560+lane*80,.16,'triangle',.08);
+  ensureAudio();readyLanes.add(lane);btn.disabled=true;btn.textContent='Ready! ✓';card.classList.remove('readying');card.classList.add('checked');tone(560+lane*80,.16,'triangle',.08);
   const b=$('#stageBtn');if(readyLanes.size===3){b.disabled=false;b.className='stage-btn';b.textContent='📘 SHOW QUESTION';tone(660,.12,'triangle',.08);setTimeout(()=>tone(880,.18,'triangle',.09),130);}else b.textContent=`WAITING ${readyLanes.size}/3`;
 }
 function handleStageButton(){
@@ -1805,8 +1996,7 @@ function showQuestion(){
   document.querySelectorAll('.player-card').forEach((card,lane)=>{card.classList.remove('checked');card.classList.add('preview');card.querySelector('.ready-btn').classList.add('hidden');const zone=card.querySelector('.response-zone');zone.classList.remove('hidden');renderResponseZone(q,lane,true)});
   const b=$('#stageBtn');b.className='stage-btn go';b.textContent='🚀 START ROUND';b.disabled=false;
 }
-function goLive(){
-  if(phase!=='preview')return;phase='countdown';const b=$('#stageBtn');b.className='stage-btn waiting';b.textContent='GET READY…';b.disabled=true;
+function goLive(){  if(phase!=='preview')return;phase='countdown';const b=$('#stageBtn');b.className='stage-btn waiting';b.textContent='GET READY…';b.disabled=true;
   const steps=['3','2','1','GO!'];let i=0;const showStep=()=>{const value=steps[i];overlayRoot.innerHTML=`<div class="countdown-overlay"><div class="countdown-burst ${value==='GO!'?'go-word':''}">${value}</div></div>`;if(value==='GO!'){tone(880,.14,'triangle',.075);setTimeout(()=>tone(1040,.16,'triangle',.07),120)}else tone(420+i*90,.10,'triangle',.05);const delay=value==='GO!'?430:560;i++;if(i<steps.length)setTimeout(showStep,delay);else setTimeout(()=>{overlayRoot.innerHTML='';beginLive()},delay)};showStep();
 }
 function beginLive(){

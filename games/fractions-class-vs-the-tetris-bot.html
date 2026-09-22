@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Class vs the Tetris Bot</title>
+<style>
+:root{
+  --navy:#082f57;--navy2:#17496f;--muted:#5c7186;--line:#dce8ee;
+  --blue:#5aa8ed;--green:#8acb62;--orange:#ff9c34;--teal:#39bdc3;--purple:#a96fc5;
+  --good:#66bc5b;--bad:#ef6f6c;--paper:#fff;--shadow:0 14px 34px rgba(41,75,105,.15);
+  --pink:#ff8fb6;--yellow:#ffe27a;--class:#62c38d;--bot:#a96fc5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eef9ff;color:var(--navy);font-family:"Trebuchet MS","Arial Rounded MT Bold",Arial,sans-serif}
+button,input,textarea{font:inherit}button{touch-action:manipulation}.hidden{display:none!important}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(135deg,#ffe3ef 0%,#f6e5ff 38%,#e9f5ff 70%,#e5f8ff 100%)}
+#app{position:relative;z-index:1;width:100%;height:100%}.screen{width:100%;height:100%;padding:clamp(8px,.9vw,15px);display:flex;flex-direction:column;gap:8px}
+.topbar{display:grid;grid-template-columns:minmax(330px,1fr) auto minmax(330px,1fr);align-items:center;gap:12px;min-height:60px}
+.brand{min-width:0}.brand h1{margin:0;font-size:clamp(27px,2.35vw,40px);line-height:1;letter-spacing:-.02em}.brand p{margin:4px 0 0;color:var(--muted);font-weight:800;font-size:13px}
+.toolbar,.game-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:8px}.icon-btn,.stage-btn,.primary-btn,.secondary-btn,.answer-btn,.move-btn,.setup-btn,.mark-top-btn{border:0;cursor:pointer;font-weight:900}
+.icon-btn{width:50px;height:50px;border-radius:15px;background:#fff;color:var(--navy);box-shadow:0 6px 16px rgba(54,84,105,.12);font-size:21px}
+.teacher-slot{display:flex;align-items:center;justify-content:center;min-width:330px}.stage-btn{width:330px;min-width:330px;height:54px;border-radius:16px;background:linear-gradient(135deg,#5aa8ed,#438fda);color:#fff;font-size:clamp(16px,1.35vw,21px);box-shadow:0 7px 18px rgba(62,123,181,.22)}
+.stage-btn.waiting{background:#dfe7ee;color:#76899a;box-shadow:none;cursor:not-allowed}.stage-btn.go{background:linear-gradient(135deg,#7ed799,#5bbd78)}.stage-btn.next{background:linear-gradient(135deg,#bc8de0,#9a68c4)}
+.teacher-mark-top{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:330px}.mark-top-btn{height:54px;border-radius:15px;font-size:17px;box-shadow:0 6px 14px rgba(54,84,105,.12)}.mark-top-btn.good{background:#e7f7e2;color:#2e6a2c;border:2px solid #72bd61}.mark-top-btn.bad{background:#fff0ee;color:#9b3c39;border:2px solid #ef7b78}.mark-top-btn:disabled{opacity:.45;cursor:not-allowed}
+.round-pill{height:50px;display:flex;align-items:center;justify-content:center;padding:0 18px;border-radius:999px;background:linear-gradient(90deg,#ffd6e9,#ead7ff,#d9f1ff);border:3px solid #fff;box-shadow:0 5px 14px rgba(54,84,105,.10);font-size:16px;font-weight:900;white-space:nowrap}
+
+/* cover */
+.intro-center{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}.cover-card{position:relative;width:min(1180px,100%);height:100%;max-height:730px;background:rgba(255,255,255,.94);border:3px solid #fff;border-radius:36px;box-shadow:0 18px 44px rgba(48,77,105,.14);overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr}
+.cover-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 16% 20%,rgba(255,143,182,.14),transparent 25%),radial-gradient(circle at 83% 18%,rgba(169,111,197,.16),transparent 24%),radial-gradient(circle at 52% 100%,rgba(90,168,237,.12),transparent 34%);pointer-events:none}.cover-copy{position:relative;z-index:2;padding:40px 44px;display:flex;flex-direction:column;justify-content:center}.cover-chip{align-self:flex-start;display:inline-flex;padding:9px 16px;border-radius:999px;background:#f7efff;color:#8259a8;border:1px solid #e4d4f1;font-weight:900;font-size:15px}.cover-title{font-size:clamp(48px,5vw,76px);line-height:.96;margin:17px 0 12px;letter-spacing:-.035em}.cover-title em{font-style:normal;color:#9a68c4}.cover-subtitle{margin:0;color:var(--muted);font-size:clamp(17px,1.4vw,23px);font-weight:800;line-height:1.28}.cover-rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:18px}.rule{padding:9px 11px;border-radius:12px;background:#fff;border:1px solid #dce8ee;color:#45627b;font-weight:900;font-size:13px}.cover-actions{display:flex;justify-content:flex-start;gap:10px;flex-wrap:wrap;margin-top:18px}.primary-btn,.secondary-btn{padding:12px 20px;border-radius:14px;font-size:18px}.primary-btn{background:linear-gradient(135deg,#5aa8ed,#438fda);color:#fff;box-shadow:0 7px 17px rgba(62,123,181,.20)}.secondary-btn{background:#f1f7fa;color:var(--navy);border:2px solid #d8e7ee}.primary-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.cover-art{position:relative;overflow:hidden;background:linear-gradient(145deg,#fff1f7,#f5efff 46%,#eaf7ff)}.cover-board{position:absolute;display:grid;gap:3px;padding:9px;border-radius:17px;background:#102f4a;box-shadow:0 18px 34px rgba(52,61,100,.20)}.cover-board.class{left:36px;bottom:52px;grid-template-columns:repeat(10,19px);grid-template-rows:repeat(10,19px);transform:rotate(-3deg)}.cover-board.bot{right:36px;top:58px;grid-template-columns:repeat(6,19px);grid-template-rows:repeat(9,19px);transform:rotate(4deg)}.cover-board i{display:block;border-radius:3px;background:#1f4969}.cover-board i.f1{background:#00c9d8}.cover-board i.f2{background:#f4d03f}.cover-board i.f3{background:#a765d1}.cover-board i.f4{background:#45b96b}.vs-badge{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%) rotate(-7deg);width:105px;height:105px;border-radius:50%;background:#fff;color:#203f5d;display:grid;place-items:center;font-size:36px;font-weight:1000;box-shadow:0 13px 28px rgba(80,55,100,.18);border:7px solid #ffb5d4}.bot-face{position:absolute;right:48px;bottom:66px;font-size:70px}.class-face{position:absolute;left:44px;top:54px;font-size:64px}
+
+/* setup */
+.setup-wrap{flex:1;min-height:0;display:grid;grid-template-columns:.72fr 1.28fr;gap:12px}.setup-panel{min-height:0;background:rgba(255,255,255,.95);border:2px solid #fff;border-radius:22px;box-shadow:0 8px 18px rgba(54,84,105,.09);padding:13px;display:flex;flex-direction:column;gap:9px}.setup-title{font-size:clamp(21px,1.8vw,28px);font-weight:1000}.setup-help{font-size:13px;line-height:1.35;font-weight:800;color:var(--muted)}.name-box{flex:1;min-height:0;width:100%;resize:none;border:2px solid #d9e6ed;outline:none;border-radius:12px;background:#fff;color:var(--navy);padding:10px 12px;font:800 18px/1.25 "Trebuchet MS",Arial,sans-serif}.name-box:focus{border-color:#83b8df;box-shadow:0 0 0 3px rgba(90,168,237,.10)}.setup-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.setup-mini{font-size:12px;font-weight:900;color:var(--muted)}.difficulty{display:flex;gap:7px}.difficulty button{border:2px solid #d7e4ec;background:#fff;color:#56758a;border-radius:11px;padding:8px 12px;font-weight:950;cursor:pointer}.difficulty button.active{border-color:#b995d7;background:#f7efff;color:#8259a8}.pair-grid{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-content:start}.pair-chip{min-height:54px;background:#fff;border:2px solid #e1ebf0;border-radius:13px;padding:7px 9px;display:grid;grid-template-columns:29px minmax(0,1fr);gap:7px;align-items:center}.pair-no{width:28px;height:28px;border-radius:9px;background:linear-gradient(145deg,#ff96c4,#b88ae0);color:#fff;display:grid;place-items:center;font-weight:1000;font-size:12px}.pair-names{font-size:12px;font-weight:950;line-height:1.22;color:#365b74;overflow:hidden}.pair-names div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.setup-actions{display:flex;justify-content:flex-end;gap:8px}
+
+/* score strip */
+.score-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;height:64px}.score-card{min-width:0;background:rgba(255,255,255,.94);border:2px solid #fff;border-radius:16px;padding:6px 11px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;box-shadow:0 5px 13px rgba(54,84,105,.09)}.score-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px}.score-card.class .score-icon{background:#e8f8f0}.score-card.bot .score-icon{background:#f3eaff}.score-label{font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.5px;color:#748a9b}.score-big{font-size:18px;line-height:1;font-weight:1000;color:#23465f}.pips{display:grid;grid-template-columns:repeat(10,12px);gap:3px;margin-top:5px}.pip{height:7px;border-radius:4px;background:#e4edf2}.score-card.class .pip.on{background:#63c98f}.score-card.bot .pip.on{background:#a96fc5}.score-number{font-size:30px;font-weight:1000;color:#254961}.score-number span{font-size:13px;color:#718697}
+
+/* gameplay */
+.game-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(250px,.78fr) minmax(420px,1.35fr) minmax(250px,.78fr) minmax(210px,.62fr);gap:9px}.panel{min-width:0;min-height:0;background:rgba(255,255,255,.96);border:3px solid #fff;border-radius:22px;box-shadow:0 10px 24px rgba(54,84,105,.11);overflow:hidden}.panel-head{height:46px;padding:7px 11px;border-bottom:1px solid #e2ebf0;display:flex;align-items:center;justify-content:space-between;gap:7px}.panel-title{font-weight:1000;color:#244a64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-tag{padding:5px 8px;border-radius:999px;background:#f2eaff;color:#8259a8;font-size:10px;font-weight:1000;white-space:nowrap}
+.player-station{display:grid;grid-template-rows:46px minmax(0,1fr) 58px}.player-head{height:46px;border-bottom:1px solid #e2ebf0;display:flex;align-items:center;justify-content:space-between;padding:7px 10px;gap:7px}.player-name{font-size:clamp(19px,1.4vw,25px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.player-index{padding:5px 8px;border-radius:999px;font-size:10px;font-weight:1000}.player-station.p1 .player-index{background:#ffe3ef;color:#a85179}.player-station.p2 .player-index{background:#efe6ff;color:#7b55a3}
+.station-question{min-height:0;padding:7px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;overflow:hidden}.q-kicker{font-size:11px;font-weight:1000;color:#8560ae;letter-spacing:.02em}.q-title{width:100%;min-height:39px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(18px,1.28vw,23px);line-height:1.06;font-weight:1000;color:var(--navy)}.q-visual{flex:1;min-height:68px;width:100%;display:grid;place-items:center;overflow:visible}.q-visual svg{max-width:94%;max-height:108px;width:auto;height:auto}.q-visual .fraction-model{width:auto;height:auto}.q-visual .fraction-model.bar{width:100%;height:auto}.q-visual .equation{gap:8px;font-size:25px}.q-visual .equation .stack-frac{font-size:25px;min-width:50px}.q-visual .stack-frac.big{font-size:38px;min-width:70px}
+.answer-grid{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:auto}.answer-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.answer-btn{min-width:0;min-height:43px;border:2px solid #dce7ed;border-radius:11px;background:#f7fafc;color:var(--navy);font-size:clamp(16px,1.02vw,19px);font-weight:1000;line-height:1.05;padding:5px 6px;box-shadow:0 3px 8px rgba(54,84,105,.06)}.answer-btn .stack-frac{font-size:19px;min-width:40px}.answer-btn:disabled{cursor:default;opacity:.62}.answer-btn.correct-picked{background:#e5f7e5;border-color:#58be73;color:#286f3c;opacity:1}.answer-btn.wrong-picked{background:#fff0ee;border-color:#ef7b78;color:#9b3c39;opacity:1}.teacher-note{width:100%;margin-top:auto;background:#f6f0fb;border:1px solid #e4d7ef;border-radius:11px;padding:7px 8px;text-align:center;font-size:12px;line-height:1.25;font-weight:900;color:#74578e}.review-answer{width:100%;margin-top:auto;border:2px solid #72bd61;background:#e8f8e8;color:#286f3c;border-radius:12px;padding:8px;text-align:center;font-weight:1000}.review-answer.bad{border-color:#ef7b78;background:#fff0ee;color:#9b3c39}.review-answer .stack-frac{font-size:24px}.station-ready{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}.station-ready .emoji{font-size:42px}.station-ready .big{font-size:21px;font-weight:1000;color:#2f86c9}.station-ready .small{font-size:12px;font-weight:900;color:var(--muted)}
+.player-controls{height:58px;display:flex;align-items:center;justify-content:center;padding:3px 7px 5px;border-top:1px solid #e5edf2}.move-grid{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.move-btn{height:46px;border:2px solid rgba(8,47,87,.11);border-radius:11px;background:#fff;color:var(--navy);font-size:20px;box-shadow:0 3px 8px rgba(54,84,105,.08)}.move-btn.rotate{font-size:13px}.move-btn:disabled{opacity:.34;cursor:default}.player-station.p1 .move-btn:not(:disabled){box-shadow:inset 0 0 0 2px rgba(255,143,182,.16),0 3px 8px rgba(54,84,105,.08)}.player-station.p2 .move-btn:not(:disabled){box-shadow:inset 0 0 0 2px rgba(169,111,197,.18),0 3px 8px rgba(54,84,105,.08)}
+.shared-panel{display:grid;grid-template-rows:46px minmax(0,1fr)}.shared-board-area{min-height:0;display:flex;align-items:center;justify-content:center;padding:7px 10px;position:relative}.board{display:grid;background:#f8fbfd;border:4px solid rgba(8,47,87,.55);border-radius:13px;overflow:hidden;box-shadow:inset 0 2px 8px rgba(41,75,105,.10);touch-action:manipulation}.class-board{--cols:14;--rows:16;grid-template-columns:repeat(14,1fr);grid-template-rows:repeat(16,1fr);aspect-ratio:14/16;height:100%;max-height:100%;width:auto;max-width:100%}.bot-board{--cols:10;--rows:16;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(16,1fr);aspect-ratio:10/16;height:100%;max-height:100%;width:auto;max-width:96%}.cell{border:1px solid #dbe6ec;background:rgba(255,255,255,.72);position:relative}.cell.filled{background:var(--cell,#5aa8ed);border-color:rgba(8,47,87,.18);box-shadow:inset 2px 2px 0 rgba(255,255,255,.28),inset -2px -2px 0 rgba(8,47,87,.10)}.cell.active{background:var(--active,#5aa8ed);box-shadow:inset 2px 2px 0 rgba(255,255,255,.35),inset -2px -2px 0 rgba(8,47,87,.13);border-color:rgba(8,47,87,.22)}.cell.active.p1{outline:2px solid #ff6fac;outline-offset:-2px}.cell.active.p2{outline:2px solid #9d63cf;outline-offset:-2px}.shared-legend{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);display:flex;gap:7px;background:rgba(255,255,255,.92);border:1px solid #dce8ee;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:1000;white-space:nowrap}.legend-dot{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:4px;vertical-align:-1px}.legend-dot.p1{background:#ff8fb6}.legend-dot.p2{background:#a96fc5}
+.bot-panel{display:grid;grid-template-rows:46px minmax(0,1fr) 34px}.bot-board-area{min-height:0;display:flex;align-items:center;justify-content:center;padding:6px}.bot-status{height:34px;border-top:1px solid #e2ebf0;display:grid;place-items:center;text-align:center;font-size:10px;font-weight:1000;color:#6a5b86;background:#faf7fd}
+
+/* fractions */
+.stack-frac{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;vertical-align:middle;line-height:.72;min-width:.9em;margin:0 .08em;font-weight:1000}.stack-frac .num{border-bottom:.09em solid currentColor;padding:0 .11em .09em}.stack-frac .den{padding:.09em .11em 0}.stack-frac.big{font-size:46px;color:var(--navy)}.equation{display:flex;align-items:center;justify-content:center;gap:12px;font-size:34px;font-weight:1000;color:#385b72}.equation .stack-frac{font-size:31px;min-width:62px}.fraction-model{width:min(210px,78%);height:140px}.fraction-model.bar{width:min(290px,96%);height:115px}
+
+/* overlays */
+.overlay-root{position:fixed;inset:0;pointer-events:none;z-index:150}.countdown-overlay,.flash{position:absolute;inset:0;display:grid;place-items:center;background:rgba(255,244,251,.42);backdrop-filter:blur(5px)}.countdown-burst{width:min(250px,30vw);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:clamp(86px,10vw,156px);font-weight:1000;color:#fff;background:linear-gradient(145deg,#ff96c4,#c9a9ff 52%,#91dcff);border:8px solid rgba(255,255,255,.96);box-shadow:0 14px 0 rgba(179,127,185,.33),0 28px 70px rgba(104,55,110,.26);text-shadow:0 5px 0 rgba(99,50,105,.18);animation:countPop .52s cubic-bezier(.18,.85,.26,1.22) both}.countdown-burst.go-word{width:min(330px,38vw);aspect-ratio:1.5;border-radius:999px;font-size:clamp(62px,7.5vw,116px);background:linear-gradient(145deg,#8fe6c7,#59d39f);color:#2d6551}.flash-card{width:min(650px,90vw);background:#fff;border:3px solid #fff;border-radius:28px;box-shadow:0 28px 80px rgba(24,52,79,.28);padding:24px 30px;text-align:center;pointer-events:auto}.flash-card h2{margin:0 0 7px;font-size:38px}.flash-card p{font-size:16px;font-weight:850;color:#657e90;line-height:1.4}.flash-emoji{font-size:70px}.confetti{position:fixed;top:-20px;width:11px;height:17px;border-radius:3px;z-index:190;animation:fall linear forwards;pointer-events:none}@keyframes countPop{0%{transform:scale(.25) rotate(-7deg);opacity:0}65%{transform:scale(1.12) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0)}}@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(720deg)}}
+
+@media(max-height:780px){
+ .screen{padding:6px 9px;gap:6px}.topbar{min-height:52px}.brand h1{font-size:27px}.brand p{display:none}.icon-btn{width:44px;height:44px}.teacher-slot{min-width:290px}.stage-btn,.teacher-mark-top{width:290px;min-width:290px}.stage-btn,.mark-top-btn{height:46px}.round-pill{height:43px;font-size:14px}.score-strip{height:55px}.score-card{padding:4px 9px}.score-icon{width:36px;height:36px}.score-big{font-size:16px}.score-number{font-size:25px}.game-main{grid-template-columns:minmax(225px,.76fr) minmax(390px,1.32fr) minmax(225px,.76fr) minmax(190px,.60fr);gap:7px}.player-station{grid-template-rows:40px minmax(0,1fr) 50px}.player-head,.panel-head{height:40px;padding:5px 8px}.player-name{font-size:19px}.station-question{padding:5px 6px;gap:3px}.q-title{font-size:18px;min-height:32px}.q-visual{min-height:54px}.q-visual svg{max-height:82px}.q-visual .equation{font-size:22px}.q-visual .equation .stack-frac{font-size:22px}.answer-btn{min-height:36px;font-size:15px}.answer-btn .stack-frac{font-size:16px}.player-controls{height:50px}.move-btn{height:40px;font-size:18px}.move-btn.rotate{font-size:11px}.shared-panel{grid-template-rows:40px minmax(0,1fr)}.bot-panel{grid-template-rows:40px minmax(0,1fr) 28px}.bot-status{height:28px}.shared-legend{bottom:5px}.cover-copy{padding:28px 36px}.cover-title{font-size:52px}.cover-subtitle{font-size:16px}.cover-rules{margin-top:12px}.cover-actions{margin-top:12px}.setup-panel{padding:9px}.pair-chip{min-height:46px}
+}
+@media(max-width:1120px){.topbar{grid-template-columns:minmax(270px,1fr) auto minmax(270px,1fr)}.teacher-slot{min-width:260px}.stage-btn,.teacher-mark-top{width:260px;min-width:260px}.game-main{grid-template-columns:minmax(210px,.75fr) minmax(350px,1.25fr) minmax(210px,.75fr) minmax(175px,.58fr)}.answer-btn{font-size:15px}.move-btn{font-size:17px}.move-btn.rotate{font-size:10px}.q-title{font-size:18px}}
+
+
+/* ===== v3 clean three-column question / connected co-op play ===== */
+.game-main{flex:1;min-height:0;gap:11px!important}
+.game-main.question-mode{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.game-main.play-mode{display:grid!important;grid-template-columns:minmax(0,2fr) minmax(300px,1fr)!important}
+
+/* The question stage mirrors Tetris Battle / Triple Jeopardy: one complete lane per player. */
+.question-lane{min-width:0;min-height:0;background:rgba(255,255,255,.97);border:2px solid #dce8ee;border-radius:23px;box-shadow:0 10px 24px rgba(54,84,105,.11);padding:10px;display:grid;grid-template-rows:54px minmax(0,1fr);gap:8px;overflow:hidden}
+.question-lane-head{height:54px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:10px}
+.question-lane.p1 .question-lane-head{background:#ffdce9}.question-lane.p2 .question-lane-head{background:#eadcff}.question-lane.bot .question-lane-head{background:#e2effb}
+.question-player-name{font-size:clamp(24px,1.85vw,32px);line-height:1;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.question-role{font-size:clamp(11px,.82vw,14px);font-weight:1000;background:rgba(255,255,255,.62);padding:6px 9px;border-radius:999px;white-space:nowrap}
+.question-area{min-height:0;border:2px solid #e1ebf0;border-radius:18px;background:#fbfdff;padding:12px 14px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;overflow:hidden}
+.question-area .q-kicker{font-size:clamp(13px,.95vw,16px);font-weight:1000;color:#8560ae;letter-spacing:.02em}
+.question-area .q-title{width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(23px,1.7vw,31px);line-height:1.08;font-weight:1000;color:var(--navy)}
+.question-area .q-visual{flex:1;min-height:110px;width:100%;display:grid;place-items:center;overflow:visible}
+.question-area .q-visual svg{max-width:92%;max-height:230px;width:auto;height:auto}
+.question-area .q-visual .fraction-model{max-height:220px}.question-area .q-visual .fraction-model.bar{width:min(430px,96%);height:auto}
+.question-area .q-visual .equation{font-size:clamp(30px,2.4vw,43px);gap:14px}.question-area .q-visual .equation .stack-frac{font-size:clamp(31px,2.5vw,45px);min-width:70px}.question-area .q-visual .stack-frac.big{font-size:clamp(56px,5vw,86px);min-width:92px}
+.question-answer-grid{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:auto}.question-answer-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.question-answer-btn{min-width:0;min-height:62px;border:2px solid #dce7ed;border-radius:14px;background:#f7fafc;color:var(--navy);font-size:clamp(22px,1.55vw,28px);font-weight:1000;line-height:1.05;padding:8px 10px;cursor:pointer;box-shadow:0 3px 8px rgba(54,84,105,.06)}
+.question-answer-btn .stack-frac{font-size:1.1em;min-width:48px}.question-answer-btn:disabled{cursor:default;opacity:.58}.question-answer-btn.correct-picked{background:#e5f7e5;border-color:#58be73;color:#286f3c;opacity:1}.question-answer-btn.wrong-picked{background:#fff0ee;border-color:#ef7b78;color:#9b3c39;opacity:1}.question-answer-btn.correct-answer{box-shadow:inset 0 0 0 3px rgba(88,190,115,.24)}
+.answer-result{width:100%;min-height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(18px,1.3vw,23px);font-weight:1000;padding:7px 10px;margin-top:auto}.answer-result.good{background:#e8f8e8;border:2px solid #72bd61;color:#286f3c}.answer-result.bad{background:#fff0ee;border:2px solid #ef7b78;color:#9b3c39}
+.teacher-work-note{width:min(520px,94%);margin-top:auto;padding:13px 15px;border-radius:14px;background:#f7f0fb;border:2px solid #e4d7ef;color:#74578e;text-align:center;font-size:clamp(15px,1.05vw,19px);font-weight:900;line-height:1.25}
+.correct-answer-strip{width:100%;padding:8px 12px;border-radius:12px;background:#eef8f0;color:#397738;text-align:center;font-size:15px;font-weight:1000}.correct-answer-strip .stack-frac{font-size:22px}
+.ready-lane{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px}.ready-lane .emoji{font-size:58px}.ready-lane .big{font-size:clamp(28px,2vw,36px);font-weight:1000;color:#2f86c9}.ready-lane .small{font-size:15px;font-weight:900;color:var(--muted)}
+.bot-wait{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:15px;padding:20px}.bot-wait .robot{font-size:86px;filter:drop-shadow(0 8px 12px rgba(79,65,110,.14))}.bot-wait .big{font-size:clamp(26px,2vw,35px);font-weight:1000;color:#76539a}.bot-wait .small{max-width:320px;color:var(--muted);font-weight:900;font-size:15px;line-height:1.35}.bot-wait .bot-mini-score{padding:10px 18px;border-radius:999px;background:#f3eaff;color:#76539a;font-weight:1000;font-size:17px}
+
+/* Connected co-op Tetris stage: the first two columns become one wide board. */
+.connected-panel{min-width:0;min-height:0;background:rgba(255,255,255,.97);border:2px solid #dce8ee;border-radius:23px;box-shadow:0 10px 24px rgba(54,84,105,.11);padding:10px;display:grid;grid-template-rows:54px minmax(0,1fr) 82px;gap:8px;overflow:hidden}
+.connected-head{height:54px;border-radius:14px;background:linear-gradient(90deg,#ffdce9 0%,#f5e2f7 50%,#eadcff 100%);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 14px;gap:12px}.connected-player{font-size:clamp(21px,1.55vw,28px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.connected-player.p2{text-align:right}.connected-title{text-align:center;font-size:14px;font-weight:1000;color:#5f6381;white-space:nowrap}.connected-title strong{display:block;font-size:18px;color:var(--navy)}
+.connected-board-zone{min-height:0;border:2px solid #e0ebf0;border-radius:17px;background:linear-gradient(180deg,#f8fbfd,#f3f9fc);padding:8px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.connected-board-zone .class-board{height:100%!important;max-height:none!important;width:auto!important;max-width:96%!important;aspect-ratio:14/16!important;border-width:4px!important;border-radius:12px!important}
+.connected-board-zone .shared-legend{bottom:11px!important}
+.connected-controls{height:82px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.player-control-dock{min-width:0;border:2px solid #e1ebf0;border-radius:15px;padding:7px 10px;display:grid;grid-template-columns:minmax(100px,.55fr) minmax(0,1.45fr);align-items:center;gap:10px;background:#fbfdff}.player-control-dock.p1{border-color:#f4ccdc}.player-control-dock.p2{border-color:#ddc9f0}.control-name{min-width:0}.control-name strong{display:block;font-size:clamp(17px,1.25vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.control-name span{display:block;font-size:11px;font-weight:900;color:var(--muted);margin-top:3px}.player-control-dock .move-grid{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.player-control-dock .move-btn{height:52px;border:2px solid rgba(8,47,87,.11);border-radius:12px;background:#fff;color:var(--navy);font-size:23px;box-shadow:0 3px 8px rgba(54,84,105,.08)}.player-control-dock .move-btn.rotate{font-size:14px}.player-control-dock .move-btn:disabled{opacity:.34;cursor:default}.no-piece{height:52px;border-radius:12px;background:#f1f5f7;color:#8293a1;display:grid;place-items:center;text-align:center;font-size:13px;font-weight:1000;padding:4px}
+
+.play-bot-panel{min-width:0;min-height:0;background:rgba(255,255,255,.97);border:2px solid #dce8ee;border-radius:23px;box-shadow:0 10px 24px rgba(54,84,105,.11);padding:10px;display:grid;grid-template-rows:54px minmax(0,1fr) 42px;gap:8px;overflow:hidden}.play-bot-head{height:54px;border-radius:14px;background:#e2effb;display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:9px}.play-bot-title{font-size:clamp(22px,1.55vw,28px);font-weight:1000}.play-bot-board{min-height:0;border:2px solid #e0ebf0;border-radius:17px;background:linear-gradient(180deg,#f8fbfd,#f3f9fc);padding:7px;display:flex;align-items:center;justify-content:center}.play-bot-board .bot-board{height:100%!important;max-height:none!important;width:auto!important;max-width:96%!important;aspect-ratio:10/16!important;border-width:4px!important;border-radius:12px!important}.play-bot-panel .bot-status{height:42px;border:0;border-radius:12px;background:#f7f2fb;font-size:12px}
+
+/* Teacher bar: keep all stage control at the top, including per-player marking. */
+.teacher-mark-top.individual{grid-template-columns:repeat(4,1fr)!important;width:min(520px,42vw)!important;min-width:430px!important;gap:6px}.teacher-mark-top.individual .mark-top-btn{height:52px!important;font-size:14px!important;padding:0 7px!important}.teacher-mark-top.individual .mark-top-btn.p1{border-color:#efabc7}.teacher-mark-top.individual .mark-top-btn.p2{border-color:#c9a9e5}.teacher-mark-top.individual .mark-top-btn.chosen{box-shadow:inset 0 0 0 3px rgba(8,47,87,.12)}
+
+@media(max-height:820px){
+ .question-lane{padding:8px;grid-template-rows:46px minmax(0,1fr);gap:6px}.question-lane-head{height:46px}.question-player-name{font-size:22px}.question-area{padding:8px 10px;gap:5px}.question-area .q-title{font-size:21px;min-height:40px}.question-area .q-visual{min-height:80px}.question-area .q-visual svg{max-height:160px}.question-area .q-visual .equation{font-size:28px}.question-area .q-visual .equation .stack-frac{font-size:30px}.question-area .q-visual .stack-frac.big{font-size:58px}.question-answer-btn{min-height:50px;font-size:20px}.connected-panel{grid-template-rows:46px minmax(0,1fr) 70px;padding:8px;gap:6px}.connected-head,.play-bot-head{height:46px}.connected-controls{height:70px;gap:8px}.player-control-dock{padding:5px 8px;gap:7px}.player-control-dock .move-btn{height:44px;font-size:20px}.no-piece{height:44px}.play-bot-panel{grid-template-rows:46px minmax(0,1fr) 34px;padding:8px;gap:6px}.play-bot-panel .bot-status{height:34px}.teacher-mark-top.individual .mark-top-btn{height:46px!important}
+}
+@media(max-width:1100px){
+ .question-lane{padding:7px}.question-area{padding:7px 8px}.question-answer-btn{font-size:19px}.connected-controls{gap:7px}.player-control-dock{grid-template-columns:92px minmax(0,1fr);padding:5px 6px}.control-name strong{font-size:16px}.player-control-dock .move-btn.rotate{font-size:11px}.teacher-mark-top.individual{min-width:390px!important;width:390px!important}.teacher-mark-top.individual .mark-top-btn{font-size:12px!important}
+}
+
+
+/* ===== v4 Tetris Battle visual alignment ===== */
+.topbar{grid-template-columns:minmax(340px,1fr) auto minmax(520px,1fr)!important;gap:14px!important;min-height:64px!important}
+.brand p{display:none!important}
+.game-toolbar{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important}
+.game-toolbar .teacher-slot{min-width:0!important;display:flex!important;align-items:center!important;justify-content:flex-end!important}
+.top-round-label{display:flex;align-items:center;justify-content:center;height:52px;min-width:165px;padding:0 18px;border-radius:999px;background:linear-gradient(90deg,#bceffc,#daf1bd,#ffe3a6,#ffd5c6);border:3px solid #fff;box-shadow:0 5px 14px rgba(54,84,105,.10);font-size:18px;font-weight:900;white-space:nowrap}
+.stage-btn{width:300px!important;min-width:300px!important;height:54px!important}
+.teacher-mark-top.individual{width:430px!important;min-width:430px!important}
+
+/* Cover page mirrors Tetris Battle. */
+.cover-card{position:relative!important;width:min(1180px,100%)!important;height:100%!important;max-height:760px!important;grid-template-columns:1fr!important;background:rgba(255,255,255,.94)!important;border:3px solid #fff!important;border-radius:36px!important;box-shadow:0 18px 44px rgba(48,77,105,.14)!important;overflow:hidden!important;display:grid!important;place-items:center!important;padding:34px 42px 122px!important}
+.cover-card::before{content:""!important;position:absolute!important;inset:0!important;background:radial-gradient(circle at 16% 20%,rgba(90,168,237,.14),transparent 25%),radial-gradient(circle at 83% 18%,rgba(255,180,125,.18),transparent 24%),radial-gradient(circle at 50% 100%,rgba(138,203,98,.13),transparent 34%)!important;pointer-events:none!important}
+.cover-inner{position:relative;z-index:2;text-align:center;max-width:920px;transform:translateY(-10px)}
+.cover-chip{align-self:auto!important;display:inline-flex!important;padding:9px 16px!important;border-radius:999px!important;background:#eef7fb!important;color:var(--navy2)!important;border:1px solid #d4e6ef!important;font-weight:900!important;font-size:15px!important}
+.cover-title{font-size:clamp(48px,5.8vw,88px)!important;line-height:.95!important;margin:17px 0 12px!important;letter-spacing:-.035em!important}.cover-title em{font-style:normal!important;color:#2f86c9!important}
+.cover-subtitle{margin:0!important;color:var(--muted)!important;font-size:clamp(18px,1.55vw,26px)!important;font-weight:800!important;line-height:1.25!important}.cover-actions{display:flex!important;justify-content:center!important;gap:12px!important;flex-wrap:wrap!important;margin-top:20px!important}.cover-steps{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:17px}.step-pill{padding:8px 12px;border-radius:12px;background:#fff;border:1px solid #dce8ee;color:#45627b;font-weight:900;font-size:14px}
+.tetromino-scene{position:absolute;left:0;right:0;bottom:22px;height:82px;display:flex;align-items:center;justify-content:center;gap:36px;pointer-events:none}.mini-tetro{--c:#5aa8ed;display:grid;grid-template-columns:repeat(4,16px);grid-template-rows:repeat(2,16px);filter:drop-shadow(0 6px 7px rgba(50,75,100,.14));transform:rotate(var(--r,0deg))}.mini-tetro i{width:16px;height:16px;background:var(--c);border:2px solid rgba(8,47,87,.28);border-radius:3px}.mini-tetro.i1 i:nth-child(1){grid-column:1}.mini-tetro.i1 i:nth-child(2){grid-column:2}.mini-tetro.i1 i:nth-child(3){grid-column:3}.mini-tetro.i1 i:nth-child(4){grid-column:4}.mini-tetro.t1 i:nth-child(1){grid-column:2}.mini-tetro.t1 i:nth-child(2){grid-column:1;grid-row:2}.mini-tetro.t1 i:nth-child(3){grid-column:2;grid-row:2}.mini-tetro.t1 i:nth-child(4){grid-column:3;grid-row:2}.mini-tetro.o1{grid-template-columns:repeat(2,16px)}
+
+/* Cleaner score strip: only the information pupils need. */
+.score-label{display:none!important}.score-big{font-size:clamp(18px,1.35vw,23px)!important}.score-card{grid-template-columns:auto minmax(0,1fr) auto!important}
+
+/* Question cards use the same compact, centred structure as Tetris Battle / Triple Jeopardy. */
+.question-area{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;align-items:stretch!important;justify-items:center!important;gap:8px!important;padding:12px 14px!important}
+.question-area .q-kicker{display:none!important}.question-area .q-title{min-height:54px!important;font-size:clamp(23px,1.65vw,30px)!important;align-self:start!important}.question-area .q-visual{min-height:0!important;width:100%!important;display:grid!important;place-items:center!important;overflow:visible!important}
+.question-area .q-visual svg{max-width:94%!important;max-height:230px!important}.question-answer-grid{align-self:end!important}.question-answer-btn{min-height:58px!important;border-radius:13px!important;background:#f7fafc!important}
+.bot-wait .small{display:none!important}.question-lane.bot .question-role{display:none!important}.bot-wait{gap:16px!important}.bot-wait .robot{font-size:82px!important}.bot-wait .big{font-size:clamp(27px,1.9vw,34px)!important}
+
+/* Per-player readiness, matching the Ready control in Tetris Battle. */
+.question-area > .ready-lane,.question-area > .bot-wait{grid-row:1/-1;width:100%;height:100%;align-self:stretch;justify-self:stretch}
+
+.ready-lane{height:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:14px!important}.ready-title{font-size:clamp(24px,1.7vw,31px);font-weight:1000;color:#2f86c9}.player-ready-btn{width:min(220px,72%);height:64px;border:2px solid #badcaf;border-radius:15px;background:#ebf8e7;color:#397738;font-size:23px;font-weight:1000;box-shadow:0 5px 12px rgba(54,84,105,.09);cursor:pointer}.player-ready-btn.done{background:#e1f4dc;color:#397738}
+
+/* Teacher-marked addition/subtraction handwriting, modelled on the Fraction Challenge boxes. */
+.handwrite-wrap{width:100%;align-self:end;display:flex;flex-direction:column;align-items:center;gap:7px;padding:3px 0}.write-label{font-size:15px;font-weight:900;color:var(--muted)}.hand-frac{display:grid;grid-template-rows:auto 4px auto;justify-items:center;align-items:center;gap:5px}.ink-cell{position:relative;width:92px;height:76px;border:2px solid #c9dce8;border-radius:13px;background:#fff;overflow:hidden;box-shadow:0 3px 9px rgba(40,85,115,.05);touch-action:none}.ink-cell.wide{width:164px;height:76px}.ink-cell canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}.clear-cell{position:absolute;right:5px;top:5px;width:23px;height:23px;border-radius:8px;border:0;background:#eef3f6;color:#648096;font-weight:900;font-size:13px;cursor:pointer;z-index:2}.hand-line{width:188px;height:4px;background:var(--navy);border-radius:4px}.preview-disabled{opacity:.72}.preview-disabled .write-canvas,.preview-disabled .clear-cell{pointer-events:none}.teacher-result{min-height:23px;font-size:14px;font-weight:1000;text-align:center}.teacher-result.good{color:#397738}.teacher-result.bad{color:#a14946}
+
+/* Connected co-op board: normal tetromino colours only. No player outlines or legend over the board. */
+.cell.active.p1,.cell.active.p2{outline:none!important}.shared-legend{display:none!important}.connected-board-zone{overflow:hidden!important}.connected-board-zone .class-board{max-width:98%!important}.control-name span{display:none!important}.player-control-dock{grid-template-columns:minmax(88px,.42fr) minmax(0,1.58fr)!important}.control-name strong{font-size:clamp(18px,1.3vw,22px)!important}
+
+@media(max-height:820px){
+ .topbar{min-height:56px!important}.top-round-label{height:46px!important}.stage-btn{height:48px!important}.teacher-mark-top.individual .mark-top-btn{height:46px!important}.cover-card{padding:26px 36px 105px!important}.tetromino-scene{bottom:15px!important;height:70px!important}.question-area{padding:8px 10px!important;gap:5px!important}.question-area .q-title{min-height:40px!important;font-size:21px!important}.question-area .q-visual svg{max-height:165px!important}.question-answer-btn{min-height:48px!important;font-size:19px!important}.player-ready-btn{height:56px!important}.ink-cell{width:78px;height:62px!important}.ink-cell.wide{width:138px!important;height:62px!important}.hand-line{width:160px!important}.write-label{font-size:13px!important}
+}
+@media(max-width:1180px){.topbar{grid-template-columns:minmax(280px,1fr) auto minmax(465px,1fr)!important}.stage-btn{width:260px!important;min-width:260px!important}.teacher-mark-top.individual{width:390px!important;min-width:390px!important}.game-toolbar{gap:6px!important}.question-answer-btn{font-size:20px!important}}
+
+
+/* ===== v5 Tetris Battle Rematch polish pass =====
+   Ready state and question typography/spacing deliberately mirror the polished
+   three-lane Tetris Battle Rematch presentation. The connected Tetris stage is unchanged. */
+
+/* Guarantee that the ready/bot waiting content is truly centred in its lane. */
+.question-area{position:relative!important}
+.question-area > .ready-lane,
+.question-area > .bot-wait{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+/* Same large green ready treatment as Tetris Battle Rematch. */
+.ready-lane{gap:12px!important}
+.ready-title{
+  width:100%!important;
+  text-align:center!important;
+  font-size:clamp(30px,2.3vw,40px)!important;
+  line-height:1.08!important;
+  font-weight:1000!important;
+  color:#2f86c9!important;
+}
+.player-ready-btn{
+  width:min(270px,78%)!important;
+  height:78px!important;
+  border:2px solid #badcaf!important;
+  border-radius:15px!important;
+  background:#ebf8e7!important;
+  color:#397738!important;
+  font-size:29px!important;
+  font-weight:1000!important;
+  box-shadow:0 5px 12px rgba(54,84,105,.09)!important;
+}
+.player-ready-btn.done{
+  background:#e1f4dc!important;
+  color:#397738!important;
+  border-color:#add49f!important;
+}
+
+/* Centre all non-play text in the bot's third lane. */
+.question-lane.bot .question-lane-head{justify-content:center!important}
+.question-lane.bot .question-player-name{width:100%!important;text-align:center!important}
+.bot-wait{gap:16px!important}
+.bot-wait .robot{font-size:82px!important}
+.bot-wait .big{width:100%!important;text-align:center!important;font-size:clamp(27px,1.9vw,34px)!important}
+.bot-wait .bot-mini-score{text-align:center!important}
+
+/* Tetris Battle Rematch-sized question stage. */
+.question-area{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  align-items:center!important;
+  justify-items:stretch!important;
+  justify-content:stretch!important;
+  gap:10px!important;
+  padding:14px 14px 12px!important;
+}
+.question-area .q-title{
+  justify-self:stretch!important;
+  align-self:center!important;
+  width:100%!important;
+  min-height:58px!important;
+  margin:0!important;
+  display:grid!important;
+  place-items:center!important;
+  text-align:center!important;
+  font-size:clamp(25px,1.82vw,32px)!important;
+  line-height:1.1!important;
+  font-weight:1000!important;
+  color:var(--navy)!important;
+}
+.question-area .q-visual{
+  min-height:0!important;
+  height:100%!important;
+  width:100%!important;
+  align-self:stretch!important;
+  display:grid!important;
+  place-items:center!important;
+  text-align:center!important;
+  overflow:visible!important;
+}
+.question-area .q-visual svg{
+  max-width:94%!important;
+  max-height:280px!important;
+  width:auto!important;
+  height:auto!important;
+}
+.question-area .q-visual .fraction-model{max-height:270px!important}
+.question-area .q-visual .fraction-model.bar{width:min(430px,96%)!important;height:auto!important}
+
+/* Large fraction typography, matching the visual weight of Rematch. */
+.question-area .q-visual .stack-frac.big{
+  font-size:clamp(72px,6.4vw,108px)!important;
+  min-width:112px!important;
+}
+.question-area .q-visual .equation{
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:clamp(18px,2vw,30px)!important;
+  font-size:clamp(38px,3vw,52px)!important;
+  line-height:1!important;
+}
+.question-area .q-visual .equation .stack-frac{
+  font-size:clamp(58px,5vw,88px)!important;
+  min-width:100px!important;
+}
+/* Addition/subtraction equations need room for two fractions, an operator, equals and ?. */
+.question-area .q-visual.qtype-addition .equation,
+.question-area .q-visual.qtype-subtraction .equation{gap:clamp(10px,1.15vw,18px)!important;font-size:clamp(28px,2.25vw,40px)!important}
+.question-area .q-visual.qtype-addition .equation .stack-frac,
+.question-area .q-visual.qtype-subtraction .equation .stack-frac{font-size:clamp(43px,3.8vw,66px)!important;min-width:76px!important}
+
+/* Rematch-sized answer bank, full-width and evenly spaced. */
+.question-answer-grid,
+.question-answer-grid.three{
+  align-self:end!important;
+  justify-self:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  gap:9px!important;
+}
+.question-answer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.question-answer-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.question-answer-btn{
+  width:100%!important;
+  min-width:0!important;
+  min-height:74px!important;
+  border-radius:15px!important;
+  font-size:clamp(26px,1.9vw,34px)!important;
+  line-height:1.05!important;
+  padding:9px 10px!important;
+  text-align:center!important;
+}
+.question-answer-btn .stack-frac{
+  font-size:1.08em!important;
+  min-width:1.15em!important;
+}
+
+/* Keep teacher-marked handwriting centred while preserving the same title/visual spacing. */
+.handwrite-wrap{justify-self:stretch!important;align-self:end!important;width:100%!important;text-align:center!important}
+.write-label{text-align:center!important}
+
+@media(max-height:820px){
+  .question-area{gap:7px!important;padding:10px 12px 9px!important}
+  .question-area .q-title{min-height:44px!important;font-size:22px!important}
+  .question-area .q-visual svg{max-height:205px!important}
+  .question-area .q-visual .stack-frac.big{font-size:72px!important}
+  .question-area .q-visual .equation{font-size:34px!important;gap:16px!important}
+  .question-area .q-visual .equation .stack-frac{font-size:58px!important;min-width:84px!important}
+  .question-area .q-visual.qtype-addition .equation .stack-frac,
+  .question-area .q-visual.qtype-subtraction .equation .stack-frac{font-size:44px!important;min-width:66px!important}
+  .question-answer-btn{min-height:60px!important;font-size:23px!important}
+  .ready-title{font-size:30px!important}
+  .player-ready-btn{width:min(250px,78%)!important;height:68px!important;font-size:26px!important}
+}
+
+@media(max-width:1100px){
+  .question-area .q-title{font-size:21px!important}
+  .question-answer-btn{font-size:21px!important}
+  .question-area .q-visual .stack-frac.big{font-size:68px!important}
+  .question-area .q-visual .equation .stack-frac{font-size:52px!important;min-width:76px!important}
+}
+
+
+
+/* ===== v7 Addition Battle Royale-style handwriting ===== */
+.question-area.teacher-question{
+  grid-template-rows:auto minmax(145px,.72fr) minmax(265px,1.28fr)!important;
+  gap:9px!important;
+}
+.question-area.teacher-question .q-visual{align-self:stretch!important}
+.question-area.teacher-question .q-visual.qtype-addition .equation,
+.question-area.teacher-question .q-visual.qtype-subtraction .equation{
+  font-size:clamp(28px,2.2vw,39px)!important;
+  gap:clamp(9px,1vw,16px)!important;
+}
+.question-area.teacher-question .q-visual.qtype-addition .equation .stack-frac,
+.question-area.teacher-question .q-visual.qtype-subtraction .equation .stack-frac{
+  font-size:clamp(42px,3.55vw,61px)!important;
+  min-width:72px!important;
+}
+.fraction-pad-shell{
+  width:100%;height:100%;min-height:0;align-self:stretch;
+  display:grid;grid-template-rows:minmax(205px,1fr) 54px;gap:8px;
+}
+.fraction-pad-paper{
+  position:relative;min-height:0;width:100%;height:100%;overflow:hidden;
+  border:3px solid rgba(30,67,103,.16);border-radius:18px;background:#fff;
+  box-shadow:inset 0 2px 7px rgba(45,74,101,.05),0 4px 0 rgba(51,76,101,.08);
+}
+.fraction-pad-paper::before{
+  content:"Write your fraction";position:absolute;left:0;right:0;top:9px;z-index:1;
+  text-align:center;color:#94a8b8;font-size:clamp(13px,.95vw,16px);font-weight:1000;pointer-events:none;
+}
+.fraction-pad-paper::after{
+  content:"";position:absolute;left:18%;right:18%;top:50%;height:4px;z-index:1;
+  transform:translateY(-50%);background:#173b68;border-radius:4px;pointer-events:none;
+}
+.fraction-pad-canvas{
+  position:absolute;inset:0;width:100%;height:100%;z-index:2;touch-action:none;cursor:crosshair;
+}
+.fraction-pad-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;min-height:0}
+.fraction-pad-btn,.fraction-submit-btn{
+  border-radius:13px;min-height:52px;font-size:clamp(16px,1.15vw,20px);font-weight:1000;cursor:pointer;
+}
+.fraction-pad-btn{background:#f7fafc;color:#345a7e;border:2px solid #d8e5ed;box-shadow:none}
+.fraction-submit-btn{border:2px solid #58be73;background:linear-gradient(135deg,#78d29b,#55b978);color:#fff;box-shadow:none}
+.fraction-pad-btn:disabled,.fraction-submit-btn:disabled{opacity:.38;cursor:not-allowed;box-shadow:none}
+.fraction-submit-btn.submitted{background:#dff7ed;color:#39705a;border:2px solid #82d2b0;box-shadow:none}
+.fraction-pad-shell.submitted .fraction-pad-paper{background:#fbfdfc}
+.fraction-pad-shell.submitted .fraction-pad-canvas{pointer-events:none}
+.fraction-pad-paper .teacher-result{
+  position:absolute;right:10px;top:9px;z-index:4;min-height:0;padding:4px 8px;border-radius:999px;
+  background:rgba(255,255,255,.9);font-size:13px;font-weight:1000;text-align:center;pointer-events:none;
+}
+.fraction-pad-paper .teacher-result:empty{display:none}
+.fraction-pad-paper .teacher-result.good{color:#397738;border:1px solid #b9ddad}
+.fraction-pad-paper .teacher-result.bad{color:#a14946;border:1px solid #f0c5c1}
+.fraction-judge-wrap{display:grid;grid-template-columns:1fr;gap:8px}
+.fraction-judge-btn{width:100%;min-height:52px;border-radius:13px;background:#fff;color:#345a7e;border:2px dashed #b7c9d7;font-size:clamp(16px,1.15vw,20px);font-weight:1000;cursor:pointer}
+.fraction-judge-btn.correct{background:#dff8ed;color:#2f6b50;border:2px solid #70cba3;box-shadow:none}
+.question-lane.teacher-correct{outline:none}
+.question-lane.teacher-correct .fraction-pad-paper{border-color:#70cba3;background:#f4fcf8;box-shadow:none}
+.teacher-revealed{display:inline-flex;align-items:center;justify-content:center;padding:.08em .14em;border-radius:12px;background:#e0f6e8;color:#25864c;box-shadow:0 0 0 4px rgba(76,190,113,.16)}
+.teacher-revealed .stack-frac{font-size:1em!important}
+
+@media(max-height:820px){
+ .question-area.teacher-question{grid-template-rows:auto minmax(115px,.62fr) minmax(225px,1.38fr)!important;gap:6px!important}
+ .fraction-pad-shell{grid-template-rows:minmax(170px,1fr) 46px;gap:6px}
+ .fraction-pad-btn,.fraction-submit-btn{min-height:46px;font-size:15px}
+ .fraction-pad-paper::before{top:6px;font-size:12px}
+ .question-area.teacher-question .q-visual.qtype-addition .equation .stack-frac,
+ .question-area.teacher-question .q-visual.qtype-subtraction .equation .stack-frac{font-size:42px!important;min-width:64px!important}
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="overlayRoot" class="overlay-root"></div>
+<script>
+(()=>{
+'use strict';
+const TOTAL_ROUNDS=15, CLASS_TARGET=10, BOT_TARGET=10;
+const CLASS_COLS=14, BOT_COLS=10, ROWS=16;
+const UNIVERSAL_SETUP_KEY='SgLDC_Universal_GameSetup_v1';
+const ROSTER_KEY='SgLDC_ClassVsTetrisBot_Roster_v2';
+const SAVE_KEY='SgLDC_ClassVsTetrisBot_State_v4';
+const PREF_KEY='SgLDC_ClassVsTetrisBot_Prefs_v4';
+const COLORS={I:'#00c9d8',O:'#f4d03f',T:'#a765d1',S:'#45b96b',Z:'#e85b5b',J:'#4e8fda',L:'#f39a3c'};
+const SHAPES={I:[[0,0],[1,0],[2,0],[3,0]],O:[[0,0],[1,0],[0,1],[1,1]],T:[[0,0],[1,0],[2,0],[1,1]],S:[[1,0],[2,0],[0,1],[1,1]],Z:[[0,0],[1,0],[1,1],[2,1]],J:[[0,0],[0,1],[1,1],[2,1]],L:[[2,0],[0,1],[1,1],[2,1]]};
+const BOT_SPEEDS={easy:15000,normal:12000,hard:9000};
+const app=document.getElementById('app'),overlay=document.getElementById('overlayRoot');
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let state=null,phase='cover',muted=false,audioCtx=null;
+let classTimer=null,botTimer=null,botAnimating=false,botAnimTimer=null;
+let classActives=[null,null],botActive=null;
+let currentRoster=[],draftPairs=[],difficulty='normal';
+let playerAnswers=[null,null],botTurnsThisPhase=0,readyPlayers=new Set();
+let handwritingSubmissions=[false,false],handPadStates=[null,null];
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function choice(a){return a[Math.floor(Math.random()*a.length)]}
+function tone(f=440,d=.09,type='sine',v=.06){if(muted)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
+function good(){tone(523,.09,'triangle');setTimeout(()=>tone(659,.1,'triangle'),80);setTimeout(()=>tone(784,.13,'triangle'),160)}
+function bad(){tone(190,.16,'sawtooth',.045)}
+function confetti(n=80){const cs=['#ffd166','#55e6a5','#ff6b9f','#a9c8e8','#cfa7f3','#ffc58f'];for(let i=0;i<n;i++){const p=document.createElement('i');p.className='confetti';p.style.left=Math.random()*100+'vw';p.style.background=choice(cs);p.style.animationDuration=(2.2+Math.random()*2.4)+'s';p.style.animationDelay=(Math.random()*.4)+'s';p.style.setProperty('--dx',(-160+Math.random()*320)+'px');document.body.appendChild(p);setTimeout(()=>p.remove(),5200)}}
+
+function toolbar(){return `<div class="toolbar"><button class="icon-btn" id="muteBtn" title="Sound">${muted?'🔇':'🔊'}</button><button class="icon-btn" id="fullBtn" title="Full screen">⛶</button><button class="icon-btn" id="homeBtn" title="Home">⌂</button></div>`}
+function bindToolbar(){const m=$('#muteBtn');if(m)m.onclick=()=>{muted=!muted;m.textContent=muted?'🔇':'🔊'};const f=$('#fullBtn');if(f)f.onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};const h=$('#homeBtn');if(h)h.onclick=()=>{pauseBot();stopClassGravity();renderCover()}}
+function teacherControlHTML(){
+  if(!state||phase==='cover'||phase==='setup')return '';
+  if(phase==='ready'){
+    const n=readyPlayers.size;
+    return `<button class="stage-btn ${n===2?'go':'waiting'}" id="stageBtn" ${n===2?'':'disabled'}>${n===2?'SHOW QUESTION':`WAITING ${n}/2`}</button>`;
+  }
+  if(phase==='question'){
+    const q=state.questions[state.round];
+    if(q.teacher)return `<button class="stage-btn waiting" id="stageBtn" disabled>WAITING ${handwritingSubmissions.filter(Boolean).length}/2 SUBMITTED</button>`;
+    return `<button class="stage-btn waiting" id="stageBtn" disabled>${playerAnswers.filter(Boolean).length}/2 PLAYERS ANSWERED</button>`;
+  }
+  if(phase==='teacherSubmitted')return `<button class="stage-btn answer" id="stageBtn">SHOW CORRECT ANSWER</button>`;
+  if(phase==='teacherReview')return `<button class="stage-btn go" id="stageBtn">START TETRIS →</button>`;
+  if(phase==='answered')return `<button class="stage-btn go" id="stageBtn">START TETRIS →</button>`;
+  if(phase==='placing')return `<button class="stage-btn waiting" id="stageBtn" disabled>TETRIS IN PLAY</button>`;
+  if(phase==='review')return `<button class="stage-btn next" id="stageBtn">NEXT PAIR →</button>`;
+  return '';
+}
+function topbar(){
+  if(!state||phase==='cover'||phase==='setup')return `<div class="topbar"><div class="brand"><h1>Class vs the Tetris Bot</h1></div><div></div>${toolbar()}</div>`;
+  const round=`Round ${state.round+1} of ${TOTAL_ROUNDS}`;
+  return `<div class="topbar"><div class="brand"><h1>Class vs the Tetris Bot</h1></div><div class="top-round-label">${round}</div><div class="game-toolbar"><div class="teacher-slot">${teacherControlHTML()}</div><button class="icon-btn" id="muteBtn" title="Sound">${muted?'🔇':'🔊'}</button><button class="icon-btn" id="fullBtn" title="Full screen">⛶</button><button class="icon-btn" id="homeBtn" title="Home">⌂</button></div></div>`;
+}
+function bindTeacherControls(){
+  const st=$('#stageBtn');
+  if(st&&phase==='ready'&&readyPlayers.size===2)st.onclick=startQuestion;
+  if(st&&phase==='teacherSubmitted')st.onclick=showTeacherCorrectAnswer;
+  if(st&&(phase==='teacherReview'||phase==='answered'))st.onclick=startTetrisPhase;
+  if(st&&phase==='review')st.onclick=completeRound;
+}
+
+function decorativeBoard(cols,rows,cls){let s=`<div class="cover-board ${cls}">`;for(let i=0;i<cols*rows;i++){const filled=i>cols*rows*.55&&Math.random()>.34;s+=`<i class="${filled?'f'+(1+Math.floor(Math.random()*4)):''}"></i>`}return s+'</div>'}
+function tetroScene(){return `<div class="tetromino-scene" aria-hidden="true"><span class="mini-tetro i1" style="--c:#5aa8ed"><i></i><i></i><i></i><i></i></span><span class="mini-tetro t1" style="--c:#8acb62;--r:-7deg"><i></i><i></i><i></i><i></i></span><span class="mini-tetro o1" style="--c:#ff9c34;--r:5deg"><i></i><i></i><i></i><i></i></span><span class="mini-tetro t1" style="--c:#a96fc5;--r:9deg"><i></i><i></i><i></i><i></i></span></div>`}
+
+function renderCover(){
+  phase='cover';pauseBot();stopClassGravity();classActives=[null,null];readyPlayers=new Set();overlay.innerHTML='';
+  const saved=loadState(),roster=getBestRoster();
+  app.innerHTML=`<main class="screen">${topbar()}<section class="intro-center"><div class="cover-card"><div class="cover-inner"><span class="cover-chip">15 rounds · 2 players at a time</span><h2 class="cover-title">Class vs the<br><em>Tetris Bot</em></h2><p class="cover-subtitle">Answer fractions. Place pieces. Beat the bot.</p><div class="cover-actions"><button class="secondary-btn" id="setupBtn">Setup Players</button><button class="primary-btn ${roster.length===30?'':'start-disabled'}" id="startBtn" ${roster.length===30?'':'disabled'}>Start Battle</button>${saved&&!saved.finished?'<button class="secondary-btn" id="resumeBtn">Resume Saved Battle</button>':''}</div><div class="cover-steps"><span class="step-pill">Ready!</span><span>→</span><span class="step-pill">Answer</span><span>→</span><span class="step-pill">Place Pieces</span><span>→</span><span class="step-pill">Beat the Bot</span></div></div>${tetroScene()}</div></section></main>`;
+  bindToolbar();
+  $('#setupBtn').onclick=renderSetup;
+  if($('#startBtn'))$('#startBtn').onclick=()=>startNewGame(getBestRoster(),difficulty);
+  if($('#resumeBtn'))$('#resumeBtn').onclick=()=>{state=saved;currentRoster=state.roster||getBestRoster();difficulty=state.difficulty||'normal';renderRoundReady()};
+}
+
+function universalRoster(){try{const r=JSON.parse(localStorage.getItem(UNIVERSAL_SETUP_KEY)||'null');if(!r||!Array.isArray(r.players))return[];const groupMap=new Map();if(Array.isArray(r.groups))r.groups.forEach((g,gi)=>(g.memberIds||[]).forEach(id=>groupMap.set(String(id),{group:gi,groupName:g.name||`Group ${gi+1}`,color:g.color||'#9db4c4'})));return r.players.map((p,i)=>({id:String(p.id||`p${i+1}`),name:String(p.name||'').trim(),...(groupMap.get(String(p.id))||{})})).filter(p=>p.name).slice(0,30)}catch(e){return[]}}
+function localRoster(){try{const a=JSON.parse(localStorage.getItem(ROSTER_KEY)||'[]');return Array.isArray(a)?a.filter(x=>x&&x.name).slice(0,30):[]}catch(e){return[]}}
+function getBestRoster(){const local=localRoster();if(local.length===30)return local;const uni=universalRoster();return uni.length===30?uni:local}
+function saveRoster(r){localStorage.setItem(ROSTER_KEY,JSON.stringify(r.slice(0,30)))}
+function prefs(){try{return JSON.parse(localStorage.getItem(PREF_KEY)||'{}')}catch(e){return{}}}
+function savePrefs(){localStorage.setItem(PREF_KEY,JSON.stringify({difficulty}))}
+function pairRoster(roster){let best=null,bestSame=99;for(let attempt=0;attempt<500;attempt++){const pool=shuffle(roster),pairs=[];let same=0;while(pool.length){const a=pool.shift();let ix=pool.findIndex(b=>a.group===undefined||b.group===undefined||a.group!==b.group);if(ix<0)ix=0;const b=pool.splice(ix,1)[0];if(a.group!==undefined&&b.group!==undefined&&a.group===b.group)same++;pairs.push([a,b])}if(same<bestSame){best=pairs;bestSame=same;if(same===0)break}}return best||[]}
+function pairsHTML(pairs){if(!pairs.length)return '<div class="setup-help">Add 30 names to generate the 15 pairs.</div>';return pairs.map((p,i)=>`<div class="pair-chip"><div class="pair-no">${i+1}</div><div class="pair-names"><div>${esc(p[0].name)}</div><div>${esc(p[1].name)}</div></div></div>`).join('')}
+function renderSetup(){phase='setup';pauseBot();stopClassGravity();const base=getBestRoster();currentRoster=base;draftPairs=base.length===30?pairRoster(base):[];difficulty=prefs().difficulty||difficulty||'normal';const names=base.map(x=>x.name).join('\n');app.innerHTML=`<main class="screen">${topbar()}<section class="setup-wrap"><div class="setup-panel"><div class="setup-title">Player roster</div><div class="setup-help">Enter exactly 30 names, one per line. You can reuse the same universal roster from Tetris Battle.</div><textarea class="name-box" id="nameBox" placeholder="Player 1\nPlayer 2\n...">${esc(names)}</textarea><div class="setup-row"><button class="secondary-btn" id="loadRosterBtn">Load Tetris Battle Roster</button><span class="setup-mini" id="nameCount">${base.length}/30 names</span></div><div class="setup-title" style="font-size:17px">Tetris Bot speed</div><div class="difficulty">${['easy','normal','hard'].map(x=>`<button data-diff="${x}" class="${difficulty===x?'active':''}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div><div class="setup-help">Easy: 15 s per bot piece · Normal: 12 s · Hard: 9 s. The bot pauses between pairs.</div></div><div class="setup-panel"><div class="setup-row" style="justify-content:space-between"><div><div class="setup-title">15 pair turns</div><div class="setup-help">Each pupil appears once. Same-group pairings are avoided when group data is available.</div></div><button class="secondary-btn" id="shufflePairsBtn" ${base.length===30?'':'disabled'}>↻ Shuffle Pairs</button></div><div class="pair-grid" id="pairGrid">${pairsHTML(draftPairs)}</div><div class="setup-actions"><button class="secondary-btn" id="backBtn">Back</button><button class="primary-btn" id="saveSetupBtn" ${base.length===30?'':'disabled'}>Save & Return</button></div></div></section></main>`;bindToolbar();$('#backBtn').onclick=renderCover;const box=$('#nameBox');const refreshNames=()=>{const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);$('#nameCount').textContent=`${arr.length}/30 names`;$('#saveSetupBtn').disabled=arr.length!==30;$('#shufflePairsBtn').disabled=arr.length!==30;if(arr.length===30){currentRoster=arr.map((name,i)=>({id:`local${i+1}`,name}));draftPairs=pairRoster(currentRoster);$('#pairGrid').innerHTML=pairsHTML(draftPairs)}};box.addEventListener('input',refreshNames);$('#loadRosterBtn').onclick=()=>{const u=universalRoster();if(u.length===30){currentRoster=u;box.value=u.map(x=>x.name).join('\n');draftPairs=pairRoster(u);$('#pairGrid').innerHTML=pairsHTML(draftPairs);$('#nameCount').textContent='30/30 names';$('#saveSetupBtn').disabled=false;$('#shufflePairsBtn').disabled=false;good()}else alert('A complete 30-player Tetris Battle roster was not found on this browser.')};$('#shufflePairsBtn').onclick=()=>{const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(arr.length!==30)return;const useGroups=currentRoster.length===30&&currentRoster.every((p,i)=>p.name===arr[i]);currentRoster=useGroups?currentRoster:arr.map((name,i)=>({id:`local${i+1}`,name}));draftPairs=pairRoster(currentRoster);$('#pairGrid').innerHTML=pairsHTML(draftPairs);tone(620,.08)};$$('[data-diff]').forEach(b=>b.onclick=()=>{difficulty=b.dataset.diff;savePrefs();$$('[data-diff]').forEach(x=>x.classList.toggle('active',x===b))});$('#saveSetupBtn').onclick=()=>{const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(arr.length!==30)return;const roster=currentRoster.length===30&&currentRoster.every((p,i)=>p.name===arr[i])?currentRoster:arr.map((name,i)=>({id:`local${i+1}`,name}));saveRoster(roster);savePrefs();renderCover()}}
+
+/* Tetris core */
+function emptyBoard(cols){return Array.from({length:ROWS},()=>Array(cols).fill(null))}
+function rotated(type,rot){let pts=SHAPES[type].map(p=>[...p]);if(type==='O')return pts;for(let r=0;r<rot%4;r++){pts=pts.map(([x,y])=>[y,-x]);const minX=Math.min(...pts.map(p=>p[0])),minY=Math.min(...pts.map(p=>p[1]));pts=pts.map(([x,y])=>[x-minX,y-minY])}return pts}
+function pieceCells(p){return rotated(p.type,p.rot).map(([x,y])=>[x+p.x,y+p.y])}
+function valid(board,p,cols){return pieceCells(p).every(([x,y])=>x>=0&&x<cols&&y<ROWS&&(y<0||!board[y][x]))}
+function activeCellSet(index){const other=classActives[index===0?1:0];return new Set(other?pieceCells(other).filter(([,y])=>y>=0).map(([x,y])=>`${x},${y}`):[])}
+function validClassPiece(index,p){if(!valid(state.classBoard,p,CLASS_COLS))return false;const other=activeCellSet(index);return pieceCells(p).every(([x,y])=>y<0||!other.has(`${x},${y}`))}
+function hardDropY(board,p,cols){let q={...p};while(valid(board,{...q,y:q.y+1},cols))q.y++;return q.y}
+function lockInto(board,p,cols){let overflow=false;pieceCells(p).forEach(([x,y])=>{if(y<0)overflow=true;else if(y<ROWS&&x>=0&&x<cols)board[y][x]={color:p.color,type:p.type}});return overflow}
+function clearRows(board,cols){let n=0;for(let y=ROWS-1;y>=0;y--){if(board[y].every(Boolean)){board.splice(y,1);board.unshift(Array(cols).fill(null));n++;y++}}return n}
+function randomPiece(cols,xHint=null){const type=choice(Object.keys(SHAPES));const pts=rotated(type,0),w=Math.max(...pts.map(p=>p[0]))+1;let x=xHint===null?Math.floor(cols/2)-Math.ceil(w/2):Math.max(0,Math.min(cols-w,xHint));return{type,rot:0,x,y:-2,color:COLORS[type]}}
+function boardHTML(board,cols,active){const amap=new Map();const acts=Array.isArray(active)?active:[active];acts.forEach((p,owner)=>{if(!p)return;pieceCells(p).forEach(([x,y])=>{if(y>=0&&y<ROWS&&x>=0&&x<cols)amap.set(`${x},${y}`,{color:p.color,owner:p.owner??owner})})});let s='';for(let y=0;y<ROWS;y++)for(let x=0;x<cols;x++){const a=amap.get(`${x},${y}`),v=board[y][x];s+=`<i class="cell ${a?`active p${(a.owner||0)+1}`:v?'filled':''}" style="${a?`--active:${a.color}`:v?`--cell:${v.color}`:''}"></i>`}return s}
+function refreshBoards(){const c=$('#classBoard');if(c)c.innerHTML=boardHTML(state.classBoard,CLASS_COLS,classActives);const b=$('#botBoard');if(b)b.innerHTML=boardHTML(state.botBoard,BOT_COLS,botActive);refreshControlStates()}
+function startClassGravity(){stopClassGravity();classTimer=setInterval(()=>{if(classActives[0])moveClass(0,0,1);if(classActives[1])moveClass(1,0,1)},850)}
+function stopClassGravity(){if(classTimer){clearInterval(classTimer);classTimer=null}}
+function moveClass(index,dx,dy){const p=classActives[index];if(!p||phase!=='placing')return;const n={...p,x:p.x+dx,y:p.y+dy};if(validClassPiece(index,n)){classActives[index]=n;refreshBoards()}else if(dy>0)lockClassPiece(index)}
+function rotateClass(index){const p=classActives[index];if(!p||phase!=='placing')return;const n={...p,rot:(p.rot+1)%4};for(const k of [0,-1,1,-2,2]){const t={...n,x:n.x+k};if(validClassPiece(index,t)){classActives[index]=t;refreshBoards();tone(index?560:500,.05);return}}}
+function spawnForPlayer(index){const hint=index===0?2:CLASS_COLS-5;let p=randomPiece(CLASS_COLS,hint);p.owner=index;for(let tries=0;tries<18&&!validClassPiece(index,p);tries++){p=randomPiece(CLASS_COLS,index===0?Math.floor(Math.random()*(CLASS_COLS/2-2)):Math.floor(CLASS_COLS/2+Math.random()*(CLASS_COLS/2-3)));p.owner=index}return validClassPiece(index,p)?p:null}
+function startTetrisPhase(){
+  if(!state||state.finished||!['answered','teacherReview'].includes(phase))return;
+  if(phase==='teacherReview')finalizeTeacherReview();
+  if(state.classCorrect>=CLASS_TARGET){finishGame('class');return}
+  phase='placing';botTurnsThisPhase=0;classActives=[null,null];
+  for(let i=0;i<2;i++)if(playerAnswers[i]?.correct)classActives[i]=spawnForPlayer(i);
+  if((playerAnswers[0]?.correct&&!classActives[0])||(playerAnswers[1]?.correct&&!classActives[1])){
+    state.classBoard=emptyBoard(CLASS_COLS);
+    for(let i=0;i<2;i++)if(playerAnswers[i]?.correct)classActives[i]=spawnForPlayer(i);
+  }
+  renderCurrentGame();
+  if(classActives.some(Boolean))startClassGravity();
+  startBot();
+  checkPlayDone();
+}
+function lockClassPiece(index){
+  const p=classActives[index];if(!p)return;
+  const overflow=lockInto(state.classBoard,p,CLASS_COLS);classActives[index]=null;
+  if(overflow){state.classBoard=emptyBoard(CLASS_COLS);classActives=[null,null]}
+  refreshBoards();
+  if(!classActives[0]&&!classActives[1]){
+    stopClassGravity();
+    const lines=clearRows(state.classBoard,CLASS_COLS);state.classLines=(state.classLines||0)+lines;if(lines)good();
+    saveState();refreshBoards();checkPlayDone();
+  }else saveState();
+}
+function checkPlayDone(){
+  if(!state||state.finished||phase!=='placing')return;
+  const classDone=!classActives[0]&&!classActives[1];
+  if(classDone&&botTurnsThisPhase>=1&&!botAnimating){
+    stopClassGravity();pauseBot();phase='review';saveState();renderCurrentGame();
+  }
+}
+function refreshControlStates(){for(let i=0;i<2;i++)$$(`[data-player-control="${i}"]`).forEach(b=>b.disabled=phase!=='placing'||!classActives[i])}
+function cloneBoard(b){return b.map(r=>r.map(c=>c?{...c}:null))}
+function boardMetrics(board,cols){let heights=Array(cols).fill(0),holes=0,agg=0,max=0;for(let x=0;x<cols;x++){let top=ROWS;for(let y=0;y<ROWS;y++)if(board[y][x]){top=y;break}const h=top===ROWS?0:ROWS-top;heights[x]=h;agg+=h;max=Math.max(max,h);if(top<ROWS)for(let y=top+1;y<ROWS;y++)if(!board[y][x])holes++}let bump=0;for(let x=0;x<cols-1;x++)bump+=Math.abs(heights[x]-heights[x+1]);return{holes,agg,max,bump}}
+function bestBotPlacement(type){let best=null,bestScore=-Infinity;for(let rot=0;rot<4;rot++){const pts=rotated(type,rot),w=Math.max(...pts.map(p=>p[0]))+1;for(let x=0;x<=BOT_COLS-w;x++){let p={type,rot,x,y:-3,color:COLORS[type]};if(!valid(state.botBoard,p,BOT_COLS))continue;p.y=hardDropY(state.botBoard,p,BOT_COLS);const b=cloneBoard(state.botBoard);if(lockInto(b,p,BOT_COLS))continue;const lines=clearRows(b,BOT_COLS),m=boardMetrics(b,BOT_COLS);const score=lines*110-m.holes*13-m.agg*.55-m.bump*.75-m.max*1.25+Math.random()*1.5;if(score>bestScore){bestScore=score;best={...p}}}}return best}
+function startBot(){pauseBot();if(!state||state.finished||state.pendingWin||phase!=='placing')return;const ms=BOT_SPEEDS[state.difficulty||'normal']||BOT_SPEEDS.normal;botTimer=setInterval(botTurn,ms);setTimeout(()=>{if(botTimer&&!botAnimating)botTurn()},900);updateBotStatus()}
+function pauseBot(){if(botTimer){clearInterval(botTimer);botTimer=null}if(botAnimTimer){clearInterval(botAnimTimer);botAnimTimer=null}botAnimating=false;botActive=null;updateBotStatus()}
+function updateBotStatus(){const e=$('#botStatus');if(e)e.textContent=botTimer?(botAnimating?'BOT DROPPING…':'BOT THINKING…'):'BOT PAUSED'}
+function botTurn(){if(!state||state.finished||botAnimating||phase!=='placing')return;const type=choice(Object.keys(SHAPES)),target=bestBotPlacement(type);if(!target){state.botBoard=emptyBoard(BOT_COLS);botTurnsThisPhase++;saveState();refreshBoards();checkPlayDone();return}botAnimating=true;botActive={type,rot:target.rot,x:target.x,y:-3,color:COLORS[type]};updateBotStatus();refreshBoards();botAnimTimer=setInterval(()=>{if(!botActive){clearInterval(botAnimTimer);botAnimTimer=null;botAnimating=false;return}const next={...botActive,y:botActive.y+1};if(next.y<=target.y&&valid(state.botBoard,next,BOT_COLS)){botActive=next;refreshBoards();return}clearInterval(botAnimTimer);botAnimTimer=null;botActive={...target};const overflow=lockInto(state.botBoard,botActive,BOT_COLS);botActive=null;if(overflow)state.botBoard=emptyBoard(BOT_COLS);else{const lines=clearRows(state.botBoard,BOT_COLS);if(lines){state.botLines+=lines;tone(330,.08,'square',.035);updateScores()}}botAnimating=false;botTurnsThisPhase++;saveState();refreshBoards();updateBotStatus();if(state.botLines>=BOT_TARGET){finishGame('bot');return}checkPlayDone()},70)}
+
+/* Fractions question bank */
+function fracHTML(n,d,cls=''){return `<span class="stack-frac ${cls}"><span class="num">${n}</span><span class="den">${d}</span></span>`}
+function circleSVG(n,d){const cx=100,cy=100,r=78;let s='<svg class="fraction-model" viewBox="0 0 200 200">';for(let i=0;i<d;i++){const a0=(-90+i*360/d)*Math.PI/180,a1=(-90+(i+1)*360/d)*Math.PI/180,x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);s+=`<path d="M100 100 L${x0.toFixed(2)} ${y0.toFixed(2)} A78 78 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z" fill="${i<n?'#91d8ee':'#fff'}" stroke="#48677c" stroke-width="3"/>`}return s+'<circle cx="100" cy="100" r="78" fill="none" stroke="#37576e" stroke-width="4"/></svg>'}
+function barSVG(n,d){const x=10,y=38,w=300,h=88,seg=w/d;let s='<svg class="fraction-model bar" viewBox="0 0 320 165">';for(let i=0;i<d;i++)s+=`<rect x="${(x+i*seg).toFixed(2)}" y="${y}" width="${seg.toFixed(2)}" height="${h}" fill="${i<n?'#9fdbb9':'#fff'}" stroke="#48677c" stroke-width="3"/>`;return s+'</svg>'}
+function fractionModel(n,d){return (d>=9||Math.random()<.42)?barSVG(n,d):circleSVG(n,d)}
+function numOptions(correct,min,max,count=3){let a=[correct];while(a.length<count){const v=min+Math.floor(Math.random()*(max-min+1));if(!a.includes(v))a.push(v)}return shuffle(a)}
+function fracOptions(n,d,count=3){const correct=`${n}/${d}`,pool=[];for(let nn=1;nn<d;nn++)if(nn!==n)pool.push(`${nn}/${d}`);for(const dd of [d+1,Math.max(2,d-1)]){const nn=Math.min(n,dd-1);const v=`${nn}/${dd}`;if(v!==correct&&!pool.includes(v))pool.push(v)}return shuffle([correct,...shuffle(pool).slice(0,count-1)])}
+function makeQuestion(type){const ds=[3,4,5,6,7,8,9,10,11,12];let d=choice(ds),a,b,nums,correct;
+ if(type==='shaded'){a=1+Math.floor(Math.random()*(d-1));correct=`${a}/${d}`;return{type,title:'What fraction is shaded?',visual:fractionModel(a,d),options:fracOptions(a,d),answer:correct,answerHTML:fracHTML(a,d,'big')}}
+ if(['greater','smaller','symbol'].includes(type)){d=choice([4,5,6,7,8,9,10,11,12]);a=1+Math.floor(Math.random()*(d-2));b=a;while(b===a)b=1+Math.floor(Math.random()*(d-1));if(type==='greater'){correct=a>b?`${a}/${d}`:`${b}/${d}`;return{type,title:'Which fraction is greater?',visual:`<div class="equation">${fracHTML(a,d,'big')}<span>or</span>${fracHTML(b,d,'big')}</div>`,options:shuffle([`${a}/${d}`,`${b}/${d}`]),answer:correct,answerHTML:fracHTML(...correct.split('/'),'big')}}if(type==='smaller'){correct=a<b?`${a}/${d}`:`${b}/${d}`;return{type,title:'Which fraction is smaller?',visual:`<div class="equation">${fracHTML(a,d,'big')}<span>or</span>${fracHTML(b,d,'big')}</div>`,options:shuffle([`${a}/${d}`,`${b}/${d}`]),answer:correct,answerHTML:fracHTML(...correct.split('/'),'big')}}correct=a<b?'<':'>';return{type,title:'Choose the correct symbol.',visual:`<div class="equation">${fracHTML(a,d,'big')}<span>?</span>${fracHTML(b,d,'big')}</div>`,options:['<','>'],answer:correct,answerHTML:`<strong style="font-size:34px">${correct}</strong>`}}
+ if(['greatest','smallest'].includes(type)){d=choice([5,6,7,8,9,10,11,12]);nums=shuffle(Array.from({length:d-1},(_,i)=>i+1)).slice(0,3);const target=type==='greatest'?Math.max(...nums):Math.min(...nums);correct=`${target}/${d}`;return{type,title:`Which fraction is the ${type}?`,visual:'',options:shuffle(nums.map(n=>`${n}/${d}`)),answer:correct,answerHTML:fracHTML(target,d,'big')}}
+ if(type==='numerator'||type==='denominator'){d=choice(ds);a=1+Math.floor(Math.random()*(d-1));correct=type==='numerator'?String(a):String(d);const max=type==='numerator'?Math.max(d,9):12;return{type,title:`What is the ${type}?`,visual:fracHTML(a,d,'big'),options:numOptions(Number(correct),1,max).map(String),answer:correct,answerHTML:`<strong style="font-size:36px">${correct}</strong>`}}
+ if(type==='addition'){d=choice([4,5,6,7,8,9,10,11,12]);a=1+Math.floor(Math.random()*(d-2));b=1+Math.floor(Math.random()*Math.max(1,d-a-1));correct=`${a+b}/${d}`;return{type,title:'Add the fractions.',visual:`<div class="equation">${fracHTML(a,d)}<span>+</span>${fracHTML(b,d)}<span>=</span><span>?</span></div>`,teacher:true,answer:correct,answerHTML:fracHTML(a+b,d,'big')}}
+ if(type==='subtraction'){d=choice([5,6,7,8,9,10,11,12]);a=2+Math.floor(Math.random()*(d-2));b=1+Math.floor(Math.random()*(a-1));correct=`${a-b}/${d}`;return{type,title:'Subtract the fractions.',visual:`<div class="equation">${fracHTML(a,d)}<span>−</span>${fracHTML(b,d)}<span>=</span><span>?</span></div>`,teacher:true,answer:correct,answerHTML:fracHTML(a-b,d,'big')}}
+}
+function makeQuestions(){const types=['shaded','greater','smaller','symbol','greatest','smallest','numerator','denominator','addition','subtraction','shaded','symbol','greatest','addition','subtraction'];return shuffle(types).map(makeQuestion)}
+
+/* state + score */
+function startNewGame(roster,diff){if(roster.length!==30){renderSetup();return}currentRoster=roster;const rosterNames=new Set(roster.map(p=>p.name));const draftOK=draftPairs.length===15&&draftPairs.flat().every(p=>rosterNames.has(p.name));const pairs=draftOK?draftPairs:pairRoster(roster);state={version:4,finished:false,round:0,classCorrect:0,classLines:0,botLines:0,classBoard:emptyBoard(CLASS_COLS),botBoard:emptyBoard(BOT_COLS),pairs:pairs.map(p=>p.map(x=>({id:x.id,name:x.name,group:x.group,groupName:x.groupName,color:x.color}))),roster,questions:makeQuestions(),difficulty:diff||'normal',pendingWin:false,lastAnswerCorrect:null};saveState();renderRoundReady()}
+function saveState(){if(state)try{localStorage.setItem(SAVE_KEY,JSON.stringify(state))}catch(e){}}
+function loadState(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');return s&&s.version===4&&Array.isArray(s.pairs)&&Array.isArray(s.questions)?s:null}catch(e){return null}}
+function pips(n){return Array.from({length:10},(_,i)=>`<i class="pip ${i<n?'on':''}"></i>`).join('')}
+function updateScores(){const cc=$('#classCorrectNum');if(cc)cc.innerHTML=`${Math.min(state.classCorrect,10)}<span>/10</span>`;const bl=$('#botLinesNum');if(bl)bl.innerHTML=`${Math.min(state.botLines,10)}<span>/10</span>`;const cp=$('#classPips');if(cp)cp.innerHTML=pips(state.classCorrect);const bp=$('#botPips');if(bp)bp.innerHTML=pips(state.botLines)}
+function scoreStrip(){return `<div class="score-strip"><div class="score-card class"><div class="score-icon">🧑‍🤝‍🧑</div><div><div class="score-big">Correct answers</div><div class="pips" id="classPips">${pips(state.classCorrect)}</div></div><div class="score-number" id="classCorrectNum">${state.classCorrect}<span>/10</span></div></div><div class="score-card bot"><div class="score-icon">🤖</div><div><div class="score-big">Lines cleared</div><div class="pips" id="botPips">${pips(state.botLines)}</div></div><div class="score-number" id="botLinesNum">${state.botLines}<span>/10</span></div></div></div>`}
+
+function optionHTML(o){const s=String(o);return s.includes('/')?fracHTML(...s.split('/')):esc(s)}
+function questionAnswerButtons(q,index){
+  const ans=playerAnswers[index],reveal=phase==='answered';
+  const cls=q.options?.length===3?'question-answer-grid three':'question-answer-grid';
+  return `<div class="${cls}">${q.options.map(o=>{const val=String(o),picked=ans&&String(ans.selected)===val;let c='question-answer-btn';if(picked)c+=ans.correct?' correct-picked':' wrong-picked';if(reveal&&val===String(q.answer))c+=' correct-answer';return `<button class="${c}" data-answer-player="${index}" data-opt="${esc(val)}" ${ans||phase!=='question'?'disabled':''}>${optionHTML(o)}</button>`}).join('')}</div>`;
+}
+function handwritingHTML(index,q){
+  const submitted=!!handwritingSubmissions[index];
+  return `<div class="fraction-pad-shell ${submitted?'submitted':''}" id="fractionPadShell${index}">
+    <div class="fraction-pad-paper" id="fractionPadPaper${index}">
+      <canvas class="fraction-pad-canvas" data-fraction-pad="${index}" aria-label="Player ${index+1} fraction writing area"></canvas>
+    </div>
+    <div class="fraction-pad-tools" id="fractionPadTools${index}">
+      <button class="fraction-pad-btn" data-pad-action="undo" data-pad-player="${index}" ${submitted?'disabled':''}>↶ Undo</button>
+      <button class="fraction-pad-btn" data-pad-action="clear" data-pad-player="${index}" ${submitted?'disabled':''}>Clear</button>
+      <button class="fraction-submit-btn ${submitted?'submitted':''}" data-pad-submit="${index}" ${submitted?'disabled':''}>${submitted?'Submitted ✓':'Submit'}</button>
+    </div>
+  </div>`;
+}
+function setupFractionPadCanvas(canvas,index){
+  const rect=canvas.getBoundingClientRect(),dpr=Math.max(1,window.devicePixelRatio||1);
+  canvas.width=Math.max(1,Math.round(rect.width*dpr));canvas.height=Math.max(1,Math.round(rect.height*dpr));
+  const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#173b68';ctx.lineWidth=5;
+  const st={canvas,ctx,strokes:[],active:null,pointerId:null,submitted:!!handwritingSubmissions[index]};handPadStates[index]=st;
+  const point=e=>{const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}};
+  const redraw=()=>redrawFractionPad(index);
+  canvas.addEventListener('pointerdown',e=>{if(phase!=='question'||st.submitted||st.pointerId!==null)return;e.preventDefault();st.pointerId=e.pointerId;try{canvas.setPointerCapture(e.pointerId)}catch(err){}st.active={pts:[point(e)]};redraw()},{passive:false});
+  canvas.addEventListener('pointermove',e=>{if(st.pointerId!==e.pointerId||!st.active||phase!=='question'||st.submitted)return;e.preventDefault();st.active.pts.push(point(e));redraw()},{passive:false});
+  const finish=e=>{if(st.pointerId===null)return;if(st.active?.pts?.length)st.strokes.push(st.active);st.active=null;try{canvas.releasePointerCapture(st.pointerId)}catch(err){}st.pointerId=null;redraw();updateFractionPadButtons(index);e?.preventDefault?.()};
+  canvas.addEventListener('pointerup',finish,{passive:false});canvas.addEventListener('pointercancel',finish,{passive:false});
+  redraw();updateFractionPadButtons(index);
+}
+function redrawFractionPad(index){
+  const st=handPadStates[index];if(!st)return;const c=st.canvas,ctx=st.ctx,r=c.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
+  const drawStroke=stroke=>{if(!stroke?.pts?.length)return;ctx.beginPath();stroke.pts.forEach((p,i)=>{const x=p.x*r.width,y=p.y*r.height;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});if(stroke.pts.length===1){const p=stroke.pts[0];ctx.lineTo(p.x*r.width+.5,p.y*r.height+.5)}ctx.stroke()};
+  st.strokes.forEach(drawStroke);if(st.active)drawStroke(st.active);
+}
+function fractionPadHasInk(index){const st=handPadStates[index];return !!(st&&(st.strokes.length||st.active?.pts?.length))}
+function updateFractionPadButtons(index){
+  const st=handPadStates[index];if(!st)return;const shell=$(`#fractionPadShell${index}`);if(shell)shell.classList.toggle('submitted',!!st.submitted);
+  $$(`[data-pad-player="${index}"]`).forEach(b=>{if(st.submitted)b.disabled=true;else if(b.dataset.padAction==='undo')b.disabled=st.strokes.length===0;else if(b.dataset.padAction==='clear')b.disabled=!fractionPadHasInk(index)});
+  const sub=$(`[data-pad-submit="${index}"]`);if(sub&&!st.submitted)sub.disabled=!fractionPadHasInk(index);
+}
+function fractionPadAction(index,action){
+  const st=handPadStates[index];if(!st||st.submitted||phase!=='question')return;
+  if(action==='undo'&&st.strokes.length)st.strokes.pop();
+  if(action==='clear'){st.strokes=[];st.active=null}
+  redrawFractionPad(index);updateFractionPadButtons(index);
+}
+function submitFractionPad(index){
+  const st=handPadStates[index];if(!st||st.submitted||phase!=='question'||!fractionPadHasInk(index))return;
+  st.submitted=true;handwritingSubmissions[index]=true;
+  const sub=$(`[data-pad-submit="${index}"]`);if(sub){sub.disabled=true;sub.classList.add('submitted');sub.textContent='Submitted ✓'}
+  $$(`[data-pad-player="${index}"]`).forEach(b=>b.disabled=true);
+  const canvas=$(`[data-fraction-pad="${index}"]`);if(canvas)canvas.style.pointerEvents='none';
+  updateFractionPadButtons(index);tone(560+index*70,.1,'triangle');
+  const stg=$('#stageBtn');
+  if(handwritingSubmissions.every(Boolean)){
+    phase='teacherSubmitted';
+    if(stg){stg.disabled=false;stg.className='stage-btn answer';stg.textContent='SHOW CORRECT ANSWER';stg.onclick=showTeacherCorrectAnswer;}
+  }else if(stg){stg.disabled=true;stg.className='stage-btn waiting';stg.textContent=`WAITING ${handwritingSubmissions.filter(Boolean).length}/2 SUBMITTED`;}
+}
+function initHandwritingPads(){
+  if(phase!=='question'||!state?.questions?.[state.round]?.teacher)return;
+  handPadStates=[null,null];
+  $$('[data-fraction-pad]').forEach(c=>setupFractionPadCanvas(c,Number(c.dataset.fractionPad)));
+  $$('[data-pad-action]').forEach(b=>b.onclick=e=>{e.preventDefault();fractionPadAction(Number(b.dataset.padPlayer),b.dataset.padAction)});
+  $$('[data-pad-submit]').forEach(b=>b.onclick=e=>{e.preventDefault();submitFractionPad(Number(b.dataset.padSubmit))});
+}
+function setTeacherJudgeButton(index){
+  const tools=$(`#fractionPadTools${index}`);if(!tools)return;
+  const correct=!!playerAnswers[index]?.correct;
+  tools.className='fraction-judge-wrap';
+  tools.innerHTML=`<button class="fraction-judge-btn ${correct?'correct':''}" data-teacher-judge="${index}">${correct?'✓ Correct':'Mark correct'}</button>`;
+  const btn=tools.querySelector('button');if(btn)btn.onclick=()=>toggleTeacherCorrect(index);
+  $(`.question-lane.p${index+1}`)?.classList.toggle('teacher-correct',correct);
+}
+function toggleTeacherCorrect(index){
+  if(phase!=='teacherReview')return;
+  const current=!!playerAnswers[index]?.correct;
+  playerAnswers[index]={selected:'teacher',correct:!current};
+  setTeacherJudgeButton(index);saveState();tone(!current?560:300,.08,'triangle');
+}
+function showTeacherCorrectAnswer(){
+  if(phase!=='teacherSubmitted'||!handwritingSubmissions.every(Boolean))return;
+  phase='teacherReview';
+  const q=state.questions[state.round];
+  playerAnswers=[{selected:'teacher',correct:false},{selected:'teacher',correct:false}];
+  const revealed=q.visual.replace('<span>?</span>',`<span class="teacher-revealed">${q.answerHTML}</span>`);
+  for(let i=0;i<2;i++){
+    const visual=$(`#questionArea${i} .q-visual`);if(visual)visual.innerHTML=revealed;
+    setTeacherJudgeButton(i);
+  }
+  const st=$('#stageBtn');if(st){st.className='stage-btn go';st.textContent='START TETRIS →';st.disabled=false;st.onclick=startTetrisPhase;}
+  good();
+}
+function finalizeTeacherReview(){
+  const pairCorrect=playerAnswers.every(a=>a&&a.correct);
+  state.lastAnswerCorrect=pairCorrect;
+  if(pairCorrect){state.classCorrect++;good()}
+  saveState();updateScores();
+  return pairCorrect;
+}
+
+function checkPlayerReady(index){
+  if(phase!=='ready'||readyPlayers.has(index))return;
+  readyPlayers.add(index);tone(560+index*70,.1);
+  const b=$(`[data-player-ready="${index}"]`);if(b){b.textContent='Ready! ✓';b.classList.add('done');b.disabled=true}
+  const st=$('#stageBtn');if(st){if(readyPlayers.size===2){st.disabled=false;st.className='stage-btn go';st.textContent='SHOW QUESTION';st.onclick=startQuestion;good()}else{st.disabled=true;st.className='stage-btn waiting';st.textContent=`WAITING ${readyPlayers.size}/2`}}
+}
+function bindReadyButtons(){$$('[data-player-ready]').forEach(b=>b.onclick=()=>checkPlayerReady(Number(b.dataset.playerReady)))}
+
+function questionAreaHTML(index){
+  const q=state.questions[state.round],ans=playerAnswers[index];
+  if(phase==='ready')return `<div class="ready-lane"><div class="ready-title">Ready for the round?</div><button class="player-ready-btn" data-player-ready="${index}">Ready!</button></div>`;
+  let bottom='';
+  if(q.teacher){
+    bottom=handwritingHTML(index,q);
+  }else{
+    bottom=questionAnswerButtons(q,index);
+    if(phase==='answered')bottom+=`<div class="correct-answer-strip">Correct answer: ${q.answerHTML}</div>`;
+  }
+  const visual=(q.teacher&&phase==='teacherReview')?q.visual.replace('<span>?</span>',`<span class="teacher-revealed">${q.answerHTML}</span>`):(q.visual||'');
+  return `<div class="q-title">${q.title}</div><div class="q-visual qtype-${q.type}">${visual}</div>${bottom}`;
+}
+function questionPlayerLane(player,index){const teacher=state?.questions?.[state.round]?.teacher?' teacher-question':'';return `<section class="question-lane p${index+1}"><div class="question-lane-head"><div class="question-player-name">${esc(player.name)}</div><div class="question-role">PLAYER ${index+1}</div></div><div class="question-area${teacher}" id="questionArea${index}">${questionAreaHTML(index)}</div></section>`}
+function botQuestionLane(){return `<section class="question-lane bot"><div class="question-lane-head"><div class="question-player-name">TETRIS BOT</div></div><div class="question-area"><div class="bot-wait"><div class="robot">🤖</div><div class="big">Bot waiting</div><div class="bot-mini-score">${state.botLines}/10 lines cleared</div></div></div></section>`}
+function playerControlDock(player,index){
+  const active=classActives[index],correct=!!playerAnswers[index]?.correct;
+  let controls;
+  if(active)controls=`<div class="move-grid"><button class="move-btn" data-player-control="${index}" data-move="${index},-1,0">◀</button><button class="move-btn" data-player-control="${index}" data-move="${index},0,1">▼</button><button class="move-btn" data-player-control="${index}" data-move="${index},1,0">▶</button><button class="move-btn rotate" data-player-control="${index}" data-rot="${index}">↻ 90°</button></div>`;
+  else if(correct)controls=`<div class="no-piece">PIECE LOCKED ✓</div>`;
+  else controls=`<div class="no-piece">NO PIECE THIS ROUND</div>`;
+  return `<div class="player-control-dock p${index+1}"><div class="control-name"><strong>${esc(player.name)}</strong></div>${controls}</div>`;
+}
+function connectedPlayPanel(pair){return `<section class="connected-panel"><div class="connected-head"><div class="connected-player">${esc(pair[0].name)}</div><div class="connected-title"><strong>SHARED CLASS BOARD</strong>${state.classLines||0} class line${state.classLines===1?'':'s'}</div><div class="connected-player p2">${esc(pair[1].name)}</div></div><div class="connected-board-zone"><div class="board class-board" id="classBoard">${boardHTML(state.classBoard,CLASS_COLS,classActives)}</div></div><div class="connected-controls">${playerControlDock(pair[0],0)}${playerControlDock(pair[1],1)}</div></section>`}
+function playBotPanel(){return `<section class="play-bot-panel"><div class="play-bot-head"><div class="play-bot-title">TETRIS BOT</div><span class="mini-tag">${state.botLines}/10 LINES</span></div><div class="play-bot-board"><div class="board bot-board" id="botBoard">${boardHTML(state.botBoard,BOT_COLS,botActive)}</div></div><div class="bot-status" id="botStatus">${botTimer?(botAnimating?'BOT DROPPING…':'BOT THINKING…'):'BOT PAUSED'}</div></section>`}
+function renderCurrentGame(){
+  const pair=state.pairs[state.round];
+  const questionMode=['ready','question','teacherSubmitted','teacherReview','answered'].includes(phase);
+  const body=questionMode?`<section class="game-main question-mode">${questionPlayerLane(pair[0],0)}${questionPlayerLane(pair[1],1)}${botQuestionLane()}</section>`:`<section class="game-main play-mode">${connectedPlayPanel(pair)}${playBotPanel()}</section>`;
+  app.innerHTML=`<main class="screen">${topbar()}${scoreStrip()}${body}</main>`;
+  bindToolbar();bindTeacherControls();bindReadyButtons();bindAnswerButtons();bindPlayerControls();refreshControlStates();updateBotStatus();initHandwritingPads();
+}
+function bindAnswerButtons(){
+  if(phase!=='question'||state.questions[state.round].teacher)return;
+  $$('[data-answer-player]').forEach(b=>b.onclick=()=>answerPlayer(Number(b.dataset.answerPlayer),b.dataset.opt));
+}
+function answerPlayer(index,opt){
+  if(phase!=='question'||state.finished||playerAnswers[index])return;
+  const q=state.questions[state.round],correct=String(opt)===String(q.answer);
+  playerAnswers[index]={selected:String(opt),correct};correct?good():bad();saveState();
+  if(playerAnswers.every(Boolean))finalizeAnswers();else renderCurrentGame();
+}
+
+function finalizeAnswers(){
+  if(!playerAnswers.every(Boolean)||state.finished)return;
+  const pairCorrect=playerAnswers.every(a=>a.correct);
+  state.lastAnswerCorrect=pairCorrect;
+  if(pairCorrect){state.classCorrect++;good()}
+  saveState();updateScores();
+  if(state.classCorrect>=CLASS_TARGET){setTimeout(()=>finishGame('class'),260);return}
+  phase='answered';saveState();renderCurrentGame();
+}
+function bindPlayerControls(){$$('[data-move]').forEach(b=>b.onclick=()=>{const [i,dx,dy]=b.dataset.move.split(',').map(Number);moveClass(i,dx,dy)});$$('[data-rot]').forEach(b=>b.onclick=()=>rotateClass(Number(b.dataset.rot)))}
+
+/* round flow */
+function renderRoundReady(){
+  if(!state||state.finished){renderCover();return}
+  if(state.round>=TOTAL_ROUNDS){finishGame('survived');return}
+  phase='ready';pauseBot();stopClassGravity();classActives=[null,null];botActive=null;botTurnsThisPhase=0;playerAnswers=[null,null];readyPlayers=new Set();handwritingSubmissions=[false,false];handPadStates=[null,null];overlay.innerHTML='';renderCurrentGame();
+}
+function startQuestion(){
+  if(phase!=='ready'||readyPlayers.size<2)return;
+  phase='question';overlay.innerHTML='';renderCurrentGame();
+}
+function completeRound(){if(!state||state.finished)return;pauseBot();stopClassGravity();classActives=[null,null];state.pendingWin=false;state.round++;playerAnswers=[null,null];botTurnsThisPhase=0;saveState();if(state.round>=TOTAL_ROUNDS)finishGame(state.classCorrect>=CLASS_TARGET?'class':'survived');else renderRoundReady()}
+function finishGame(result){if(!state||state.finished)return;phase='end';pauseBot();stopClassGravity();state.finished=true;saveState();let emoji,title,msg;if(result==='class'){emoji='🏆';title='Tetris Bot is OUT!';msg=`The class reached ${CLASS_TARGET} correct answers before the bot cleared ${BOT_TARGET} lines.`;confetti(100);good()}else if(result==='bot'){emoji='🤖';title='Class is OUT!';msg=`The Tetris Bot cleared ${BOT_TARGET} lines first. The class reached ${state.classCorrect} correct answer${state.classCorrect===1?'':'s'}.`;bad()}else{emoji='⏱️';title='The Tetris Bot survives!';msg=`All ${TOTAL_ROUNDS} pairs have played. The class reached ${state.classCorrect} of the ${CLASS_TARGET} correct answers needed to knock it out.`}overlay.innerHTML=`<div class="flash"><div class="flash-card"><div class="flash-emoji">${emoji}</div><h2>${title}</h2><p>${msg}</p><p><strong>Class:</strong> ${state.classCorrect}/10 correct &nbsp; · &nbsp; <strong>Bot:</strong> ${state.botLines}/10 lines</p><button class="primary-btn" id="finishHome">Back to Cover</button></div></div>`;$('#finishHome').onclick=()=>{overlay.innerHTML='';renderCover()}}
+
+window.addEventListener('keydown',e=>{if(phase==='placing'){if(e.key==='a')moveClass(0,-1,0);if(e.key==='s')moveClass(0,0,1);if(e.key==='d')moveClass(0,1,0);if(e.key==='w')rotateClass(0);if(e.key==='ArrowLeft')moveClass(1,-1,0);if(e.key==='ArrowDown')moveClass(1,0,1);if(e.key==='ArrowRight')moveClass(1,1,0);if(e.key==='ArrowUp')rotateClass(1)}if(e.key==='Enter'&&phase==='ready'&&readyPlayers.size===2)startQuestion()});
+difficulty=prefs().difficulty||'normal';renderCover();
+})();
+</script>
+</body>
+</html>
