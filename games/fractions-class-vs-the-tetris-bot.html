@@ -31,7 +31,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;background:li
 .cover-art{position:relative;overflow:hidden;background:linear-gradient(145deg,#fff1f7,#f5efff 46%,#eaf7ff)}.cover-board{position:absolute;display:grid;gap:3px;padding:9px;border-radius:17px;background:#102f4a;box-shadow:0 18px 34px rgba(52,61,100,.20)}.cover-board.class{left:36px;bottom:52px;grid-template-columns:repeat(10,19px);grid-template-rows:repeat(10,19px);transform:rotate(-3deg)}.cover-board.bot{right:36px;top:58px;grid-template-columns:repeat(6,19px);grid-template-rows:repeat(9,19px);transform:rotate(4deg)}.cover-board i{display:block;border-radius:3px;background:#1f4969}.cover-board i.f1{background:#00c9d8}.cover-board i.f2{background:#f4d03f}.cover-board i.f3{background:#a765d1}.cover-board i.f4{background:#45b96b}.vs-badge{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%) rotate(-7deg);width:105px;height:105px;border-radius:50%;background:#fff;color:#203f5d;display:grid;place-items:center;font-size:36px;font-weight:1000;box-shadow:0 13px 28px rgba(80,55,100,.18);border:7px solid #ffb5d4}.bot-face{position:absolute;right:48px;bottom:66px;font-size:70px}.class-face{position:absolute;left:44px;top:54px;font-size:64px}
 
 /* setup */
-.setup-wrap{flex:1;min-height:0;display:grid;grid-template-columns:.72fr 1.28fr;gap:12px}.setup-panel{min-height:0;background:rgba(255,255,255,.95);border:2px solid #fff;border-radius:22px;box-shadow:0 8px 18px rgba(54,84,105,.09);padding:13px;display:flex;flex-direction:column;gap:9px}.setup-title{font-size:clamp(21px,1.8vw,28px);font-weight:1000}.setup-help{font-size:13px;line-height:1.35;font-weight:800;color:var(--muted)}.name-box{flex:1;min-height:0;width:100%;resize:none;border:2px solid #d9e6ed;outline:none;border-radius:12px;background:#fff;color:var(--navy);padding:10px 12px;font:800 18px/1.25 "Trebuchet MS",Arial,sans-serif}.name-box:focus{border-color:#83b8df;box-shadow:0 0 0 3px rgba(90,168,237,.10)}.setup-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.setup-mini{font-size:12px;font-weight:900;color:var(--muted)}.difficulty{display:flex;gap:7px}.difficulty button{border:2px solid #d7e4ec;background:#fff;color:#56758a;border-radius:11px;padding:8px 12px;font-weight:950;cursor:pointer}.difficulty button.active{border-color:#b995d7;background:#f7efff;color:#8259a8}.pair-grid{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-content:start}.pair-chip{min-height:54px;background:#fff;border:2px solid #e1ebf0;border-radius:13px;padding:7px 9px;display:grid;grid-template-columns:29px minmax(0,1fr);gap:7px;align-items:center}.pair-no{width:28px;height:28px;border-radius:9px;background:linear-gradient(145deg,#ff96c4,#b88ae0);color:#fff;display:grid;place-items:center;font-weight:1000;font-size:12px}.pair-names{font-size:12px;font-weight:950;line-height:1.22;color:#365b74;overflow:hidden}.pair-names div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.setup-actions{display:flex;justify-content:flex-end;gap:8px}
+.setup-wrap{flex:1;min-height:0;display:grid;grid-template-columns:.72fr 1.28fr;gap:12px}.setup-panel{min-height:0;background:rgba(255,255,255,.95);border:2px solid #fff;border-radius:22px;box-shadow:0 8px 18px rgba(54,84,105,.09);padding:13px;display:flex;flex-direction:column;gap:9px}.setup-title{font-size:clamp(21px,1.8vw,28px);font-weight:1000}.setup-help{font-size:13px;line-height:1.35;font-weight:800;color:var(--muted)}.name-box{flex:1;min-height:0;width:100%;resize:none;border:2px solid #d9e6ed;outline:none;border-radius:12px;background:#fff;color:var(--navy);padding:10px 12px;font:800 18px/1.25 "Trebuchet MS",Arial,sans-serif}.name-box:focus{border-color:#83b8df;box-shadow:0 0 0 3px rgba(90,168,237,.10)}.setup-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.setup-mini{font-size:12px;font-weight:900;color:var(--muted)}.difficulty{display:flex;gap:7px}.difficulty button{border:2px solid #d7e4ec;background:#fff;color:#56758a;border-radius:11px;padding:8px 12px;font-weight:950;cursor:pointer}.difficulty button.active{border-color:#b995d7;background:#f7efff;color:#8259a8}.pair-grid{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-content:start}.pair-chip{min-height:54px;background:#fff;border:2px solid #e1ebf0;border-radius:13px;padding:7px 9px;display:grid;grid-template-columns:29px minmax(0,1fr);gap:7px;align-items:center}.pair-no{width:28px;height:28px;border-radius:9px;background:linear-gradient(145deg,#ff96c4,#b88ae0);color:#fff;display:grid;place-items:center;font-weight:1000;font-size:12px}.pair-names{font-size:12px;font-weight:950;line-height:1.22;color:#365b74;overflow:hidden}.pair-names div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:5px solid var(--pair-color,#dce8ee);padding-left:6px;border-radius:4px}.setup-actions{display:flex;justify-content:flex-end;gap:8px}
 
 /* score strip */
 .score-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;height:64px}.score-card{min-width:0;background:rgba(255,255,255,.94);border:2px solid #fff;border-radius:16px;padding:6px 11px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;box-shadow:0 5px 13px rgba(54,84,105,.09)}.score-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px}.score-card.class .score-icon{background:#e8f8f0}.score-card.bot .score-icon{background:#f3eaff}.score-label{font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.5px;color:#748a9b}.score-big{font-size:18px;line-height:1;font-weight:1000;color:#23465f}.pips{display:grid;grid-template-columns:repeat(10,12px);gap:3px;margin-top:5px}.pip{height:7px;border-radius:4px;background:#e4edf2}.score-card.class .pip.on{background:#63c98f}.score-card.bot .pip.on{background:#a96fc5}.score-number{font-size:30px;font-weight:1000;color:#254961}.score-number span{font-size:13px;color:#718697}
@@ -86,7 +86,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;background:li
 
 /* Connected co-op Tetris stage: the first two columns become one wide board. */
 .connected-panel{min-width:0;min-height:0;background:rgba(255,255,255,.97);border:2px solid #dce8ee;border-radius:23px;box-shadow:0 10px 24px rgba(54,84,105,.11);padding:10px;display:grid;grid-template-rows:54px minmax(0,1fr) 82px;gap:8px;overflow:hidden}
-.connected-head{height:54px;border-radius:14px;background:linear-gradient(90deg,#ffdce9 0%,#f5e2f7 50%,#eadcff 100%);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 14px;gap:12px}.connected-player{font-size:clamp(21px,1.55vw,28px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.connected-player.p2{text-align:right}.connected-title{text-align:center;font-size:14px;font-weight:1000;color:#5f6381;white-space:nowrap}.connected-title strong{display:block;font-size:18px;color:var(--navy)}
+.connected-head{height:54px;border-radius:14px;background:linear-gradient(90deg,var(--p1-group,#ffdce9) 0%,#f5f7fb 50%,var(--p2-group,#eadcff) 100%);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 14px;gap:12px}.connected-player{font-size:clamp(21px,1.55vw,28px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.connected-player.p2{text-align:right}.connected-title{text-align:center;font-size:14px;font-weight:1000;color:#5f6381;white-space:nowrap}.connected-title strong{display:block;font-size:18px;color:var(--navy)}
 .connected-board-zone{min-height:0;border:2px solid #e0ebf0;border-radius:17px;background:linear-gradient(180deg,#f8fbfd,#f3f9fc);padding:8px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .connected-board-zone .class-board{height:100%!important;max-height:none!important;width:auto!important;max-width:96%!important;aspect-ratio:14/16!important;border-width:4px!important;border-radius:12px!important}
 .connected-board-zone .shared-legend{bottom:11px!important}
@@ -407,6 +407,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;background:li
 const TOTAL_ROUNDS=15, CLASS_TARGET=10, BOT_TARGET=10;
 const CLASS_COLS=14, BOT_COLS=10, ROWS=16;
 const UNIVERSAL_SETUP_KEY='SgLDC_Universal_GameSetup_v1';
+const GROUP_IDS=['red','yellow','green','orange','purple','blue'];
+const DEFAULT_GROUP_COLORS=['#ff8fb6','#ffe27a','#9ee6c4','#ffb97a','#c8a5ff','#8fd8ff'];
+const DEFAULT_GROUP_NAMES=['Red Group','Yellow Group','Green Group','Orange Group','Purple Group','Blue Group'];
 const ROSTER_KEY='SgLDC_ClassVsTetrisBot_Roster_v2';
 const SAVE_KEY='SgLDC_ClassVsTetrisBot_State_v4';
 const PREF_KEY='SgLDC_ClassVsTetrisBot_Prefs_v4';
@@ -473,18 +476,97 @@ function renderCover(){
   bindToolbar();
   $('#setupBtn').onclick=renderSetup;
   if($('#startBtn'))$('#startBtn').onclick=()=>startNewGame(getBestRoster(),difficulty);
-  if($('#resumeBtn'))$('#resumeBtn').onclick=()=>{state=saved;currentRoster=state.roster||getBestRoster();difficulty=state.difficulty||'normal';renderRoundReady()};
+  if($('#resumeBtn'))$('#resumeBtn').onclick=()=>{state=saved;const live=getBestRoster();currentRoster=live.length===30?live:(state.roster||[]);if(live.length===30){const byId=new Map(live.map(p=>[p.id,p])),byName=new Map(live.map(p=>[p.name,p]));state.roster=live;state.pairs=state.pairs.map(pair=>pair.map(p=>{const m=byId.get(p.id)||byName.get(p.name);return m?{...p,...m}:p}));saveState()}difficulty=state.difficulty||'normal';renderRoundReady()};
 }
 
-function universalRoster(){try{const r=JSON.parse(localStorage.getItem(UNIVERSAL_SETUP_KEY)||'null');if(!r||!Array.isArray(r.players))return[];const groupMap=new Map();if(Array.isArray(r.groups))r.groups.forEach((g,gi)=>(g.memberIds||[]).forEach(id=>groupMap.set(String(id),{group:gi,groupName:g.name||`Group ${gi+1}`,color:g.color||'#9db4c4'})));return r.players.map((p,i)=>({id:String(p.id||`p${i+1}`),name:String(p.name||'').trim(),...(groupMap.get(String(p.id))||{})})).filter(p=>p.name).slice(0,30)}catch(e){return[]}}
+function safeGroupColor(value,fallback='#dce8ee'){const v=String(value||'').trim();return /^#[0-9a-f]{6}$/i.test(v)?v:fallback}
+function normalizeGameSetup(raw){
+  if(!raw||!Array.isArray(raw.players)||!Array.isArray(raw.groups))return null;
+  const players=raw.players.map((p,i)=>typeof p==='string'
+    ?{id:`p${String(i+1).padStart(2,'0')}`,name:p}
+    :{id:String(p.id||`p${String(i+1).padStart(2,'0')}`),name:String(p.name||'')});
+  const groups=GROUP_IDS.map((id,i)=>{
+    const g=raw.groups.find(x=>String(x?.id||'').toLowerCase()===id)||raw.groups[i]||{};
+    return{id,name:String(g.name||DEFAULT_GROUP_NAMES[i]),color:safeGroupColor(g.color,DEFAULT_GROUP_COLORS[i]),memberIds:Array.isArray(g.memberIds)?g.memberIds.map(String):[]};
+  });
+  return{schema:'sgldc-game-setup',version:2,players,groups};
+}
+function rosterFromSetup(cfg){
+  cfg=normalizeGameSetup(cfg);if(!cfg)return[];
+  const groupMap=new Map();
+  cfg.groups.forEach((g,gi)=>(g.memberIds||[]).forEach(pid=>groupMap.set(String(pid),{
+    group:g.id||GROUP_IDS[gi],groupId:g.id||GROUP_IDS[gi],
+    groupName:g.name||DEFAULT_GROUP_NAMES[gi],color:safeGroupColor(g.color,DEFAULT_GROUP_COLORS[gi])
+  })));
+  return cfg.players.map((p,i)=>({id:String(p.id||`p${i+1}`),name:String(p.name||'').trim(),...(groupMap.get(String(p.id))||{})})).filter(p=>p.name).slice(0,30);
+}
+function universalRoster(){try{return rosterFromSetup(JSON.parse(localStorage.getItem(UNIVERSAL_SETUP_KEY)||'null'))}catch(e){return[]}}
 function localRoster(){try{const a=JSON.parse(localStorage.getItem(ROSTER_KEY)||'[]');return Array.isArray(a)?a.filter(x=>x&&x.name).slice(0,30):[]}catch(e){return[]}}
-function getBestRoster(){const local=localRoster();if(local.length===30)return local;const uni=universalRoster();return uni.length===30?uni:local}
+function getBestRoster(){const uni=universalRoster();if(uni.length===30)return uni;const local=localRoster();return local.length===30?local:(uni.length?uni:local)}
 function saveRoster(r){localStorage.setItem(ROSTER_KEY,JSON.stringify(r.slice(0,30)))}
 function prefs(){try{return JSON.parse(localStorage.getItem(PREF_KEY)||'{}')}catch(e){return{}}}
 function savePrefs(){localStorage.setItem(PREF_KEY,JSON.stringify({difficulty}))}
+function parseGameSetupText(text){
+  try{const parsed=normalizeGameSetup(JSON.parse(text));if(parsed)return parsed}catch(e){}
+  const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith('#'));
+  if(!lines.length||!/^SGLDC_GAME_SETUP(?:\t|\s)+2$/i.test(lines[0]))return null;
+  const players=[],groupsById=new Map(),assignments=[];
+  for(const line of lines.slice(1)){
+    const parts=line.split('\t'),type=(parts.shift()||'').toUpperCase();
+    if(type==='PLAYER'&&parts.length>=2){const id=parts.shift(),name=parts.join('\t');players.push({id,name})}
+    else if(type==='GROUP'&&parts.length>=3){const id=String(parts.shift()).toLowerCase(),name=parts.shift(),color=parts.shift();groupsById.set(id,{id,name,color,memberIds:[]})}
+    else if(type==='ASSIGN'&&parts.length>=2)assignments.push([String(parts[0]),String(parts[1]).toLowerCase()]);
+  }
+  const groups=GROUP_IDS.map((id,i)=>groupsById.get(id)||{id,name:DEFAULT_GROUP_NAMES[i],color:DEFAULT_GROUP_COLORS[i],memberIds:[]});
+  assignments.forEach(([pid,gid])=>{const g=groups.find(x=>x.id===gid);if(g&&!g.memberIds.includes(pid))g.memberIds.push(pid)});
+  return normalizeGameSetup({players,groups});
+}
 function pairRoster(roster){let best=null,bestSame=99;for(let attempt=0;attempt<500;attempt++){const pool=shuffle(roster),pairs=[];let same=0;while(pool.length){const a=pool.shift();let ix=pool.findIndex(b=>a.group===undefined||b.group===undefined||a.group!==b.group);if(ix<0)ix=0;const b=pool.splice(ix,1)[0];if(a.group!==undefined&&b.group!==undefined&&a.group===b.group)same++;pairs.push([a,b])}if(same<bestSame){best=pairs;bestSame=same;if(same===0)break}}return best||[]}
-function pairsHTML(pairs){if(!pairs.length)return '<div class="setup-help">Add 30 names to generate the 15 pairs.</div>';return pairs.map((p,i)=>`<div class="pair-chip"><div class="pair-no">${i+1}</div><div class="pair-names"><div>${esc(p[0].name)}</div><div>${esc(p[1].name)}</div></div></div>`).join('')}
-function renderSetup(){phase='setup';pauseBot();stopClassGravity();const base=getBestRoster();currentRoster=base;draftPairs=base.length===30?pairRoster(base):[];difficulty=prefs().difficulty||difficulty||'normal';const names=base.map(x=>x.name).join('\n');app.innerHTML=`<main class="screen">${topbar()}<section class="setup-wrap"><div class="setup-panel"><div class="setup-title">Player roster</div><div class="setup-help">Enter exactly 30 names, one per line. You can reuse the same universal roster from Tetris Battle.</div><textarea class="name-box" id="nameBox" placeholder="Player 1\nPlayer 2\n...">${esc(names)}</textarea><div class="setup-row"><button class="secondary-btn" id="loadRosterBtn">Load Tetris Battle Roster</button><span class="setup-mini" id="nameCount">${base.length}/30 names</span></div><div class="setup-title" style="font-size:17px">Tetris Bot speed</div><div class="difficulty">${['easy','normal','hard'].map(x=>`<button data-diff="${x}" class="${difficulty===x?'active':''}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div><div class="setup-help">Easy: 15 s per bot piece · Normal: 12 s · Hard: 9 s. The bot pauses between pairs.</div></div><div class="setup-panel"><div class="setup-row" style="justify-content:space-between"><div><div class="setup-title">15 pair turns</div><div class="setup-help">Each pupil appears once. Same-group pairings are avoided when group data is available.</div></div><button class="secondary-btn" id="shufflePairsBtn" ${base.length===30?'':'disabled'}>↻ Shuffle Pairs</button></div><div class="pair-grid" id="pairGrid">${pairsHTML(draftPairs)}</div><div class="setup-actions"><button class="secondary-btn" id="backBtn">Back</button><button class="primary-btn" id="saveSetupBtn" ${base.length===30?'':'disabled'}>Save & Return</button></div></div></section></main>`;bindToolbar();$('#backBtn').onclick=renderCover;const box=$('#nameBox');const refreshNames=()=>{const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);$('#nameCount').textContent=`${arr.length}/30 names`;$('#saveSetupBtn').disabled=arr.length!==30;$('#shufflePairsBtn').disabled=arr.length!==30;if(arr.length===30){currentRoster=arr.map((name,i)=>({id:`local${i+1}`,name}));draftPairs=pairRoster(currentRoster);$('#pairGrid').innerHTML=pairsHTML(draftPairs)}};box.addEventListener('input',refreshNames);$('#loadRosterBtn').onclick=()=>{const u=universalRoster();if(u.length===30){currentRoster=u;box.value=u.map(x=>x.name).join('\n');draftPairs=pairRoster(u);$('#pairGrid').innerHTML=pairsHTML(draftPairs);$('#nameCount').textContent='30/30 names';$('#saveSetupBtn').disabled=false;$('#shufflePairsBtn').disabled=false;good()}else alert('A complete 30-player Tetris Battle roster was not found on this browser.')};$('#shufflePairsBtn').onclick=()=>{const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(arr.length!==30)return;const useGroups=currentRoster.length===30&&currentRoster.every((p,i)=>p.name===arr[i]);currentRoster=useGroups?currentRoster:arr.map((name,i)=>({id:`local${i+1}`,name}));draftPairs=pairRoster(currentRoster);$('#pairGrid').innerHTML=pairsHTML(draftPairs);tone(620,.08)};$$('[data-diff]').forEach(b=>b.onclick=()=>{difficulty=b.dataset.diff;savePrefs();$$('[data-diff]').forEach(x=>x.classList.toggle('active',x===b))});$('#saveSetupBtn').onclick=()=>{const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(arr.length!==30)return;const roster=currentRoster.length===30&&currentRoster.every((p,i)=>p.name===arr[i])?currentRoster:arr.map((name,i)=>({id:`local${i+1}`,name}));saveRoster(roster);savePrefs();renderCover()}}
+function pairsHTML(pairs){if(!pairs.length)return '<div class="setup-help">Add 30 names to generate the 15 pairs.</div>';return pairs.map((p,i)=>`<div class="pair-chip"><div class="pair-no">${i+1}</div><div class="pair-names"><div style="--pair-color:${safeGroupColor(p[0].color)}">${esc(p[0].name)}</div><div style="--pair-color:${safeGroupColor(p[1].color)}">${esc(p[1].name)}</div></div></div>`).join('')}
+function renderSetup(){
+  phase='setup';pauseBot();stopClassGravity();
+  const base=getBestRoster();currentRoster=base;draftPairs=base.length===30?pairRoster(base):[];
+  difficulty=prefs().difficulty||difficulty||'normal';
+  const names=base.map(x=>x.name).join('\n');
+  app.innerHTML=`<main class="screen">${topbar()}<section class="setup-wrap"><div class="setup-panel"><div class="setup-title">Game Setup</div><div class="setup-help">Upload the same <strong>Game_Setup.txt</strong> used by Tetris Battle, or load the universal setup already saved in this browser.</div><textarea class="name-box" id="nameBox" placeholder="Player 1\nPlayer 2\n...">${esc(names)}</textarea><div class="setup-row"><button class="secondary-btn" id="uploadSetupBtn">Upload Game_Setup.txt ↑</button><button class="secondary-btn" id="loadRosterBtn">Load Saved Game Setup</button><span class="setup-mini" id="nameCount">${base.length}/30 names</span></div><input type="file" id="gameSetupFile" accept=".txt,.json,text/plain,application/json" class="hidden"><div class="setup-title" style="font-size:17px">Tetris Bot speed</div><div class="difficulty">${['easy','normal','hard'].map(x=>`<button data-diff="${x}" class="${difficulty===x?'active':''}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</div><div class="setup-help">Easy: 15 s per bot piece · Normal: 12 s · Hard: 9 s. The bot pauses between pairs.</div></div><div class="setup-panel"><div class="setup-row" style="justify-content:space-between"><div><div class="setup-title">15 pair turns</div><div class="setup-help">Each pupil appears once. Same-group pairings are avoided when group data is available.</div></div><button class="secondary-btn" id="shufflePairsBtn" ${base.length===30?'':'disabled'}>↻ Shuffle Pairs</button></div><div class="pair-grid" id="pairGrid">${pairsHTML(draftPairs)}</div><div class="setup-actions"><button class="secondary-btn" id="backBtn">Back</button><button class="primary-btn" id="saveSetupBtn" ${base.length===30?'':'disabled'}>Save & Return</button></div></div></section></main>`;
+  bindToolbar();$('#backBtn').onclick=renderCover;
+  const box=$('#nameBox');
+  const applyRoster=roster=>{
+    currentRoster=roster;box.value=roster.map(x=>x.name).join('\n');draftPairs=roster.length===30?pairRoster(roster):[];
+    $('#pairGrid').innerHTML=pairsHTML(draftPairs);$('#nameCount').textContent=`${roster.length}/30 names`;
+    $('#saveSetupBtn').disabled=roster.length!==30;$('#shufflePairsBtn').disabled=roster.length!==30;
+  };
+  const refreshNames=()=>{
+    const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    $('#nameCount').textContent=`${arr.length}/30 names`;$('#saveSetupBtn').disabled=arr.length!==30;$('#shufflePairsBtn').disabled=arr.length!==30;
+    if(arr.length===30){currentRoster=arr.map((name,i)=>({id:`local${i+1}`,name}));draftPairs=pairRoster(currentRoster);$('#pairGrid').innerHTML=pairsHTML(draftPairs)}
+  };
+  box.addEventListener('input',refreshNames);
+  $('#uploadSetupBtn').onclick=()=>$('#gameSetupFile').click();
+  $('#gameSetupFile').onchange=e=>{
+    const file=e.target.files?.[0];e.target.value='';if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const cfg=parseGameSetupText(reader.result),roster=rosterFromSetup(cfg);
+      if(!cfg||roster.length!==30){alert('Could not read a complete 30-player Game_Setup.txt file.');return}
+      localStorage.setItem(UNIVERSAL_SETUP_KEY,JSON.stringify(cfg));saveRoster(roster);applyRoster(roster);good();
+    };
+    reader.readAsText(file);
+  };
+  $('#loadRosterBtn').onclick=()=>{const roster=universalRoster();if(roster.length===30){saveRoster(roster);applyRoster(roster);good()}else alert('A complete 30-player universal Game Setup was not found on this browser.')};
+  $('#shufflePairsBtn').onclick=()=>{
+    const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(arr.length!==30)return;
+    const useGroups=currentRoster.length===30&&currentRoster.every((p,i)=>p.name===arr[i]);
+    currentRoster=useGroups?currentRoster:arr.map((name,i)=>({id:`local${i+1}`,name}));
+    draftPairs=pairRoster(currentRoster);$('#pairGrid').innerHTML=pairsHTML(draftPairs);tone(620,.08);
+  };
+  $$('[data-diff]').forEach(b=>b.onclick=()=>{difficulty=b.dataset.diff;savePrefs();$$('[data-diff]').forEach(x=>x.classList.toggle('active',x===b))});
+  $('#saveSetupBtn').onclick=()=>{
+    const arr=box.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(arr.length!==30)return;
+    const roster=currentRoster.length===30&&currentRoster.every((p,i)=>p.name===arr[i])?currentRoster:arr.map((name,i)=>({id:`local${i+1}`,name}));
+    saveRoster(roster);savePrefs();renderCover();
+  };
+}
 
 /* Tetris core */
 function emptyBoard(cols){return Array.from({length:ROWS},()=>Array(cols).fill(null))}
@@ -507,7 +589,6 @@ function spawnForPlayer(index){const hint=index===0?2:CLASS_COLS-5;let p=randomP
 function startTetrisPhase(){
   if(!state||state.finished||!['answered','teacherReview'].includes(phase))return;
   if(phase==='teacherReview')finalizeTeacherReview();
-  if(state.classCorrect>=CLASS_TARGET){finishGame('class');return}
   phase='placing';botTurnsThisPhase=0;classActives=[null,null];
   for(let i=0;i<2;i++)if(playerAnswers[i]?.correct)classActives[i]=spawnForPlayer(i);
   if((playerAnswers[0]?.correct&&!classActives[0])||(playerAnswers[1]?.correct&&!classActives[1])){
@@ -544,7 +625,7 @@ function bestBotPlacement(type){let best=null,bestScore=-Infinity;for(let rot=0;
 function startBot(){pauseBot();if(!state||state.finished||state.pendingWin||phase!=='placing')return;const ms=BOT_SPEEDS[state.difficulty||'normal']||BOT_SPEEDS.normal;botTimer=setInterval(botTurn,ms);setTimeout(()=>{if(botTimer&&!botAnimating)botTurn()},900);updateBotStatus()}
 function pauseBot(){if(botTimer){clearInterval(botTimer);botTimer=null}if(botAnimTimer){clearInterval(botAnimTimer);botAnimTimer=null}botAnimating=false;botActive=null;updateBotStatus()}
 function updateBotStatus(){const e=$('#botStatus');if(e)e.textContent=botTimer?(botAnimating?'BOT DROPPING…':'BOT THINKING…'):'BOT PAUSED'}
-function botTurn(){if(!state||state.finished||botAnimating||phase!=='placing')return;const type=choice(Object.keys(SHAPES)),target=bestBotPlacement(type);if(!target){state.botBoard=emptyBoard(BOT_COLS);botTurnsThisPhase++;saveState();refreshBoards();checkPlayDone();return}botAnimating=true;botActive={type,rot:target.rot,x:target.x,y:-3,color:COLORS[type]};updateBotStatus();refreshBoards();botAnimTimer=setInterval(()=>{if(!botActive){clearInterval(botAnimTimer);botAnimTimer=null;botAnimating=false;return}const next={...botActive,y:botActive.y+1};if(next.y<=target.y&&valid(state.botBoard,next,BOT_COLS)){botActive=next;refreshBoards();return}clearInterval(botAnimTimer);botAnimTimer=null;botActive={...target};const overflow=lockInto(state.botBoard,botActive,BOT_COLS);botActive=null;if(overflow)state.botBoard=emptyBoard(BOT_COLS);else{const lines=clearRows(state.botBoard,BOT_COLS);if(lines){state.botLines+=lines;tone(330,.08,'square',.035);updateScores()}}botAnimating=false;botTurnsThisPhase++;saveState();refreshBoards();updateBotStatus();if(state.botLines>=BOT_TARGET){finishGame('bot');return}checkPlayDone()},70)}
+function botTurn(){if(!state||state.finished||botAnimating||phase!=='placing')return;const type=choice(Object.keys(SHAPES)),target=bestBotPlacement(type);if(!target){state.botBoard=emptyBoard(BOT_COLS);botTurnsThisPhase++;saveState();refreshBoards();checkPlayDone();return}botAnimating=true;botActive={type,rot:target.rot,x:target.x,y:-3,color:COLORS[type]};updateBotStatus();refreshBoards();botAnimTimer=setInterval(()=>{if(!botActive){clearInterval(botAnimTimer);botAnimTimer=null;botAnimating=false;return}const next={...botActive,y:botActive.y+1};if(next.y<=target.y&&valid(state.botBoard,next,BOT_COLS)){botActive=next;refreshBoards();return}clearInterval(botAnimTimer);botAnimTimer=null;botActive={...target};const overflow=lockInto(state.botBoard,botActive,BOT_COLS);botActive=null;if(overflow)state.botBoard=emptyBoard(BOT_COLS);else{const lines=clearRows(state.botBoard,BOT_COLS);if(lines){state.botLines=Math.min(BOT_TARGET,state.botLines+lines);if(state.botLines>=BOT_TARGET&&!state.botTargetRound)state.botTargetRound=state.round+1;tone(330,.08,'square',.035);updateScores()}}botAnimating=false;botTurnsThisPhase++;saveState();refreshBoards();updateBotStatus();checkPlayDone()},70)}
 
 /* Fractions question bank */
 function fracHTML(n,d,cls=''){return `<span class="stack-frac ${cls}"><span class="num">${n}</span><span class="den">${d}</span></span>`}
@@ -564,12 +645,12 @@ function makeQuestion(type){const ds=[3,4,5,6,7,8,9,10,11,12];let d=choice(ds),a
 function makeQuestions(){const types=['shaded','greater','smaller','symbol','greatest','smallest','numerator','denominator','addition','subtraction','shaded','symbol','greatest','addition','subtraction'];return shuffle(types).map(makeQuestion)}
 
 /* state + score */
-function startNewGame(roster,diff){if(roster.length!==30){renderSetup();return}currentRoster=roster;const rosterNames=new Set(roster.map(p=>p.name));const draftOK=draftPairs.length===15&&draftPairs.flat().every(p=>rosterNames.has(p.name));const pairs=draftOK?draftPairs:pairRoster(roster);state={version:4,finished:false,round:0,classCorrect:0,classLines:0,botLines:0,classBoard:emptyBoard(CLASS_COLS),botBoard:emptyBoard(BOT_COLS),pairs:pairs.map(p=>p.map(x=>({id:x.id,name:x.name,group:x.group,groupName:x.groupName,color:x.color}))),roster,questions:makeQuestions(),difficulty:diff||'normal',pendingWin:false,lastAnswerCorrect:null};saveState();renderRoundReady()}
+function startNewGame(roster,diff){if(roster.length!==30){renderSetup();return}currentRoster=roster;const rosterNames=new Set(roster.map(p=>p.name));const draftOK=draftPairs.length===15&&draftPairs.flat().every(p=>rosterNames.has(p.name));const pairs=draftOK?draftPairs:pairRoster(roster);state={version:5,finished:false,round:0,classCorrect:0,classLines:0,botLines:0,classTargetRound:null,botTargetRound:null,classBoard:emptyBoard(CLASS_COLS),botBoard:emptyBoard(BOT_COLS),pairs:pairs.map(p=>p.map(x=>({id:x.id,name:x.name,group:x.group,groupId:x.groupId,groupName:x.groupName,color:safeGroupColor(x.color)}))),roster,questions:makeQuestions(),difficulty:diff||'normal',pendingWin:false,lastAnswerCorrect:null};saveState();renderRoundReady()}
 function saveState(){if(state)try{localStorage.setItem(SAVE_KEY,JSON.stringify(state))}catch(e){}}
-function loadState(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');return s&&s.version===4&&Array.isArray(s.pairs)&&Array.isArray(s.questions)?s:null}catch(e){return null}}
+function loadState(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!s||![4,5].includes(Number(s.version))||!Array.isArray(s.pairs)||!Array.isArray(s.questions)||s.pairs.length!==TOTAL_ROUNDS||s.questions.length!==TOTAL_ROUNDS)return null;s.version=5;if(s.classTargetRound===undefined)s.classTargetRound=null;if(s.botTargetRound===undefined)s.botTargetRound=null;return s}catch(e){return null}}
 function pips(n){return Array.from({length:10},(_,i)=>`<i class="pip ${i<n?'on':''}"></i>`).join('')}
 function updateScores(){const cc=$('#classCorrectNum');if(cc)cc.innerHTML=`${Math.min(state.classCorrect,10)}<span>/10</span>`;const bl=$('#botLinesNum');if(bl)bl.innerHTML=`${Math.min(state.botLines,10)}<span>/10</span>`;const cp=$('#classPips');if(cp)cp.innerHTML=pips(state.classCorrect);const bp=$('#botPips');if(bp)bp.innerHTML=pips(state.botLines)}
-function scoreStrip(){return `<div class="score-strip"><div class="score-card class"><div class="score-icon">🧑‍🤝‍🧑</div><div><div class="score-big">Correct answers</div><div class="pips" id="classPips">${pips(state.classCorrect)}</div></div><div class="score-number" id="classCorrectNum">${state.classCorrect}<span>/10</span></div></div><div class="score-card bot"><div class="score-icon">🤖</div><div><div class="score-big">Lines cleared</div><div class="pips" id="botPips">${pips(state.botLines)}</div></div><div class="score-number" id="botLinesNum">${state.botLines}<span>/10</span></div></div></div>`}
+function scoreStrip(){return `<div class="score-strip"><div class="score-card class"><div class="score-icon">🧑‍🤝‍🧑</div><div><div class="score-big">Correct answers</div><div class="pips" id="classPips">${pips(state.classCorrect)}</div></div><div class="score-number" id="classCorrectNum">${Math.min(state.classCorrect,CLASS_TARGET)}<span>/10</span></div></div><div class="score-card bot"><div class="score-icon">🤖</div><div><div class="score-big">Lines cleared</div><div class="pips" id="botPips">${pips(state.botLines)}</div></div><div class="score-number" id="botLinesNum">${Math.min(state.botLines,BOT_TARGET)}<span>/10</span></div></div></div>`}
 
 function optionHTML(o){const s=String(o);return s.includes('/')?fracHTML(...s.split('/')):esc(s)}
 function questionAnswerButtons(q,index){
@@ -670,7 +751,11 @@ function showTeacherCorrectAnswer(){
 function finalizeTeacherReview(){
   const pairCorrect=playerAnswers.every(a=>a&&a.correct);
   state.lastAnswerCorrect=pairCorrect;
-  if(pairCorrect){state.classCorrect++;good()}
+  if(pairCorrect){
+    if(state.classCorrect<CLASS_TARGET)state.classCorrect++;
+    if(state.classCorrect>=CLASS_TARGET&&!state.classTargetRound)state.classTargetRound=state.round+1;
+    good();
+  }
   saveState();updateScores();
   return pairCorrect;
 }
@@ -696,7 +781,7 @@ function questionAreaHTML(index){
   const visual=(q.teacher&&phase==='teacherReview')?q.visual.replace('<span>?</span>',`<span class="teacher-revealed">${q.answerHTML}</span>`):(q.visual||'');
   return `<div class="q-title">${q.title}</div><div class="q-visual qtype-${q.type}">${visual}</div>${bottom}`;
 }
-function questionPlayerLane(player,index){const teacher=state?.questions?.[state.round]?.teacher?' teacher-question':'';return `<section class="question-lane p${index+1}"><div class="question-lane-head"><div class="question-player-name">${esc(player.name)}</div><div class="question-role">PLAYER ${index+1}</div></div><div class="question-area${teacher}" id="questionArea${index}">${questionAreaHTML(index)}</div></section>`}
+function questionPlayerLane(player,index){const teacher=state?.questions?.[state.round]?.teacher?' teacher-question':'',groupColor=safeGroupColor(player.color,index===0?'#ffdce9':'#eadcff');return `<section class="question-lane p${index+1}"><div class="question-lane-head" style="background:${groupColor}"><div class="question-player-name">${esc(player.name)}</div><div class="question-role">${esc(player.groupName||`PLAYER ${index+1}`)}</div></div><div class="question-area${teacher}" id="questionArea${index}">${questionAreaHTML(index)}</div></section>`}
 function botQuestionLane(){return `<section class="question-lane bot"><div class="question-lane-head"><div class="question-player-name">TETRIS BOT</div></div><div class="question-area"><div class="bot-wait"><div class="robot">🤖</div><div class="big">Bot waiting</div><div class="bot-mini-score">${state.botLines}/10 lines cleared</div></div></div></section>`}
 function playerControlDock(player,index){
   const active=classActives[index],correct=!!playerAnswers[index]?.correct;
@@ -704,9 +789,9 @@ function playerControlDock(player,index){
   if(active)controls=`<div class="move-grid"><button class="move-btn" data-player-control="${index}" data-move="${index},-1,0">◀</button><button class="move-btn" data-player-control="${index}" data-move="${index},0,1">▼</button><button class="move-btn" data-player-control="${index}" data-move="${index},1,0">▶</button><button class="move-btn rotate" data-player-control="${index}" data-rot="${index}">↻ 90°</button></div>`;
   else if(correct)controls=`<div class="no-piece">PIECE LOCKED ✓</div>`;
   else controls=`<div class="no-piece">NO PIECE THIS ROUND</div>`;
-  return `<div class="player-control-dock p${index+1}"><div class="control-name"><strong>${esc(player.name)}</strong></div>${controls}</div>`;
+  const groupColor=safeGroupColor(player.color,index===0?'#ffdce9':'#eadcff');return `<div class="player-control-dock p${index+1}" style="border-color:${groupColor};box-shadow:inset 6px 0 0 ${groupColor}"><div class="control-name"><strong>${esc(player.name)}</strong><span>${esc(player.groupName||'')}</span></div>${controls}</div>`;
 }
-function connectedPlayPanel(pair){return `<section class="connected-panel"><div class="connected-head"><div class="connected-player">${esc(pair[0].name)}</div><div class="connected-title"><strong>SHARED CLASS BOARD</strong>${state.classLines||0} class line${state.classLines===1?'':'s'}</div><div class="connected-player p2">${esc(pair[1].name)}</div></div><div class="connected-board-zone"><div class="board class-board" id="classBoard">${boardHTML(state.classBoard,CLASS_COLS,classActives)}</div></div><div class="connected-controls">${playerControlDock(pair[0],0)}${playerControlDock(pair[1],1)}</div></section>`}
+function connectedPlayPanel(pair){const p1=safeGroupColor(pair[0].color,'#ffdce9'),p2=safeGroupColor(pair[1].color,'#eadcff');return `<section class="connected-panel"><div class="connected-head" style="--p1-group:${p1};--p2-group:${p2}"><div class="connected-player">${esc(pair[0].name)}</div><div class="connected-title"><strong>SHARED CLASS BOARD</strong>${state.classLines||0} class line${state.classLines===1?'':'s'}</div><div class="connected-player p2">${esc(pair[1].name)}</div></div><div class="connected-board-zone"><div class="board class-board" id="classBoard">${boardHTML(state.classBoard,CLASS_COLS,classActives)}</div></div><div class="connected-controls">${playerControlDock(pair[0],0)}${playerControlDock(pair[1],1)}</div></section>`}
 function playBotPanel(){return `<section class="play-bot-panel"><div class="play-bot-head"><div class="play-bot-title">TETRIS BOT</div><span class="mini-tag">${state.botLines}/10 LINES</span></div><div class="play-bot-board"><div class="board bot-board" id="botBoard">${boardHTML(state.botBoard,BOT_COLS,botActive)}</div></div><div class="bot-status" id="botStatus">${botTimer?(botAnimating?'BOT DROPPING…':'BOT THINKING…'):'BOT PAUSED'}</div></section>`}
 function renderCurrentGame(){
   const pair=state.pairs[state.round];
@@ -730,25 +815,29 @@ function finalizeAnswers(){
   if(!playerAnswers.every(Boolean)||state.finished)return;
   const pairCorrect=playerAnswers.every(a=>a.correct);
   state.lastAnswerCorrect=pairCorrect;
-  if(pairCorrect){state.classCorrect++;good()}
+  if(pairCorrect){
+    if(state.classCorrect<CLASS_TARGET)state.classCorrect++;
+    if(state.classCorrect>=CLASS_TARGET&&!state.classTargetRound)state.classTargetRound=state.round+1;
+    good();
+  }
   saveState();updateScores();
-  if(state.classCorrect>=CLASS_TARGET){setTimeout(()=>finishGame('class'),260);return}
   phase='answered';saveState();renderCurrentGame();
 }
 function bindPlayerControls(){$$('[data-move]').forEach(b=>b.onclick=()=>{const [i,dx,dy]=b.dataset.move.split(',').map(Number);moveClass(i,dx,dy)});$$('[data-rot]').forEach(b=>b.onclick=()=>rotateClass(Number(b.dataset.rot)))}
 
 /* round flow */
+function finalResult(){const cr=Number(state?.classTargetRound)||0,br=Number(state?.botTargetRound)||0;if(cr&&(!br||cr<=br))return'class';if(br)return'bot';return'survived'}
 function renderRoundReady(){
   if(!state||state.finished){renderCover();return}
-  if(state.round>=TOTAL_ROUNDS){finishGame('survived');return}
+  if(state.round>=TOTAL_ROUNDS){finishGame(finalResult());return}
   phase='ready';pauseBot();stopClassGravity();classActives=[null,null];botActive=null;botTurnsThisPhase=0;playerAnswers=[null,null];readyPlayers=new Set();handwritingSubmissions=[false,false];handPadStates=[null,null];overlay.innerHTML='';renderCurrentGame();
 }
 function startQuestion(){
   if(phase!=='ready'||readyPlayers.size<2)return;
   phase='question';overlay.innerHTML='';renderCurrentGame();
 }
-function completeRound(){if(!state||state.finished)return;pauseBot();stopClassGravity();classActives=[null,null];state.pendingWin=false;state.round++;playerAnswers=[null,null];botTurnsThisPhase=0;saveState();if(state.round>=TOTAL_ROUNDS)finishGame(state.classCorrect>=CLASS_TARGET?'class':'survived');else renderRoundReady()}
-function finishGame(result){if(!state||state.finished)return;phase='end';pauseBot();stopClassGravity();state.finished=true;saveState();let emoji,title,msg;if(result==='class'){emoji='🏆';title='Tetris Bot is OUT!';msg=`The class reached ${CLASS_TARGET} correct answers before the bot cleared ${BOT_TARGET} lines.`;confetti(100);good()}else if(result==='bot'){emoji='🤖';title='Class is OUT!';msg=`The Tetris Bot cleared ${BOT_TARGET} lines first. The class reached ${state.classCorrect} correct answer${state.classCorrect===1?'':'s'}.`;bad()}else{emoji='⏱️';title='The Tetris Bot survives!';msg=`All ${TOTAL_ROUNDS} pairs have played. The class reached ${state.classCorrect} of the ${CLASS_TARGET} correct answers needed to knock it out.`}overlay.innerHTML=`<div class="flash"><div class="flash-card"><div class="flash-emoji">${emoji}</div><h2>${title}</h2><p>${msg}</p><p><strong>Class:</strong> ${state.classCorrect}/10 correct &nbsp; · &nbsp; <strong>Bot:</strong> ${state.botLines}/10 lines</p><button class="primary-btn" id="finishHome">Back to Cover</button></div></div>`;$('#finishHome').onclick=()=>{overlay.innerHTML='';renderCover()}}
+function completeRound(){if(!state||state.finished)return;pauseBot();stopClassGravity();classActives=[null,null];state.pendingWin=false;state.round++;playerAnswers=[null,null];botTurnsThisPhase=0;saveState();if(state.round>=TOTAL_ROUNDS)finishGame(finalResult());else renderRoundReady()}
+function finishGame(result){if(!state||state.finished)return;phase='end';pauseBot();stopClassGravity();state.finished=true;saveState();let emoji,title,msg;if(result==='class'){emoji='🏆';title='Tetris Bot is OUT!';msg=`All ${TOTAL_ROUNDS} pairs played. The class reached ${CLASS_TARGET} correct answers first${state.classTargetRound?` in Round ${state.classTargetRound}`:''}.`;confetti(100);good()}else if(result==='bot'){emoji='🤖';title='Class is OUT!';msg=`All ${TOTAL_ROUNDS} pairs played. The Tetris Bot cleared ${BOT_TARGET} lines first${state.botTargetRound?` in Round ${state.botTargetRound}`:''}.`;bad()}else{emoji='⏱️';title='The Tetris Bot survives!';msg=`All ${TOTAL_ROUNDS} pairs have played. The class reached ${state.classCorrect} of the ${CLASS_TARGET} correct answers needed to knock it out.`}overlay.innerHTML=`<div class="flash"><div class="flash-card"><div class="flash-emoji">${emoji}</div><h2>${title}</h2><p>${msg}</p><p><strong>Class:</strong> ${Math.min(state.classCorrect,CLASS_TARGET)}/10 correct &nbsp; · &nbsp; <strong>Bot:</strong> ${Math.min(state.botLines,BOT_TARGET)}/10 lines</p><button class="primary-btn" id="finishHome">Back to Cover</button></div></div>`;$('#finishHome').onclick=()=>{overlay.innerHTML='';renderCover()}}
 
 window.addEventListener('keydown',e=>{if(phase==='placing'){if(e.key==='a')moveClass(0,-1,0);if(e.key==='s')moveClass(0,0,1);if(e.key==='d')moveClass(0,1,0);if(e.key==='w')rotateClass(0);if(e.key==='ArrowLeft')moveClass(1,-1,0);if(e.key==='ArrowDown')moveClass(1,0,1);if(e.key==='ArrowRight')moveClass(1,1,0);if(e.key==='ArrowUp')rotateClass(1)}if(e.key==='Enter'&&phase==='ready'&&readyPlayers.size===2)startQuestion()});
 difficulty=prefs().difficulty||'normal';renderCover();
