@@ -977,6 +977,7 @@
     const unitFlows = {
       Fractions: {
         subtitle: "6 lessons · Primary 2 Mathematics",
+        slsPackage: "https://vle.learning.moe.edu.sg/community-gallery/module/view/f4c9143e-0a58-485e-bb8d-6fec8fd10dc1",
         lessons: [
           {
             title: "Equal Parts and Fractions",
@@ -1412,7 +1413,7 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "topic-btn" + (unitName === activeUnit ? " active" : "");
-        button.textContent = unitName;
+        button.textContent = `P2 ${unitName}`;
         button.setAttribute("aria-pressed", String(unitName === activeUnit));
         button.addEventListener("click", () => {
           activeUnit = unitName;
@@ -1431,7 +1432,7 @@
       unitFlowContentEl.innerHTML = `
         <div class="unit-heading">
           <div class="unit-heading-copy">
-            <h2>${activeUnit}</h2>
+            <h2>P2 ${activeUnit}</h2>
             <span>${unit.subtitle || ""}</span>
           </div>
           ${unit.slsPackage ? `
