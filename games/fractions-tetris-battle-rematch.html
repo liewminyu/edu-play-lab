@@ -765,7 +765,7 @@ function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Ma
 function tone(freq=440,d=.1,type='triangle',vol=.06){if(muted)return;try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d);}catch(e){}}
 function goodSound(){tone(523,.09);setTimeout(()=>tone(659,.1),90);setTimeout(()=>tone(784,.13),180)}function badSound(){tone(190,.16,'sawtooth',.045)}
 function blankSetup(){const players=[];const groups=[];for(let g=0;g<6;g++){const ids=[];for(let i=0;i<5;i++){const id=`p${String(g*5+i+1).padStart(2,'0')}`;players.push({id,name:''});ids.push(id);}groups.push({id:GROUP_IDS[g],name:DEFAULT_NAMES[g],color:DEFAULT_COLORS[g],memberIds:ids});}return{schema:'sgldc-game-setup',version:1,players,groups};}
-function normalizeSetup(raw){if(!raw||!Array.isArray(raw.players)||!Array.isArray(raw.groups))return null;const players=raw.players.map((p,i)=>typeof p==='string'?{id:`p${String(i+1).padStart(2,'0')}`,name:p}:{id:String(p.id||`p${String(i+1).padStart(2,'0')}`),name:String(p.name||'')});const groups=GROUP_IDS.map((id,i)=>{const g=raw.groups[i]||{};return{id,name:String(g.name||DEFAULT_NAMES[i]),color:/^#[0-9a-f]{6}$/i.test(String(g.color||''))?g.color:DEFAULT_COLORS[i],memberIds:Array.isArray(g.memberIds)?g.memberIds.map(String):[]};});return{schema:'sgldc-game-setup',version:1,players,groups};}
+function normalizeSetup(raw){if(!raw||!Array.isArray(raw.players)||!Array.isArray(raw.groups))return null;const players=raw.players.map((p,i)=>typeof p==='string'?{id:`p${String(i+1).padStart(2,'0')}`,name:p}:{id:String(p.id||`p${String(i+1).padStart(2,'0')}`),name:String(p.name||'')});const groups=GROUP_IDS.map((id,i)=>{const g=raw.groups.find(x=>String(x?.id||'').toLowerCase()===id)||raw.groups[i]||{};return{id,name:String(g.name||DEFAULT_NAMES[i]),color:/^#[0-9a-f]{6}$/i.test(String(g.color||''))?g.color:DEFAULT_COLORS[i],memberIds:Array.isArray(g.memberIds)?g.memberIds.map(String):[]};});return{schema:'sgldc-game-setup',version:1,players,groups};}
 function loadSetup(){try{return normalizeSetup(JSON.parse(localStorage.getItem(SETUP_KEY)||'null'));}catch(e){return null}}
 function saveSetup(cfg){localStorage.setItem(SETUP_KEY,JSON.stringify(cfg));}
 function setupReady(cfg){if(!cfg||cfg.groups.length!==6)return false;const all=[];for(const g of cfg.groups){if(g.memberIds.length!==5)return false;for(const id of g.memberIds){const p=cfg.players.find(x=>x.id===id);if(!p||!p.name.trim())return false;all.push(id);}}return new Set(all).size===30;}
@@ -916,7 +916,7 @@ function handleSetupUpload(e){const f=e.target.files?.[0];e.target.value='';if(!
 function addSetupToGame(){setupDraft.groups.forEach((g,i)=>{g.name=($(`#groupName-${i}`)?.value||g.name).trim()||DEFAULT_NAMES[i];g.color=$(`#groupColor-${i}`)?.value||g.color});if(!groupingComplete(setupDraft)){setupStatus('<strong>Exactly 30 players are needed — 5 in each group.</strong>','bad');badSound();return}saveSetup(setupDraft);setup=cloneSetupCfg(setupDraft);goodSound();setupStatus('<strong>Player names added to game.</strong> You can return to the home screen and start.','good');refreshSetupButtons()}
 function renderSetup(){overlayRoot.innerHTML='';phase='setup';selectedPlayerId=null;setupUndoStack=[];setupRedoStack=[];setupDraft=normalizeSetup(loadSetup())||blankSetupDraft();app.innerHTML=`<main class="screen setup-screen"><div class="setup-topbar"><button class="icon-btn setup-back" id="setupBackBtn" title="Back">←</button><div class="setup-title-wrap"><h1>Game Setup</h1></div><div class="setup-history"><button class="icon-btn" id="undoSetupBtn" title="Undo" disabled>↶</button><button class="icon-btn" id="redoSetupBtn" title="Redo" disabled>↷</button></div><div>${toolbar()}</div></div><section class="setup-grid"><div class="setup-panel player-bank"><div class="setup-panel-label"><span>Player Names</span><span class="setup-count" id="playerCount">${setupDraft.players.length}/30</span></div><textarea class="player-entry" id="playerNamesInput" spellcheck="false" rows="1" placeholder="Enter one name per line"></textarea><div class="player-tags" id="playerTags"></div></div>${setupDraft.groups.map((g,i)=>{const col=2+Math.floor(i/2),row=i%2+1;return `<div class="setup-panel group-card" id="groupCard-${i}" style="grid-column:${col};grid-row:${row}"><div class="group-header"><input class="group-name-input" id="groupName-${i}" maxlength="12" value="${esc(g.name)}"><input class="group-colour" id="groupColor-${i}" type="color" value="${g.color}"></div><div class="group-drop" id="groupDrop-${i}"></div><div class="group-player-count" id="groupCount-${i}">${g.memberIds.length}/5 players</div></div>`}).join('')}</section><div class="setup-actions"><button class="setup-action" id="uploadBtn">Upload ↑</button><button class="setup-action" id="randomizeBtn" disabled>Randomize ↻</button><button class="setup-action primary" id="addToGameBtn">Add player names to game</button><button class="setup-action" id="downloadSetupBtn" disabled>Download ↓</button></div><div class="setup-toast" id="setupToast"></div><input type="file" id="setupFileInput" accept=".txt,.json,text/plain,application/json" class="hidden"></main>`;bindToolbar();$('#setupBackBtn').onclick=renderIntro;$('#undoSetupBtn').onclick=undoSetup;$('#redoSetupBtn').onclick=redoSetup;bindNameEntry($('#playerNamesInput'),addNamesToBank);setupDraft.groups.forEach((g,i)=>{const n=$(`#groupName-${i}`);let nSnap=null;n.onfocus=()=>nSnap=cloneSetupCfg(setupDraft);n.onchange=()=>{if(nSnap){setupUndoStack.push(nSnap);setupRedoStack=[];nSnap=null}setupDraft.groups[i].name=n.value.trim()||DEFAULT_NAMES[i];renderSetupTagsAndGroups();refreshSetupHistory()};const c=$(`#groupColor-${i}`);let cSnap=null;c.onpointerdown=()=>cSnap=cloneSetupCfg(setupDraft);c.onchange=()=>{if(cSnap){setupUndoStack.push(cSnap);setupRedoStack=[];cSnap=null}setupDraft.groups[i].color=c.value;renderSetupTagsAndGroups();refreshSetupHistory()}});$('#uploadBtn').onclick=()=>$('#setupFileInput').click();$('#setupFileInput').onchange=handleSetupUpload;$('#randomizeBtn').onclick=randomizeGroups;$('#addToGameBtn').onclick=addSetupToGame;$('#downloadSetupBtn').onclick=downloadSetup;renderSetupTagsAndGroups();refreshSetupHistory()}
 function scoreBoardHTML(){const gd=groupData();return `<div class="scoreboard">${gd.map(g=>`<div class="score-card"><span class="gname" style="background:${g.color}">${esc(g.name)}</span><span class="score">${state.scores[g.id]||0}</span></div>`).join('')}</div>`}
-function currentRoster(){return state.schedule[state.roundIndex]}
+function currentRoster(){const roster=state.schedule[state.roundIndex]||[];const live=Object.fromEntries(groupData().map(g=>[g.id,g]));return roster.map(p=>{const g=live[p.groupId];return g?{...p,groupName:g.name,color:g.color}:p})}
 function syncLaneBoardFromGroup(lane){const p=currentRoster()?.[lane];if(!p)return;if(!state.groupBoards)state.groupBoards=Object.fromEntries(GROUP_IDS.map(id=>[id,emptyBoard()]));if(!state.groupBoards[p.groupId])state.groupBoards[p.groupId]=state.boards?.[lane]||emptyBoard();state.boards[lane]=state.groupBoards[p.groupId];}
 function persistLaneBoard(lane){const p=currentRoster()?.[lane];if(!p)return;if(!state.groupBoards)state.groupBoards=Object.fromEntries(GROUP_IDS.map(id=>[id,emptyBoard()]));state.groupBoards[p.groupId]=state.boards[lane];}
 function boardCellHTML(lane){const board=state.boards[lane],active=state.activePieces?.[lane];const activeSet=new Map();if(active){cellsFor(active).forEach(([x,y])=>{if(y>=0&&y<ROWS&&x>=0&&x<COLS)activeSet.set(`${x},${y}`,active.color)})}let s='';for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const v=board[y][x],a=activeSet.get(`${x},${y}`),cls=['cell'];let style='';if(a){cls.push('active');style=`--active:${a}`}else if(v){cls.push('filled');if(v.kind==='junk')cls.push('junk');style=`--cell:${v.color||'#5aa8ed'}`}s+=`<div class="${cls.join(' ')}" data-lane="${lane}" data-x="${x}" data-y="${y}" style="${style}"></div>`}return s}
@@ -1006,12 +1006,12 @@ function v9ReviewCard(q,qi){
   else body=`<div class="v9-correct-answer"><div class="v9-correct-label">CORRECT ANSWER</div><div class="v9-correct-main ${long?'long':''}">${formattedAnswerHTML(q)}</div></div>`;
   return `<article class="v9-review-card ${compact}"><div class="v9-review-kicker">QUESTION ${qi+1}</div><div class="v9-review-title">${q.title}</div>${visual}${body}</article>`;
 }
-function showAnswersV9(){if(phase!=='reviewReady')return;fadeOutBGM(1200);answerRevealed=true;phase='revealedV9';const main=$('#v9Main');if(main)main.innerHTML=`<div class="v9-answer-review-grid">${[0,1,2].map(qi=>v9ReviewCard(questionForRound(state.roundIndex,qi),qi)).join('')}</div>`;const st=$('#stageBtn');st.disabled=false;st.className='stage-btn next';st.textContent='FINISH RACE';tone(720,.10,'triangle',.04)}
+function showAnswersV9(){if(phase!=='reviewReady')return;clearV10OrderDrags();fadeOutBGM(1200);answerRevealed=true;phase='revealedV9';const main=$('#v9Main');if(main)main.innerHTML=`<div class="v9-answer-review-grid">${[0,1,2].map(qi=>v9ReviewCard(questionForRound(state.roundIndex,qi),qi)).join('')}</div>`;const st=$('#stageBtn');st.disabled=false;st.className='stage-btn next';st.textContent='FINISH RACE';tone(720,.10,'triangle',.04)}
 
 
 
 /* ===== v10 alternating full-lane interaction overrides ===== */
-let v10OrderDrag=null;
+let v10OrderDrags=new Map();
 function v10PlainOptionsHTML(lane,q,long){
   const extraClass=q.options.length===2?' two':'';
   return `<div class="v9-answer-grid ${long?'long':''}${extraClass}">${q.options.map(o=>`<button class="v9-answer-btn" data-v9-answer="${lane}" data-opt="${esc(o)}">${v9OptionHTML(o)}</button>`).join('')}</div>`;
@@ -1030,13 +1030,85 @@ function v10CompleteStageHTML(){return `<div class="v10-complete-stage">${v9Comp
 function v10TetrisStageHTML(lane){return `<div class="v10-tetris-stage"><div class="v10-board-wrap"><div class="board" id="board-${lane}">${boardCellHTML(lane)}</div></div><div class="v10-controls" id="dock-${lane}"></div></div>`}
 function v9PlayerCard(p,lane){return `<article class="v9-racer v10-racer" data-lane="${lane}" style="--group:${p.color}"><div class="v9-player-head"><span class="v9-player-name">${esc(p.player)}</span><span class="v9-group-name">${esc(p.groupName)}</span></div><div class="v10-lane-stage" id="lane-stage-${lane}">${v10ReadyStageHTML(lane)}</div></article>`}
 function v9IdleControls(lane){const dock=$(`#dock-${lane}`);if(!dock)return;dock.innerHTML=`<div class="move-grid v9-disabled-controls"><button class="move-btn" disabled>◀</button><button class="move-btn" disabled>▼</button><button class="move-btn" disabled>▶</button><button class="move-btn rotate" disabled>↻ 90°</button></div>`;updateRescueButton(lane)}
-function showTetrisLaneV10(lane){syncLaneBoardFromGroup(lane);const stage=$(`#lane-stage-${lane}`);if(!stage)return;stage.innerHTML=v10TetrisStageHTML(lane);v9IdleControls(lane);updateRescueButton(lane);bindBoardClicks();refreshBoard(lane);}
-function moveV10OrderGhost(e){if(!v10OrderDrag)return;v10OrderDrag.ghost.style.left=`${e.clientX}px`;v10OrderDrag.ghost.style.top=`${e.clientY}px`}
-function moveV10OrderDrag(e){if(!v10OrderDrag)return;e.preventDefault();moveV10OrderGhost(e);const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.v10-order-card');if(!target||target===v10OrderDrag.card||target.closest('.v10-order-work')!==v10OrderDrag.work)return;const cards=[...v10OrderDrag.work.querySelectorAll('.v10-order-card')],from=cards.indexOf(v10OrderDrag.card),to=cards.indexOf(target);if(from<to)target.after(v10OrderDrag.card);else target.before(v10OrderDrag.card);}
-function endV10OrderDrag(){if(!v10OrderDrag)return;v10OrderDrag.card.classList.remove('drag-source');v10OrderDrag.ghost.remove();window.removeEventListener('pointermove',moveV10OrderDrag);v10OrderDrag=null;}
-function startV10OrderDrag(e){if(phase!=='raceLive')return;const card=e.currentTarget,work=card.closest('.v10-order-work'),lane=Number(work.dataset.orderLane);if(laneFinishedV9[lane]||laneBusyV9[lane])return;e.preventDefault();const ghost=card.cloneNode(true);ghost.classList.add('v10-order-ghost');ghost.style.width=`${card.getBoundingClientRect().width}px`;ghost.style.height=`${card.getBoundingClientRect().height}px`;document.body.appendChild(ghost);card.classList.add('drag-source');v10OrderDrag={lane,card,work,ghost};moveV10OrderGhost(e);window.addEventListener('pointermove',moveV10OrderDrag,{passive:false});window.addEventListener('pointerup',endV10OrderDrag,{once:true});window.addEventListener('pointercancel',endV10OrderDrag,{once:true})}
-function bindOrderStage(lane,q){const stage=$(`#lane-stage-${lane}`);if(!stage)return;stage.querySelectorAll('.v10-order-card').forEach(card=>card.addEventListener('pointerdown',startV10OrderDrag,{passive:false}));const check=$(`#order-check-${lane}`);if(check)check.onclick=()=>{const answer=[...stage.querySelectorAll('.v10-order-card')].map(card=>card.dataset.value).join(' → ');answerLane(lane,answer,check);};}
+function showTetrisLaneV10(lane){clearV10OrderDrags(lane);syncLaneBoardFromGroup(lane);const stage=$(`#lane-stage-${lane}`);if(!stage)return;stage.innerHTML=v10TetrisStageHTML(lane);v9IdleControls(lane);updateRescueButton(lane);bindBoardClicks();refreshBoard(lane);}
+function clearV10OrderDrags(lane=null){
+  for(const [pointerId,d] of [...v10OrderDrags]){
+    if(lane===null||d.lane===lane)endV10OrderDrag(pointerId,true);
+  }
+  if(lane===null){
+    document.querySelectorAll('.v10-order-ghost').forEach(g=>g.remove());
+    document.querySelectorAll('.v10-order-card.drag-source').forEach(card=>card.classList.remove('drag-source'));
+  }
+}
+function moveV10OrderGhost(pointerId,x,y){
+  const d=v10OrderDrags.get(pointerId);
+  if(!d?.ghost)return;
+  d.ghost.style.left=`${x}px`;
+  d.ghost.style.top=`${y}px`;
+}
+function moveV10OrderDrag(e){
+  const d=v10OrderDrags.get(e.pointerId);
+  if(!d)return;
+  e.preventDefault();
+  moveV10OrderGhost(e.pointerId,e.clientX,e.clientY);
+  const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.v10-order-card');
+  if(!target||target===d.card||target.closest('.v10-order-work')!==d.work)return;
+  const cards=[...d.work.querySelectorAll('.v10-order-card')],from=cards.indexOf(d.card),to=cards.indexOf(target);
+  if(from<to)target.after(d.card);else target.before(d.card);
+}
+function endV10OrderDrag(pointerId,cancel=false){
+  const d=v10OrderDrags.get(pointerId);
+  if(!d)return;
+  v10OrderDrags.delete(pointerId);
+  try{d.ghost?.remove()}catch(_){}
+  try{d.card?.classList.remove('drag-source')}catch(_){}
+  try{
+    if(d.card?.hasPointerCapture?.(pointerId))d.card.releasePointerCapture(pointerId);
+  }catch(_){}
+}
+function startV10OrderDrag(e){
+  if(phase!=='raceLive')return;
+  const card=e.currentTarget,work=card.closest('.v10-order-work'),lane=Number(work.dataset.orderLane);
+  if(laneFinishedV9[lane]||laneBusyV9[lane])return;
+  e.preventDefault();
+  for(const [pointerId,d] of [...v10OrderDrags]){
+    if(d.lane===lane)endV10OrderDrag(pointerId,true);
+  }
+  const ghost=card.cloneNode(true);
+  ghost.classList.add('v10-order-ghost');
+  ghost.classList.remove('drag-source');
+  ghost.style.width=`${card.getBoundingClientRect().width}px`;
+  ghost.style.height=`${card.getBoundingClientRect().height}px`;
+  document.body.appendChild(ghost);
+  card.classList.add('drag-source');
+  v10OrderDrags.set(e.pointerId,{lane,card,work,ghost,pointerId:e.pointerId});
+  moveV10OrderGhost(e.pointerId,e.clientX,e.clientY);
+  try{card.setPointerCapture(e.pointerId)}catch(_){}
+}
+function bindOrderStage(lane,q){
+  const stage=$(`#lane-stage-${lane}`);
+  if(!stage)return;
+  stage.querySelectorAll('.v10-order-card').forEach(card=>{
+    card.addEventListener('pointerdown',startV10OrderDrag,{passive:false});
+    card.addEventListener('pointermove',moveV10OrderDrag,{passive:false});
+    card.addEventListener('pointerup',e=>endV10OrderDrag(e.pointerId,false));
+    card.addEventListener('pointercancel',e=>endV10OrderDrag(e.pointerId,true));
+    card.addEventListener('lostpointercapture',e=>endV10OrderDrag(e.pointerId,false));
+  });
+  const check=$(`#order-check-${lane}`);
+  if(check)check.onclick=()=>{
+    clearV10OrderDrags(lane);
+    const answer=[...stage.querySelectorAll('.v10-order-card')].map(card=>card.dataset.value).join(' → ');
+    answerLane(lane,answer,check);
+  };
+}
+document.addEventListener('pointerup',e=>{if(v10OrderDrags.has(e.pointerId))endV10OrderDrag(e.pointerId,false)},true);
+document.addEventListener('pointercancel',e=>{if(v10OrderDrags.has(e.pointerId))endV10OrderDrag(e.pointerId,true)},true);
+window.addEventListener('blur',()=>clearV10OrderDrags());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearV10OrderDrags()});
+
 function renderLaneQuestionV9(lane){
+  clearV10OrderDrags(lane);
   const stage=$(`#lane-stage-${lane}`);if(!stage)return;
   if(laneFinishedV9[lane]){stage.innerHTML=v10CompleteStageHTML();return}
   stage.innerHTML=v10QuestionStageHTML(lane);
