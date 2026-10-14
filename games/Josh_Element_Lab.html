@@ -90,8 +90,17 @@ button,input{font:inherit}
 .empty-results{padding:30px 18px;color:#86abc6;font-weight:850;text-align:center}
 .note{padding:0 18px 16px 18px;color:#83a6c1;font-size:12px;font-weight:800}
 
-.palette{border:1px solid rgba(114,177,216,.22);border-radius:28px;background:rgba(255,255,255,.62);backdrop-filter:blur(14px);box-shadow:0 10px 24px rgba(38,99,142,.06);padding:10px 14px;overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr)}
-.palette-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:6px;min-height:34px}
+.palette{
+  border:1px solid rgba(114,177,216,.22);border-radius:28px;background:rgba(255,255,255,.62);
+  backdrop-filter:blur(14px);box-shadow:0 10px 24px rgba(38,99,142,.06);
+  padding:10px 14px;overflow:hidden;display:grid;
+  grid-template-rows:38px minmax(0,1fr)
+}
+.palette-head{
+  height:38px;min-height:38px;max-height:38px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:0 0 4px 0;overflow:hidden
+}
 .palette-grid{
   display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;min-height:0;align-items:stretch;
   scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px
@@ -105,8 +114,18 @@ button,input{font:inherit}
 }
 .atom-btn img{width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(39,98,145,.10))}
 .atom-btn.more{font-weight:950;color:#4a7aa0;font-size:14px;line-height:1.1;text-align:center;padding:10px}
-.selection-strip{display:flex;align-items:center;gap:8px;overflow:auto;white-space:nowrap}
-.selection-pill{padding:8px 12px;border-radius:999px;background:#edf8ff;border:1px solid #d7ebf8;font-size:13px;font-weight:900;color:#5a87a6}
+.selection-strip{
+  flex:1 1 auto;height:34px;min-height:34px;max-height:34px;
+  display:flex;align-items:center;gap:8px;overflow-x:auto;overflow-y:hidden;
+  white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch
+}
+.selection-strip::-webkit-scrollbar{display:none}
+.selection-pill{
+  height:32px;min-height:32px;display:flex;align-items:center;
+  padding:0 12px;border-radius:999px;background:#edf8ff;border:1px solid #d7ebf8;
+  font-size:13px;font-weight:900;color:#5a87a6;line-height:1
+}
+.palette-head>.smallnote{flex:0 0 auto;line-height:32px}
 .smallnote{font-size:12px;color:#84a7c1;font-weight:800}
 
 .overlay{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:18px;background:rgba(35,87,123,.18);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:.2s opacity}
@@ -653,7 +672,7 @@ renderPalette();
 function renderSelectionStrip() {
   const parts = Object.entries(counts).filter(([,v])=>v>0).sort((a,b)=>a[0].localeCompare(b[0]));
   if(!parts.length) {
-    selectionStrip.innerHTML = `<span class="smallnote">No atoms selected</span>`;
+    selectionStrip.innerHTML = `<span class="smallnote" style="height:32px;display:flex;align-items:center">No atoms selected</span>`;
     return;
   }
   selectionStrip.innerHTML = parts.map(([sym,val]) => `<span class="selection-pill">${sym} ×${val}</span>`).join("");
