@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Megan's Magic Dollmaker 2.3</title>
+<title>Megan's Magic Dollmaker 2.5</title>
 <style>
 :root{
   --ink:#4e3b78;--ink2:#796492;--line:#e6d9f3;--accent:#8867ef;--accent2:#f6d9ee;
@@ -55,24 +55,41 @@ button{color:var(--ink)}
 }
 @media(orientation:portrait){
   html,body{overflow:hidden}
-  .app{padding:calc(5px + var(--safeT)) calc(6px + var(--safeR)) calc(5px + var(--safeB)) calc(6px + var(--safeL));gap:5px;grid-template-rows:auto auto minmax(0,1fr) auto}
-  .topbar{min-height:48px;padding:5px 7px;border-radius:17px}.logo{width:36px;height:36px;border-radius:12px;font-size:19px}.brand{gap:7px}.title h1{font-size:1.08rem}.title small{display:none}
+  /* Lock the four app rows so changing categories cannot resize the stage. */
+  .app{
+    padding:calc(5px + var(--safeT)) calc(6px + var(--safeR)) calc(5px + var(--safeB)) calc(6px + var(--safeL));
+    gap:5px;
+    grid-template-rows:48px 64px minmax(0,1fr) 48px;
+  }
+  .topbar{height:48px;min-height:48px;max-height:48px;padding:5px 7px;border-radius:17px;overflow:hidden}
+  .logo{width:36px;height:36px;border-radius:12px;font-size:19px}.brand{gap:7px}.title h1{font-size:1.08rem}.title small{display:none}
   .actions{gap:4px;flex-wrap:nowrap}.actions .btn{padding:7px 8px;border-radius:10px;font-size:.8rem}.actions .btn span.label{display:none}#saveBtn span.label{display:inline}
-  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:15px;overflow:visible}.tab{min-width:0;padding:7px 4px;font-size:.78rem;line-height:1.05}
-  .stagePanel{padding:5px;border-radius:17px;gap:4px}.stageTools{min-height:31px;padding:0 2px}.stageHint{font-size:.73rem}.stageActions{gap:4px}.stageActions .btn{padding:6px 8px;font-size:.72rem;border-radius:9px}
-  .stageViewport{border-radius:13px}.stageInner{padding:3px}
+  .tabs{
+    height:64px;min-height:64px;max-height:64px;
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));
+    gap:3px;padding:4px;border-radius:15px;overflow:hidden
+  }
+  .tab{min-width:0;min-height:0;padding:0 4px;font-size:.78rem;line-height:1.05;display:flex;align-items:center;justify-content:center}
+  .workspace{min-height:0;height:100%;overflow:hidden}
+  .stagePanel{height:100%;min-height:0;padding:5px;border-radius:17px;gap:4px;grid-template-rows:31px minmax(0,1fr);overflow:hidden}
+  .stageTools{height:31px;min-height:31px;max-height:31px;padding:0 2px;overflow:hidden}.stageHint{font-size:.73rem}.stageActions{gap:4px}.stageActions .btn{padding:6px 8px;font-size:.72rem;border-radius:9px}
+  .stageViewport{height:100%;min-height:0;border-radius:13px}.stageInner{padding:3px}
   .layerDrawer{top:39px;right:5px;bottom:5px;width:min(310px,44vw);padding:9px;border-radius:14px}.drawerHead{margin-bottom:6px}.drawerHead h2{font-size:.9rem}.layerList{gap:4px}.layerRow{padding:4px;grid-template-columns:28px minmax(0,1fr) 30px 30px}.layerName{font-size:.72rem}.iconBtn{min-height:27px;padding:4px}
   .sectionCard{padding:7px;margin-top:7px}.subtle{font-size:.7rem}.quick .btn{font-size:.72rem;padding:7px}
-  .tray{min-height:48px;padding:5px 7px;border-radius:14px}.chiprow{gap:5px}.chip{padding:7px 10px;font-size:.76rem}
+  .tray{height:48px;min-height:48px;max-height:48px;padding:5px 7px;border-radius:14px;overflow:hidden}
+  .chiprow{height:36px;min-height:36px;max-height:36px;gap:5px;overflow-x:auto;overflow-y:hidden;align-items:center}
+  .chip{height:34px;min-height:34px;padding:0 10px;font-size:.76rem;display:flex;align-items:center}
   .toast{bottom:calc(58px + var(--safeB));font-size:.82rem}
 }
-@media(max-width:650px){.logo{width:32px;height:32px}.brand{gap:5px}.title h1{font-size:.95rem}#saveBtn span.label{display:none}.layerDrawer{width:min(300px,72vw)}}.actions .btn span.label{display:none}.brand{gap:7px}.title h1{font-size:1rem}.layerDrawer{top:47px}}
+@media(max-width:650px){
+  .logo{width:32px;height:32px}.brand{gap:5px}.title h1{font-size:.95rem}#saveBtn span.label{display:none}.layerDrawer{width:min(300px,72vw)}
+}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.3</h1><small>Dress up, drag, pinch, twist and make a wallpaper</small></div></div>
+    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.5</h1><small>Dress up, drag, pinch, twist and make a wallpaper</small></div></div>
     <div class="actions">
       <button class="btn magic" id="surpriseBtn">🎲 <span class="label">Surprise Me</span></button>
       <button class="btn" id="matchBtn">🪄 <span class="label">Match Look</span></button>
