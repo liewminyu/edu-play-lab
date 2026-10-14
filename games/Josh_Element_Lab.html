@@ -62,12 +62,13 @@ button,input{font:inherit}
   max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
 }
 .compound-sub{font-size:13px;line-height:1.2;color:var(--muted);font-weight:800;white-space:nowrap}
-.viewer-stage{padding:4px 14px 10px 14px;min-height:0;position:relative;z-index:1}
+.viewer-stage{padding:4px 14px 10px 14px;min-height:280px;position:relative;z-index:1}
 .viewer-card{height:100%;border-radius:26px;position:relative;z-index:1;background:
   radial-gradient(circle at 50% 45%, rgba(176,225,249,.18), rgba(176,225,249,.08) 45%, transparent 66%),
   linear-gradient(180deg, rgba(252,254,255,.98), rgba(240,250,255,.92));
   border:1px solid rgba(137,195,227,.20); overflow:hidden}
-.model-view{position:absolute;inset:0}
+.model-view{position:absolute;inset:0;width:100%;height:100%}
+.model-view canvas{width:100%!important;height:100%!important;display:block}
 .viewer-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:28px;color:#89aec9;font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:-.03em;pointer-events:none}
 .viewer-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:15px;font-weight:850;color:#7ea2bc}
 .controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:0 16px 16px 16px;flex-wrap:wrap}
@@ -163,10 +164,51 @@ button,input{font:inherit}
 .toast{position:fixed;left:50%;top:86px;transform:translate(-50%,-15px);opacity:0;z-index:5000;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid rgba(119,176,210,.22);color:#4a799a;padding:10px 14px;border-radius:16px;font-weight:850;box-shadow:0 12px 24px rgba(35,93,133,.12);transition:.2s opacity,.2s transform;pointer-events:none;max-width:min(86vw,660px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-@media (max-width:1200px){
+@media (max-width:820px){
   .main{grid-template-columns:1fr}
   .app{grid-template-rows:64px minmax(0,1fr) 138px}
 }
+
+@media (min-width:821px) and (max-width:1180px) and (orientation:landscape){
+  .app{
+    grid-template-rows:58px minmax(0,1fr) 128px;
+    gap:10px;
+    padding:8px 10px 10px;
+  }
+  .main{
+    grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr);
+    gap:10px;
+  }
+  .viewer-wrap{
+    grid-template-rows:86px minmax(300px,1fr) 72px;
+  }
+  .viewer-stage{
+    min-height:300px;
+    padding:2px 10px 8px;
+  }
+  .viewer-card{
+    min-height:300px;
+  }
+  .results{
+    min-height:0;
+  }
+  .palette{
+    padding:8px 12px;
+  }
+  .palette-head{
+    min-height:28px;
+    padding-bottom:4px;
+  }
+  .atom-btn{
+    flex-basis:78px;
+    height:70px;
+  }
+  .atom-btn img{
+    width:50px;
+    height:50px;
+  }
+}
+
 @media (max-width:860px){
   .app{grid-template-rows:58px minmax(0,1fr) 132px;gap:8px;padding:8px}
   .brand{font-size:18px}
@@ -977,6 +1019,13 @@ document.addEventListener("keydown", e=>{
 
 renderFromCounts();
 renderElementGrid("");
+
+setTimeout(()=>{
+  try{
+    if(mainViewer){ mainViewer.resize(); mainViewer.zoomTo(); mainViewer.render(); }
+    if(bookViewer){ bookViewer.resize(); bookViewer.zoomTo(); bookViewer.render(); }
+  }catch(e){}
+}, 350);
 </script>
 </body>
 </html>
