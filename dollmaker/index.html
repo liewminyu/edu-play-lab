@@ -199,7 +199,8 @@ royalPrincess:{background:'galaStage',hair:'halfUp',headpiece:'sunCrown',makeup:
 const DEFAULT_SELECTION={background:'castleGarden',outfit:'flowerPrincess',hair:'longWaves',headpiece:'flowerCrown',makeup:'flowerFairy',effect:'sakura'};
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function mapDefaults(items,base){return Object.fromEntries(items.filter(x=>x.id!=='none').map(x=>[x.id,clone(base)]))}
-function newState(){return{selection:clone(DEFAULT_SELECTION),activeCategory:'outfit',editTarget:'outfit',selectedLayer:'outfit',headGroup:clone(DEFAULT_HEAD),outfits:mapDefaults(OUTFITS,DEFAULT_OUTFIT),backgrounds:mapDefaults(BACKGROUNDS,DEFAULT_BG),effects:mapDefaults(EFFECTS,DEFAULT_FX),layerOrder:DEFAULT_ORDER.slice(),visible:{background:true,outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},viewZoom:100}}
+function mapCalibrated(items){return Object.fromEntries(items.filter(x=>x.id!=='none'&&x.cfg).map(x=>[x.id,clone(x.cfg)]))}
+function newState(){return{selection:clone(DEFAULT_SELECTION),activeCategory:'outfit',editTarget:'outfit',selectedLayer:'outfit',headGroup:clone(DEFAULT_HEAD),headpieces:mapCalibrated(HEADPIECES),makeups:mapCalibrated(MAKEUP),outfits:mapDefaults(OUTFITS,DEFAULT_OUTFIT),backgrounds:mapDefaults(BACKGROUNDS,DEFAULT_BG),effects:mapDefaults(EFFECTS,DEFAULT_FX),layerOrder:DEFAULT_ORDER.slice(),visible:{background:true,outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},viewZoom:100}}
 const STORAGE='megan-dollmaker-2-state-v1';
 let state=loadState();
 function loadState(){
@@ -212,7 +213,7 @@ function loadState(){
 function normalizeState(s){
   for(const key of DEFAULT_ORDER)if(!s.layerOrder.includes(key))s.layerOrder.push(key);
   s.layerOrder=s.layerOrder.filter((x,i,a)=>DEFAULT_ORDER.includes(x)&&a.indexOf(x)===i);
-  s.outfits=Object.assign(mapDefaults(OUTFITS,DEFAULT_OUTFIT),s.outfits||{});s.backgrounds=Object.assign(mapDefaults(BACKGROUNDS,DEFAULT_BG),s.backgrounds||{});s.effects=Object.assign(mapDefaults(EFFECTS,DEFAULT_FX),s.effects||{});s.visible=Object.assign({background:true,outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},s.visible||{});s.selection=Object.assign(clone(DEFAULT_SELECTION),s.selection||{});if(!s.selectedLayer)s.selectedLayer=s.editTarget==='background'?'background':s.editTarget==='effect'?'effect':s.editTarget==='head'?'frontHair':'outfit';
+  s.headpieces=Object.assign(mapCalibrated(HEADPIECES),s.headpieces||{});s.makeups=Object.assign(mapCalibrated(MAKEUP),s.makeups||{});s.outfits=Object.assign(mapDefaults(OUTFITS,DEFAULT_OUTFIT),s.outfits||{});s.backgrounds=Object.assign(mapDefaults(BACKGROUNDS,DEFAULT_BG),s.backgrounds||{});s.effects=Object.assign(mapDefaults(EFFECTS,DEFAULT_FX),s.effects||{});s.visible=Object.assign({background:true,outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},s.visible||{});s.selection=Object.assign(clone(DEFAULT_SELECTION),s.selection||{});if(!s.selectedLayer)s.selectedLayer=s.editTarget==='background'?'background':s.editTarget==='effect'?'effect':s.editTarget==='headpiece'?'headpiece':s.editTarget==='makeup'?'makeup':s.editTarget==='head'?'frontHair':'outfit';
 }
 function saveState(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){}}
 const $=id=>document.getElementById(id);
@@ -220,25 +221,25 @@ const els={tabs:$('tabs'),chiprow:$('chiprow'),trayTitle:$('trayTitle'),stageHin
 const layerWraps={outfit:els.outfitWrap,backHair:els.backHairWrap,baseHead:els.baseHeadWrap,makeup:els.makeupWrap,frontHair:els.frontHairWrap,headpiece:els.headpieceWrap,effect:els.effectWrap};
 function item(arr,id){return arr.find(x=>x.id===id)}
 function transform(el,cfg){el.style.transform=`translate(${cfg.x}px,${cfg.y}px) scale(${cfg.scale/100}) rotate(${cfg.rotate}deg)`;el.style.opacity=cfg.opacity/100}
-function currentCfg(target=state.editTarget){if(target==='head')return state.headGroup;if(target==='outfit')return state.outfits[state.selection.outfit];if(target==='background')return state.backgrounds[state.selection.background];if(target==='effect'){if(state.selection.effect==='none')return null;return state.effects[state.selection.effect]}return null}
-function resetCfg(target){if(target==='head')state.headGroup=clone(DEFAULT_HEAD);else if(target==='outfit')state.outfits[state.selection.outfit]=clone(DEFAULT_OUTFIT);else if(target==='background')state.backgrounds[state.selection.background]=clone(DEFAULT_BG);else if(target==='effect'&&state.selection.effect!=='none')state.effects[state.selection.effect]=clone(DEFAULT_FX)}
+function currentCfg(target=state.editTarget){if(target==='head')return state.headGroup;if(target==='headpiece'){if(state.selection.headpiece==='none')return null;return state.headpieces[state.selection.headpiece]}if(target==='makeup'){if(state.selection.makeup==='none')return null;return state.makeups[state.selection.makeup]}if(target==='outfit')return state.outfits[state.selection.outfit];if(target==='background')return state.backgrounds[state.selection.background];if(target==='effect'){if(state.selection.effect==='none')return null;return state.effects[state.selection.effect]}return null}
+function resetCfg(target){if(target==='head')state.headGroup=clone(DEFAULT_HEAD);else if(target==='headpiece'&&state.selection.headpiece!=='none'){const hp=item(HEADPIECES,state.selection.headpiece);state.headpieces[state.selection.headpiece]=clone(hp.cfg)}else if(target==='makeup'&&state.selection.makeup!=='none'){const mk=item(MAKEUP,state.selection.makeup);state.makeups[state.selection.makeup]=clone(mk.cfg)}else if(target==='outfit')state.outfits[state.selection.outfit]=clone(DEFAULT_OUTFIT);else if(target==='background')state.backgrounds[state.selection.background]=clone(DEFAULT_BG);else if(target==='effect'&&state.selection.effect!=='none')state.effects[state.selection.effect]=clone(DEFAULT_FX)}
 function applyScene(){
  const bg=item(BACKGROUNDS,state.selection.background),out=item(OUTFITS,state.selection.outfit),hair=item(HAIR,state.selection.hair),hp=item(HEADPIECES,state.selection.headpiece),mk=item(MAKEUP,state.selection.makeup),fx=item(EFFECTS,state.selection.effect);
  els.backgroundLayer.src=bg.img;els.outfitLayer.src=out.img;els.backHairLayer.src=hair.back;els.frontHairLayer.src=hair.front;
  if(hp&&hp.img){els.headpieceLayer.src=hp.img;els.headpieceLayer.style.display='block'}else els.headpieceLayer.style.display='none';
  if(mk&&mk.img){els.makeupLayer.src=mk.img;els.makeupLayer.style.display='block'}else els.makeupLayer.style.display='none';
  if(fx&&fx.img){els.effectLayer.src=fx.img;els.effectLayer.style.display='block'}else els.effectLayer.style.display='none';
- transform(els.backgroundLayer,state.backgrounds[state.selection.background]);transform(els.outfitLayer,state.outfits[state.selection.outfit]);transform(els.backHairLayer,hair.backCfg);transform(els.frontHairLayer,hair.frontCfg);if(hp&&hp.cfg)transform(els.headpieceLayer,hp.cfg);if(mk&&mk.cfg)transform(els.makeupLayer,mk.cfg);if(fx&&fx.img)transform(els.effectLayer,state.effects[state.selection.effect]);
+ transform(els.backgroundLayer,state.backgrounds[state.selection.background]);transform(els.outfitLayer,state.outfits[state.selection.outfit]);transform(els.backHairLayer,hair.backCfg);transform(els.frontHairLayer,hair.frontCfg);if(hp&&hp.cfg)transform(els.headpieceLayer,state.headpieces[hp.id]);if(mk&&mk.cfg)transform(els.makeupLayer,state.makeups[mk.id]);if(fx&&fx.img)transform(els.effectLayer,state.effects[state.selection.effect]);
  const hg=`translate(${state.headGroup.x}px,${state.headGroup.y}px) scale(${state.headGroup.scale/100}) rotate(${state.headGroup.rotate}deg)`;
  for(const key of ['backHair','baseHead','makeup','frontHair','headpiece']){layerWraps[key].style.transform=hg;layerWraps[key].style.opacity=state.headGroup.opacity/100}
  els.backgroundWrap.style.zIndex='0';els.backgroundWrap.style.display=state.visible.background?'block':'none';state.layerOrder.forEach((k,i)=>{layerWraps[k].style.zIndex=String(i+1);layerWraps[k].style.display=state.visible[k]?'block':'none'});
  if(state.selection.makeup==='none')els.makeupWrap.style.display='none';if(state.selection.headpiece==='none')els.headpieceWrap.style.display='none';if(state.selection.effect==='none')els.effectWrap.style.display='none';
  els.lookSummary.innerHTML=`<b>${out.label}</b><br>${hair.label} · ${hp.label} · ${mk.label}<br>${bg.label} · ${fx.label}`;
 }
-function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit'){state.editTarget='outfit';state.selectedLayer='outfit'}if(key==='background'){state.editTarget='background';state.selectedLayer='background'}if(key==='effect'){state.editTarget='effect';state.selectedLayer='effect'}if(key==='hair'){state.editTarget='head';state.selectedLayer='frontHair'}if(key==='headpiece'){state.editTarget='head';state.selectedLayer='headpiece'}if(key==='makeup'){state.editTarget='head';state.selectedLayer='makeup'}els.layerDrawer.classList.remove('open');renderAll();saveState()};els.tabs.appendChild(b)}}
-function renderTray(){const c=CATEGORIES[state.activeCategory];els.trayTitle.textContent=c.label;els.chiprow.innerHTML='';for(const it of c.items){const b=document.createElement('button');b.className='chip'+(state.selection[state.activeCategory]===it.id?' active':'');b.textContent=it.label;b.onclick=()=>{state.selection[state.activeCategory]=it.id;applyScene();renderTray();renderControls();renderLayers();saveState()};els.chiprow.appendChild(b)}}
+function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit'){state.editTarget='outfit';state.selectedLayer='outfit'}if(key==='background'){state.editTarget='background';state.selectedLayer='background'}if(key==='effect'){state.editTarget='effect';state.selectedLayer='effect'}if(key==='hair'){state.editTarget='head';state.selectedLayer='frontHair'}if(key==='headpiece'){state.editTarget='headpiece';state.selectedLayer='headpiece'}if(key==='makeup'){state.editTarget='makeup';state.selectedLayer='makeup'}els.layerDrawer.classList.remove('open');renderAll();saveState()};els.tabs.appendChild(b)}}
+function renderTray(){const c=CATEGORIES[state.activeCategory];els.trayTitle.textContent=c.label;els.chiprow.innerHTML='';for(const it of c.items){const b=document.createElement('button');b.className='chip'+(state.selection[state.activeCategory]===it.id?' active':'');b.textContent=it.label;b.onclick=()=>{state.selection[state.activeCategory]=it.id;if(state.activeCategory==='headpiece'){state.editTarget='headpiece';state.selectedLayer='headpiece'}else if(state.activeCategory==='makeup'){state.editTarget='makeup';state.selectedLayer='makeup'}applyScene();renderTray();renderControls();renderLayers();saveState()};els.chiprow.appendChild(b)}}
 function renderControls(){
-  const names={outfit:'Outfit',head:'Head',background:'Background',effect:'Magic Effect'};
+  const names={outfit:'Outfit',head:'Head / Hair',headpiece:'Headpiece',makeup:'Makeup',background:'Background',effect:'Magic Effect'};
   const n=names[state.editTarget];
   els.stageHint.textContent=`${n} selected • drag · pinch · twist`;
 }
@@ -247,8 +248,8 @@ function selectLayer(k){
   if(k==='background'){state.activeCategory='background';state.editTarget='background'}
   else if(k==='outfit'){state.activeCategory='outfit';state.editTarget='outfit'}
   else if(k==='effect'){state.activeCategory='effect';state.editTarget='effect'}
-  else if(k==='makeup'){state.activeCategory='makeup';state.editTarget='head'}
-  else if(k==='headpiece'){state.activeCategory='headpiece';state.editTarget='head'}
+  else if(k==='makeup'){state.activeCategory='makeup';state.editTarget='makeup'}
+  else if(k==='headpiece'){state.activeCategory='headpiece';state.editTarget='headpiece'}
   else {state.activeCategory='hair';state.editTarget='head'}
   renderTabs();renderTray();renderControls();renderLayers();saveState();
   els.layerDrawer.classList.remove('open');
@@ -294,6 +295,7 @@ function pointerPair(){return [...pointers.values()].slice(0,2)}
 function pairDistance(p){return Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)}
 function pairAngle(p){return Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x)}
 function normalizeDeg(d){while(d>180)d-=360;while(d<-180)d+=360;return d}
+function currentGestureScale(){const base=fitScale*(state.viewZoom/100);return (state.editTarget==='headpiece'||state.editTarget==='makeup')?base*Math.max(.01,state.headGroup.scale/100):base}
 els.scene.addEventListener('pointerdown',e=>{
   const c=currentCfg();if(!c)return;
   els.scene.setPointerCapture?.(e.pointerId);
@@ -310,7 +312,7 @@ els.scene.addEventListener('pointermove',e=>{
   if(!pointers.has(e.pointerId)||!gesture)return;
   pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   const c=currentCfg();if(!c)return;
-  const sceneScale=fitScale*(state.viewZoom/100);
+  const sceneScale=currentGestureScale();
   if(pointers.size===1&&gesture.type==='drag'){
     c.x=gesture.startX+(e.clientX-gesture.x)/sceneScale;
     c.y=gesture.startY+(e.clientY-gesture.y)/sceneScale;
@@ -347,7 +349,7 @@ async function renderWallpaper(){
  const imgs=[els.backgroundLayer,els.outfitLayer,els.backHairLayer,els.baseHeadLayer,els.frontHairLayer];if(state.selection.makeup!=='none')imgs.push(els.makeupLayer);if(state.selection.headpiece!=='none')imgs.push(els.headpieceLayer);if(state.selection.effect!=='none')imgs.push(els.effectLayer);await Promise.all(imgs.map(ready));
  const c=document.createElement('canvas');c.width=2048;c.height=2732;const ctx=c.getContext('2d');ctx.scale(c.width/BW,c.height/BH);drawLayer(ctx,els.backgroundLayer,state.backgrounds[state.selection.background],null,true);
  const hair=item(HAIR,state.selection.hair),hp=item(HEADPIECES,state.selection.headpiece),mk=item(MAKEUP,state.selection.makeup),fx=item(EFFECTS,state.selection.effect);
- const render={outfit:()=>drawLayer(ctx,els.outfitLayer,state.outfits[state.selection.outfit]),backHair:()=>drawLayer(ctx,els.backHairLayer,hair.backCfg,state.headGroup),baseHead:()=>drawLayer(ctx,els.baseHeadLayer,{x:0,y:0,scale:100,rotate:0,opacity:100},state.headGroup),makeup:()=>{if(mk.id!=='none')drawLayer(ctx,els.makeupLayer,mk.cfg,state.headGroup)},frontHair:()=>drawLayer(ctx,els.frontHairLayer,hair.frontCfg,state.headGroup),headpiece:()=>{if(hp.id!=='none')drawLayer(ctx,els.headpieceLayer,hp.cfg,state.headGroup)},effect:()=>{if(fx.id!=='none')drawLayer(ctx,els.effectLayer,state.effects[fx.id])}};
+ const render={outfit:()=>drawLayer(ctx,els.outfitLayer,state.outfits[state.selection.outfit]),backHair:()=>drawLayer(ctx,els.backHairLayer,hair.backCfg,state.headGroup),baseHead:()=>drawLayer(ctx,els.baseHeadLayer,{x:0,y:0,scale:100,rotate:0,opacity:100},state.headGroup),makeup:()=>{if(mk.id!=='none')drawLayer(ctx,els.makeupLayer,state.makeups[mk.id],state.headGroup)},frontHair:()=>drawLayer(ctx,els.frontHairLayer,hair.frontCfg,state.headGroup),headpiece:()=>{if(hp.id!=='none')drawLayer(ctx,els.headpieceLayer,state.headpieces[hp.id],state.headGroup)},effect:()=>{if(fx.id!=='none')drawLayer(ctx,els.effectLayer,state.effects[fx.id])}};
  state.layerOrder.forEach(k=>{if(state.visible[k]&&render[k])render[k]()});return c
 }
 $('saveBtn').onclick=async()=>{try{toast('Making wallpaper…');const c=await renderWallpaper();const blob=await new Promise(r=>c.toBlob(r,'image/png'));const file=new File([blob],'Megan_Magic_Wallpaper.png',{type:'image/png'});if(navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:"Megan's Magic Wallpaper"})}else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast('Wallpaper saved')} }catch(e){console.error(e);toast('Could not save wallpaper')}};
