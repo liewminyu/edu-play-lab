@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Megan's Magic Dollmaker 2.0</title>
+<style>
+:root{
+  --ink:#4e3b78;--ink2:#796492;--line:#e6d9f3;--accent:#8867ef;--accent2:#f6d9ee;
+  --panel:rgba(255,255,255,.88);--panelStrong:rgba(255,255,255,.96);--shadow:0 12px 34px rgba(100,78,145,.14);
+  --safeT:env(safe-area-inset-top,0px);--safeB:env(safe-area-inset-bottom,0px);--safeL:env(safe-area-inset-left,0px);--safeR:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;color:var(--ink);background:linear-gradient(135deg,#f9effb,#f8f4ff 52%,#eef5ff)}
+button,input,select{font:inherit}
+button{color:var(--ink)}
+.app{height:100dvh;padding:calc(8px + var(--safeT)) calc(10px + var(--safeR)) calc(8px + var(--safeB)) calc(10px + var(--safeL));display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:8px}
+.topbar,.tabs,.tray,.panel{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.topbar{border-radius:22px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:58px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;font-size:22px;background:linear-gradient(135deg,#ffd4ea,#dcd1ff 58%,#d7eaff)}
+.title{min-width:0}.title h1{margin:0;font-size:clamp(1.2rem,2vw,1.75rem);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title small{display:block;color:var(--ink2);font-weight:700;margin-top:4px}
+.actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.btn{border:1px solid #ded2ef;background:linear-gradient(180deg,#fff,#f8f3ff);border-radius:13px;padding:9px 11px;font-weight:800;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.9)}.btn.primary{background:linear-gradient(135deg,#8e72f4,#735ce5);border-color:#735ce5;color:white}.btn.magic{background:linear-gradient(135deg,#ffe0ef,#eadcff)}
+.tabs{border-radius:18px;padding:6px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar,.chiprow::-webkit-scrollbar{display:none}.tab{flex:1 0 auto;min-width:110px;border:0;background:transparent;border-radius:12px;padding:9px 12px;font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(135deg,#eadcff,#ffe2f0);box-shadow:inset 0 0 0 1px #dac7ef}
+.workspace{min-height:0;display:grid;grid-template-columns:minmax(150px,175px) minmax(420px,1fr) minmax(180px,215px);gap:8px}
+.panel{border-radius:20px;min-height:0;overflow:auto}.left,.right{padding:12px}.panel h2{font-size:1rem;margin:0 0 10px}.subtle{font-size:.8rem;color:var(--ink2);line-height:1.35}
+.editTargets{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}.editBtn{border:1px solid #e0d4f2;background:#fff;border-radius:11px;padding:8px 5px;font-size:.82rem;font-weight:800}.editBtn.active{background:linear-gradient(135deg,#e8dcff,#ffe2ee);border-color:#bfa8eb}
+.controls{display:none}.control label{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:850;margin-bottom:5px}.controlGrid{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:6px;align-items:center}input[type=range]{width:100%;accent-color:var(--accent)}input[type=number]{width:56px;border:1px solid #e0d4f0;border-radius:9px;padding:6px 3px;text-align:center;color:var(--ink);font-weight:800;background:#fff}
+.smallActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.smallActions .btn{font-size:.78rem;padding:8px 5px}
+.stagePanel{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:6px;padding:8px;background:rgba(255,255,255,.62);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.stageTools{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.zoomControls{display:flex;align-items:center;gap:6px}.zoomVal{font-size:.8rem;font-weight:900;min-width:44px;text-align:center}.stageHint{font-size:.78rem;color:var(--ink2);font-weight:700}.stageViewport{min-height:0;overflow:auto;border-radius:16px;position:relative;background:linear-gradient(180deg,#f8f0fb,#f1f7ff);overscroll-behavior:contain}.stageInner{min-width:100%;min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:8px}.sceneShell{position:relative;flex:0 0 auto}.scene{position:absolute;left:0;top:0;width:1086px;height:1448px;transform-origin:top left;touch-action:none;user-select:none}.layerWrap{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%}.layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:50% 50%;pointer-events:none}.backgroundLayer{object-fit:cover}
+.layerList{display:grid;gap:6px}.layerRow{display:grid;grid-template-columns:32px minmax(0,1fr) 34px 34px;align-items:center;gap:5px;border:1px solid #e4daf2;background:rgba(255,255,255,.92);border-radius:11px;padding:6px}.layerName{font-size:.78rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.iconBtn{border:1px solid #e1d6f0;background:#fff;border-radius:9px;min-height:31px;font-weight:900}.iconBtn.off{opacity:.45}
+.sectionCard{border:1px solid #e7dcf3;border-radius:14px;padding:9px;background:rgba(255,255,255,.72);margin-bottom:9px}.quick{display:grid;grid-template-columns:1fr;gap:6px}.quick .btn{font-size:.8rem;padding:8px}
+.tray{border-radius:18px;padding:8px 10px;min-height:78px}.trayTitle{font-size:.8rem;font-weight:900;margin-bottom:6px;color:var(--ink2)}.chiprow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}.chip{flex:0 0 auto;border:1px solid #e1d6ef;background:#fff;border-radius:999px;padding:9px 13px;font-size:.82rem;font-weight:850;cursor:pointer;white-space:nowrap}.chip.active{background:linear-gradient(135deg,#8e72f4,#755ee7);border-color:#755ee7;color:#fff;box-shadow:0 5px 13px rgba(117,94,231,.2)}
+.toast{position:fixed;left:50%;bottom:calc(92px + var(--safeB));transform:translateX(-50%) translateY(20px);background:rgba(67,49,93,.92);color:#fff;padding:10px 14px;border-radius:13px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:9999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+@media(max-width:1120px){.workspace{grid-template-columns:145px minmax(360px,1fr) 180px}.left,.right{padding:9px}.title small{display:none}.actions .btn{padding:8px 9px}.tab{min-width:100px;padding:8px 10px}}
+@media(max-width:900px) and (orientation:portrait){html,body{overflow:auto}.app{height:auto;min-height:100dvh;grid-template-rows:auto auto auto auto}.workspace{grid-template-columns:1fr;grid-template-areas:"stage" "left" "right"}.stagePanel{grid-area:stage;height:72dvh}.left{grid-area:left;max-height:none}.right{grid-area:right;max-height:none}.panel{overflow:visible}.editTargets{grid-template-columns:repeat(4,1fr)}.controls{display:none}.tray{position:sticky;bottom:0;z-index:30}}
+@media(max-width:650px){.actions .btn span.label{display:none}.logo{width:36px;height:36px}.topbar{min-height:50px}.controls{display:none}.editTargets{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.0</h1><small>Dress up, drag, pinch, rotate and make a wallpaper</small></div></div>
+    <div class="actions">
+      <button class="btn magic" id="surpriseBtn">🎲 <span class="label">Surprise Me</span></button>
+      <button class="btn" id="matchBtn">🪄 <span class="label">Match Look</span></button>
+      <button class="btn" id="fullscreenBtn">⛶</button>
+      <button class="btn primary" id="saveBtn">💾 <span class="label">Save Wallpaper</span></button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <main class="workspace">
+    <aside class="panel left">
+      <h2 id="editTitle">Move & Resize</h2>
+      <div class="editTargets" id="editTargets"></div>
+      <div class="controls" id="controls"></div>
+      <div class="smallActions">
+        <button class="btn" id="resetTargetBtn">↻ Reset Selected</button>
+        <button class="btn" id="centerTargetBtn">◎ Center</button>
+      </div>
+      <div class="sectionCard" style="margin-top:10px">
+        <h2 style="margin-bottom:7px">Touch Controls</h2>
+        <p class="subtle" style="margin:0"><b>One finger:</b> drag to reposition.<br><b>Two fingers:</b> pinch to resize.<br><b>Rotate:</b> keep one thumb down and move your other finger around it.</p>
+      </div>
+    </aside>
+
+    <section class="stagePanel">
+      <div class="stageTools">
+        <div class="stageHint" id="stageHint">Editing Outfit • drag or pinch on the stage</div>
+        <div class="zoomControls">
+          <button class="btn" id="zoomOutBtn">−</button><span class="zoomVal" id="zoomVal">Fit</span><button class="btn" id="zoomInBtn">+</button><button class="btn" id="fitBtn">Fit</button>
+        </div>
+      </div>
+      <div class="stageViewport" id="stageViewport"><div class="stageInner"><div class="sceneShell" id="sceneShell"><div class="scene" id="scene">
+        <div class="layerWrap" id="backgroundWrap"><img class="layer backgroundLayer" id="backgroundLayer" alt="Background"></div>
+        <div class="layerWrap" id="outfitWrap" data-layer="outfit"><img class="layer" id="outfitLayer" alt="Outfit"></div>
+        <div class="layerWrap" id="backHairWrap" data-layer="backHair"><img class="layer" id="backHairLayer" alt="Back hair"></div>
+        <div class="layerWrap" id="baseHeadWrap" data-layer="baseHead"><img class="layer" id="baseHeadLayer" src="assets/base_head.webp" alt="Megan base head"></div>
+        <div class="layerWrap" id="makeupWrap" data-layer="makeup"><img class="layer" id="makeupLayer" alt="Makeup"></div>
+        <div class="layerWrap" id="frontHairWrap" data-layer="frontHair"><img class="layer" id="frontHairLayer" alt="Front hair"></div>
+        <div class="layerWrap" id="headpieceWrap" data-layer="headpiece"><img class="layer" id="headpieceLayer" alt="Headpiece"></div>
+        <div class="layerWrap" id="effectWrap" data-layer="effect"><img class="layer" id="effectLayer" alt="Magic effect"></div>
+      </div></div></div></div>
+    </section>
+
+    <aside class="panel right">
+      <div class="sectionCard"><h2>Layer Order</h2><div class="subtle" style="margin-bottom:7px">Top item appears in front.</div><div class="layerList" id="layerList"></div></div>
+      <div class="sectionCard"><h2>Quick Actions</h2><div class="quick">
+        <button class="btn" id="resetLookBtn">↻ Reset Look</button>
+      </div></div>
+      <div class="sectionCard"><h2>Current Look</h2><div class="subtle" id="lookSummary"></div></div>
+    </aside>
+  </main>
+
+  <section class="tray"><div class="trayTitle" id="trayTitle">Outfit</div><div class="chiprow" id="chiprow"></div></section>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+const BW=1086,BH=1448;
+const A='assets/';
+const HAIR=[
+{id:'frenchBraids',label:'French Braids',back:A+'french_back.webp',front:A+'french_front.webp',backCfg:{x:8,y:10,scale:112.5,rotate:-5.1,opacity:100},frontCfg:{x:8,y:10,scale:112.5,rotate:-5.1,opacity:100}},
+{id:'twinBraids',label:'Twin Braids',back:A+'twin_back.webp',front:A+'twin_front.webp',backCfg:{x:0,y:14,scale:108.5,rotate:0,opacity:100},frontCfg:{x:0,y:14,scale:108.5,rotate:0,opacity:100}},
+{id:'longWaves',label:'Long Waves',back:A+'waves_back.webp',front:A+'waves_front.webp',backCfg:{x:5,y:90,scale:116,rotate:-2.5,opacity:100},frontCfg:{x:4,y:90,scale:116,rotate:-2.5,opacity:100}},
+{id:'halfUp',label:'Half Up',back:A+'half_back.webp',front:A+'half_front.webp',backCfg:{x:6,y:25,scale:112.5,rotate:-2,opacity:100},frontCfg:{x:6,y:25,scale:112.5,rotate:-2,opacity:100}},
+{id:'highPony',label:'High Pony',back:A+'pony_back.webp',front:A+'pony_front.webp',backCfg:{x:51,y:-54,scale:103,rotate:-2.5,opacity:100},frontCfg:{x:-8,y:-119,scale:103.5,rotate:-2.5,opacity:100}}
+];
+const HEADPIECES=[
+{id:'none',label:'None',img:''},
+{id:'flowerCrown',label:'Flower Crown',img:A+'flower_crown.webp',cfg:{x:-5,y:-186,scale:95.5,rotate:0,opacity:100}},
+{id:'earthElfCirclet',label:'Earth Elf Circlet',img:A+'elf_circlet.webp',cfg:{x:0,y:-205,scale:91,rotate:-3.6,opacity:100}},
+{id:'seashellTiara',label:'Seashell Tiara',img:A+'seashell_tiara.webp',cfg:{x:-7,y:-240,scale:98,rotate:-4.5,opacity:100}},
+{id:'moonCrown',label:'Moon Crown',img:A+'moon_crown.webp',cfg:{x:-13,y:-228,scale:91,rotate:-3.9,opacity:100}},
+{id:'sunCrown',label:'Sun Crown',img:A+'sun_crown.webp',cfg:{x:-12,y:-240,scale:94,rotate:-6.6,opacity:100}},
+{id:'iceCrystalTiara',label:'Ice Crystal Tiara',img:A+'ice_tiara.webp',cfg:{x:-8,y:-190,scale:101,rotate:-6.2,opacity:100}},
+{id:'butterflyCrown',label:'Butterfly Crown',img:A+'butterfly_crown.webp',cfg:{x:-13,y:-240,scale:100.5,rotate:-6.3,opacity:100}},
+{id:'rainbowUnicornHeadband',label:'Unicorn Headband',img:A+'unicorn_headband.webp',cfg:{x:-31,y:-240,scale:105,rotate:-9.1,opacity:100}}
+];
+const MAKEUP=[
+{id:'none',label:'None',img:''},
+{id:'naturalGlow',label:'Natural Glow',img:A+'natural_glow.webp',cfg:{x:16,y:6,scale:84,rotate:-5.6,opacity:100}},
+{id:'flowerFairy',label:'Flower Fairy',img:A+'flower_fairy.webp',cfg:{x:15,y:4,scale:80.5,rotate:-5.8,opacity:100}},
+{id:'oceanShimmer',label:'Ocean Shimmer',img:A+'ocean_shimmer.webp',cfg:{x:6,y:11,scale:78,rotate:-5.8,opacity:100}},
+{id:'moonStarlight',label:'Moon Starlight',img:A+'moon_starlight.webp',cfg:{x:11,y:14,scale:78,rotate:-5.8,opacity:100}},
+{id:'snowflakeFrost',label:'Snowflake Frost',img:A+'snowflake_frost.webp',cfg:{x:6,y:-9,scale:78,rotate:-7.6,opacity:75}},
+{id:'butterflySparkle',label:'Butterfly Sparkle',img:A+'butterfly_sparkle.webp',cfg:{x:12,y:-22,scale:84,rotate:-7.2,opacity:100}}
+];
+const OUTFITS=[
+{id:'flowerPrincess',label:'Flower Princess',img:A+'outfit_flower.webp'},
+{id:'moonPrincess',label:'Moon Princess',img:A+'outfit_moon.webp'},
+{id:'starPrincess',label:'Star Princess',img:A+'outfit_star.webp'},
+{id:'icePrincess',label:'Ice Princess',img:A+'outfit_ice.webp'},
+{id:'oceanPrincess',label:'Ocean Princess',img:A+'outfit_ocean.webp'},
+{id:'butterflyPrincess',label:'Butterfly Princess',img:A+'outfit_butterfly.webp'},
+{id:'gardenPrincess',label:'Garden Princess',img:A+'outfit_garden.webp'},
+{id:'royalPrincess',label:'Royal Princess',img:A+'outfit_royal.webp'}
+];
+const BACKGROUNDS=[
+{id:'royalBedroom',label:'Royal Bedroom',img:A+'bg_bedroom.webp'},
+{id:'castleGarden',label:'Castle Garden',img:A+'bg_garden.webp'},
+{id:'skyPalace',label:'Sky Palace',img:A+'bg_sky.webp'},
+{id:'starship',label:'Starship',img:A+'bg_starship.webp'},
+{id:'moonBase',label:'Moon Base',img:A+'bg_moon.webp'},
+{id:'observatory',label:'Observatory',img:A+'bg_observatory.webp'},
+{id:'runway',label:'Fashion Runway',img:A+'bg_runway.webp'},
+{id:'atelier',label:'Fashion Atelier',img:A+'bg_atelier.webp'},
+{id:'galaStage',label:'Princess Gala',img:A+'bg_gala.webp'},
+{id:'paris',label:'Paris Boutique',img:A+'bg_paris.webp'}
+];
+const EFFECTS=[
+{id:'none',label:'None',img:''},
+{id:'sakura',label:'Sakura Bloom',img:A+'fx_sakura.webp'},
+{id:'celestialPortal',label:'Celestial Portal',img:A+'fx_portal.webp'},
+{id:'stardust',label:'Stardust',img:A+'fx_stardust.webp'},
+{id:'iceCrystal',label:'Ice Crystal',img:A+'fx_ice.webp'},
+{id:'oceanPearl',label:'Ocean Pearl',img:A+'fx_ocean.webp'},
+{id:'butterflyGlow',label:'Butterfly Glow',img:A+'fx_butterfly.webp'},
+{id:'enchantedGarden',label:'Enchanted Garden',img:A+'fx_garden.webp'},
+{id:'royalHeart',label:'Royal Heart',img:A+'fx_royal.webp'}
+];
+const CATEGORIES={background:{label:'Background',items:BACKGROUNDS},outfit:{label:'Outfit',items:OUTFITS},hair:{label:'Hairstyle',items:HAIR},headpiece:{label:'Headpiece',items:HEADPIECES},makeup:{label:'Makeup',items:MAKEUP},effect:{label:'Magic Effect',items:EFFECTS}};
+const DEFAULT_OUTFIT={x:-1,y:285,scale:128,rotate:0,opacity:100};
+const DEFAULT_HEAD={x:0,y:-505,scale:28,rotate:0,opacity:100};
+const DEFAULT_BG={x:0,y:0,scale:100,rotate:0,opacity:100};
+const DEFAULT_FX={x:0,y:0,scale:100,rotate:0,opacity:100};
+const DEFAULT_ORDER=['outfit','backHair','baseHead','makeup','frontHair','headpiece','effect']; // back -> front
+const LAYER_LABELS={outfit:'Outfit',backHair:'Back Hair',baseHead:'Base Head',makeup:'Makeup',frontHair:'Front Hair',headpiece:'Headpiece',effect:'Magic Effect'};
+const MATCH={
+flowerPrincess:{background:'castleGarden',hair:'longWaves',headpiece:'flowerCrown',makeup:'flowerFairy',effect:'sakura'},
+moonPrincess:{background:'skyPalace',hair:'frenchBraids',headpiece:'moonCrown',makeup:'moonStarlight',effect:'celestialPortal'},
+starPrincess:{background:'observatory',hair:'highPony',headpiece:'sunCrown',makeup:'moonStarlight',effect:'stardust'},
+icePrincess:{background:'moonBase',hair:'longWaves',headpiece:'iceCrystalTiara',makeup:'snowflakeFrost',effect:'iceCrystal'},
+oceanPrincess:{background:'skyPalace',hair:'longWaves',headpiece:'seashellTiara',makeup:'oceanShimmer',effect:'oceanPearl'},
+butterflyPrincess:{background:'castleGarden',hair:'halfUp',headpiece:'butterflyCrown',makeup:'butterflySparkle',effect:'butterflyGlow'},
+gardenPrincess:{background:'castleGarden',hair:'halfUp',headpiece:'earthElfCirclet',makeup:'flowerFairy',effect:'enchantedGarden'},
+royalPrincess:{background:'galaStage',hair:'halfUp',headpiece:'sunCrown',makeup:'naturalGlow',effect:'royalHeart'}
+};
+const DEFAULT_SELECTION={background:'castleGarden',outfit:'flowerPrincess',hair:'longWaves',headpiece:'flowerCrown',makeup:'flowerFairy',effect:'sakura'};
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function mapDefaults(items,base){return Object.fromEntries(items.filter(x=>x.id!=='none').map(x=>[x.id,clone(base)]))}
+function newState(){return{selection:clone(DEFAULT_SELECTION),activeCategory:'outfit',editTarget:'outfit',headGroup:clone(DEFAULT_HEAD),outfits:mapDefaults(OUTFITS,DEFAULT_OUTFIT),backgrounds:mapDefaults(BACKGROUNDS,DEFAULT_BG),effects:mapDefaults(EFFECTS,DEFAULT_FX),layerOrder:DEFAULT_ORDER.slice(),visible:{outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},viewZoom:100}}
+const STORAGE='megan-dollmaker-2-state-v1';
+let state=loadState();
+function loadState(){
+  try{const raw=localStorage.getItem(STORAGE);if(raw){const s=Object.assign(newState(),JSON.parse(raw));normalizeState(s);return s}}catch(e){}
+  const s=newState();
+  // Best-effort migration from the outfit calibrator when testing locally in the same browser origin.
+  for(const key of ['megan-outfit-calibrator-v4','megan-outfit-calibrator-v3']){try{const raw=localStorage.getItem(key);if(!raw)continue;const p=JSON.parse(raw);if(p.headGroup)Object.assign(s.headGroup,p.headGroup);const o=p.outfits||p;for(const id in s.outfits)if(o[id])Object.assign(s.outfits[id],o[id]);if(Array.isArray(p.layerOrder))s.layerOrder=p.layerOrder.filter(x=>DEFAULT_ORDER.includes(x));break}catch(e){}}
+  normalizeState(s);return s
+}
+function normalizeState(s){
+  for(const key of DEFAULT_ORDER)if(!s.layerOrder.includes(key))s.layerOrder.push(key);
+  s.layerOrder=s.layerOrder.filter((x,i,a)=>DEFAULT_ORDER.includes(x)&&a.indexOf(x)===i);
+  s.outfits=Object.assign(mapDefaults(OUTFITS,DEFAULT_OUTFIT),s.outfits||{});s.backgrounds=Object.assign(mapDefaults(BACKGROUNDS,DEFAULT_BG),s.backgrounds||{});s.effects=Object.assign(mapDefaults(EFFECTS,DEFAULT_FX),s.effects||{});s.visible=Object.assign({outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},s.visible||{});s.selection=Object.assign(clone(DEFAULT_SELECTION),s.selection||{});
+}
+function saveState(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){}}
+const $=id=>document.getElementById(id);
+const els={tabs:$('tabs'),chiprow:$('chiprow'),trayTitle:$('trayTitle'),controls:$('controls'),editTargets:$('editTargets'),editTitle:$('editTitle'),stageHint:$('stageHint'),stageViewport:$('stageViewport'),scene:$('scene'),sceneShell:$('sceneShell'),zoomVal:$('zoomVal'),layerList:$('layerList'),lookSummary:$('lookSummary'),backgroundWrap:$('backgroundWrap'),backgroundLayer:$('backgroundLayer'),outfitWrap:$('outfitWrap'),outfitLayer:$('outfitLayer'),backHairWrap:$('backHairWrap'),backHairLayer:$('backHairLayer'),baseHeadWrap:$('baseHeadWrap'),baseHeadLayer:$('baseHeadLayer'),makeupWrap:$('makeupWrap'),makeupLayer:$('makeupLayer'),frontHairWrap:$('frontHairWrap'),frontHairLayer:$('frontHairLayer'),headpieceWrap:$('headpieceWrap'),headpieceLayer:$('headpieceLayer'),effectWrap:$('effectWrap'),effectLayer:$('effectLayer'),toast:$('toast')};
+const layerWraps={outfit:els.outfitWrap,backHair:els.backHairWrap,baseHead:els.baseHeadWrap,makeup:els.makeupWrap,frontHair:els.frontHairWrap,headpiece:els.headpieceWrap,effect:els.effectWrap};
+function item(arr,id){return arr.find(x=>x.id===id)}
+function transform(el,cfg){el.style.transform=`translate(${cfg.x}px,${cfg.y}px) scale(${cfg.scale/100}) rotate(${cfg.rotate}deg)`;el.style.opacity=cfg.opacity/100}
+function currentCfg(target=state.editTarget){if(target==='head')return state.headGroup;if(target==='outfit')return state.outfits[state.selection.outfit];if(target==='background')return state.backgrounds[state.selection.background];if(target==='effect'){if(state.selection.effect==='none')return null;return state.effects[state.selection.effect]}return null}
+function resetCfg(target){if(target==='head')state.headGroup=clone(DEFAULT_HEAD);else if(target==='outfit')state.outfits[state.selection.outfit]=clone(DEFAULT_OUTFIT);else if(target==='background')state.backgrounds[state.selection.background]=clone(DEFAULT_BG);else if(target==='effect'&&state.selection.effect!=='none')state.effects[state.selection.effect]=clone(DEFAULT_FX)}
+function applyScene(){
+ const bg=item(BACKGROUNDS,state.selection.background),out=item(OUTFITS,state.selection.outfit),hair=item(HAIR,state.selection.hair),hp=item(HEADPIECES,state.selection.headpiece),mk=item(MAKEUP,state.selection.makeup),fx=item(EFFECTS,state.selection.effect);
+ els.backgroundLayer.src=bg.img;els.outfitLayer.src=out.img;els.backHairLayer.src=hair.back;els.frontHairLayer.src=hair.front;
+ if(hp&&hp.img){els.headpieceLayer.src=hp.img;els.headpieceLayer.style.display='block'}else els.headpieceLayer.style.display='none';
+ if(mk&&mk.img){els.makeupLayer.src=mk.img;els.makeupLayer.style.display='block'}else els.makeupLayer.style.display='none';
+ if(fx&&fx.img){els.effectLayer.src=fx.img;els.effectLayer.style.display='block'}else els.effectLayer.style.display='none';
+ transform(els.backgroundLayer,state.backgrounds[state.selection.background]);transform(els.outfitLayer,state.outfits[state.selection.outfit]);transform(els.backHairLayer,hair.backCfg);transform(els.frontHairLayer,hair.frontCfg);if(hp&&hp.cfg)transform(els.headpieceLayer,hp.cfg);if(mk&&mk.cfg)transform(els.makeupLayer,mk.cfg);if(fx&&fx.img)transform(els.effectLayer,state.effects[state.selection.effect]);
+ const hg=`translate(${state.headGroup.x}px,${state.headGroup.y}px) scale(${state.headGroup.scale/100}) rotate(${state.headGroup.rotate}deg)`;
+ for(const key of ['backHair','baseHead','makeup','frontHair','headpiece']){layerWraps[key].style.transform=hg;layerWraps[key].style.opacity=state.headGroup.opacity/100}
+ els.backgroundWrap.style.zIndex='0';state.layerOrder.forEach((k,i)=>{layerWraps[k].style.zIndex=String(i+1);layerWraps[k].style.display=state.visible[k]?'block':'none'});
+ if(state.selection.makeup==='none')els.makeupWrap.style.display='none';if(state.selection.headpiece==='none')els.headpieceWrap.style.display='none';if(state.selection.effect==='none')els.effectWrap.style.display='none';
+ els.lookSummary.innerHTML=`<b>${out.label}</b><br>${hair.label} · ${hp.label} · ${mk.label}<br>${bg.label} · ${fx.label}`;
+}
+function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit')state.editTarget='outfit';if(key==='background')state.editTarget='background';if(key==='effect')state.editTarget='effect';if(['hair','headpiece','makeup'].includes(key))state.editTarget='head';renderAll();saveState()};els.tabs.appendChild(b)}}
+function renderTray(){const c=CATEGORIES[state.activeCategory];els.trayTitle.textContent=c.label;els.chiprow.innerHTML='';for(const it of c.items){const b=document.createElement('button');b.className='chip'+(state.selection[state.activeCategory]===it.id?' active':'');b.textContent=it.label;b.onclick=()=>{state.selection[state.activeCategory]=it.id;if(state.activeCategory==='effect'&&it.id==='none'&&state.editTarget==='effect')state.editTarget='outfit';applyScene();renderTray();renderControls();renderLayers();saveState()};els.chiprow.appendChild(b)}}
+function renderEditTargets(){const opts=[['outfit','Outfit'],['head','Head'],['background','Background'],['effect','Effect']];els.editTargets.innerHTML='';for(const [k,label] of opts){const b=document.createElement('button');b.className='editBtn'+(state.editTarget===k?' active':'');b.textContent=label;b.disabled=(k==='effect'&&state.selection.effect==='none');b.onclick=()=>{state.editTarget=k;renderControls();renderEditTargets();saveState()};els.editTargets.appendChild(b)}}
+function renderControls(){
+  renderEditTargets();
+  const names={outfit:'Outfit',head:'Head',background:'Background',effect:'Magic Effect'};
+  els.editTitle.textContent='Move & Resize — '+names[state.editTarget];
+  els.stageHint.textContent=`Editing ${names[state.editTarget]} • drag, pinch or rotate on the stage`;
+  els.controls.innerHTML='';
+}
+function renderLayers(){els.layerList.innerHTML='';const front=[...state.layerOrder].reverse();front.forEach((k,i)=>{const row=document.createElement('div');row.className='layerRow';const eye=document.createElement('button');eye.className='iconBtn'+(state.visible[k]?'':' off');eye.textContent=state.visible[k]?'👁':'○';eye.onclick=()=>{state.visible[k]=!state.visible[k];applyScene();renderLayers();saveState()};const name=document.createElement('div');name.className='layerName';name.textContent=LAYER_LABELS[k];const up=document.createElement('button');up.className='iconBtn';up.textContent='↑';up.disabled=i===0;up.onclick=()=>moveLayer(k,1);const down=document.createElement('button');down.className='iconBtn';down.textContent='↓';down.disabled=i===front.length-1;down.onclick=()=>moveLayer(k,-1);row.append(eye,name,up,down);els.layerList.appendChild(row)})}
+function moveLayer(k,dir){const i=state.layerOrder.indexOf(k),j=i+dir;if(j<0||j>=state.layerOrder.length)return;[state.layerOrder[i],state.layerOrder[j]]=[state.layerOrder[j],state.layerOrder[i]];applyScene();renderLayers();saveState()}
+let fitScale=1;
+function updateView(){const r=els.stageViewport.getBoundingClientRect();fitScale=Math.min(Math.max(100,r.width-18)/BW,Math.max(100,r.height-18)/BH);const s=fitScale*(state.viewZoom/100);els.scene.style.transform=`scale(${s})`;els.sceneShell.style.width=(BW*s)+'px';els.sceneShell.style.height=(BH*s)+'px';els.zoomVal.textContent=state.viewZoom===100?'Fit':state.viewZoom+'%'}
+function setViewZoom(z){state.viewZoom=Math.max(50,Math.min(180,Math.round(z/10)*10));updateView();saveState()}
+function renderAll(){renderTabs();renderTray();renderControls();renderLayers();applyScene();requestAnimationFrame(updateView)}
+function toast(t){els.toast.textContent=t;els.toast.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>els.toast.classList.remove('show'),1800)}
+$('resetTargetBtn').onclick=()=>{resetCfg(state.editTarget);renderControls();applyScene();saveState()};$('centerTargetBtn').onclick=()=>{const c=currentCfg();if(!c)return;c.x=0;c.y=0;renderControls();applyScene();saveState()};$('zoomOutBtn').onclick=()=>setViewZoom(state.viewZoom-10);$('zoomInBtn').onclick=()=>setViewZoom(state.viewZoom+10);$('fitBtn').onclick=()=>setViewZoom(100);
+$('matchBtn').onclick=()=>{const m=MATCH[state.selection.outfit];if(m)Object.assign(state.selection,m);renderAll();saveState();toast('Look matched ✨')};
+$('surpriseBtn').onclick=()=>{const pick=a=>a[Math.floor(Math.random()*a.length)].id;state.selection={background:pick(BACKGROUNDS),outfit:pick(OUTFITS),hair:pick(HAIR),headpiece:pick(HEADPIECES.filter(x=>x.id!=='none')),makeup:pick(MAKEUP.filter(x=>x.id!=='none')),effect:pick(EFFECTS.filter(x=>x.id!=='none'))};renderAll();saveState();toast('Surprise! 🎲')};
+$('resetLookBtn').onclick=()=>{if(!confirm('Reset the whole dollmaker to its starting look and positions?'))return;state=newState();renderAll();saveState();toast('Look reset')};
+$('fullscreenBtn').onclick=async()=>{try{const el=document.documentElement;if(document.fullscreenElement)await document.exitFullscreen();else if(el.requestFullscreen)await el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();else toast('On iPad: Add to Home Screen for a full-screen app view.')}catch(e){toast('On iPad: Add to Home Screen for a full-screen app view.')}};
+// Direct touch/mouse manipulation: drag, pinch and two-finger twist.
+const pointers=new Map();let gesture=null;
+function pointerPair(){return [...pointers.values()].slice(0,2)}
+function pairDistance(p){return Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)}
+function pairAngle(p){return Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x)}
+function normalizeDeg(d){while(d>180)d-=360;while(d<-180)d+=360;return d}
+els.scene.addEventListener('pointerdown',e=>{
+  const c=currentCfg();if(!c)return;
+  els.scene.setPointerCapture?.(e.pointerId);
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1){
+    gesture={type:'drag',x:e.clientX,y:e.clientY,startX:c.x,startY:c.y};
+  }else if(pointers.size>=2){
+    const p=pointerPair();
+    gesture={type:'transform',dist:Math.max(1,pairDistance(p)),angle:pairAngle(p),scale:c.scale,rotate:c.rotate};
+  }
+  e.preventDefault();
+});
+els.scene.addEventListener('pointermove',e=>{
+  if(!pointers.has(e.pointerId)||!gesture)return;
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const c=currentCfg();if(!c)return;
+  const sceneScale=fitScale*(state.viewZoom/100);
+  if(pointers.size===1&&gesture.type==='drag'){
+    c.x=gesture.startX+(e.clientX-gesture.x)/sceneScale;
+    c.y=gesture.startY+(e.clientY-gesture.y)/sceneScale;
+  }else if(pointers.size>=2){
+    const p=pointerPair(),d=Math.max(1,pairDistance(p)),a=pairAngle(p);
+    if(gesture.type!=='transform')gesture={type:'transform',dist:d,angle:a,scale:c.scale,rotate:c.rotate};
+    c.scale=Math.max(10,Math.min(220,gesture.scale*(d/gesture.dist)));
+    // Hold one thumb still and move the other finger around it to rotate.
+    c.rotate=normalizeDeg(gesture.rotate+(a-gesture.angle)*180/Math.PI);
+  }
+  applyScene();
+  e.preventDefault();
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size===0){gesture=null;saveState();}
+  else if(pointers.size===1){
+    const p=[...pointers.values()][0],c=currentCfg();
+    gesture={type:'drag',x:p.x,y:p.y,startX:c.x,startY:c.y};
+    saveState();
+  }else{
+    const p=pointerPair(),c=currentCfg();
+    gesture={type:'transform',dist:Math.max(1,pairDistance(p)),angle:pairAngle(p),scale:c.scale,rotate:c.rotate};
+  }
+}
+els.scene.addEventListener('pointerup',endPointer);els.scene.addEventListener('pointercancel',endPointer);
+// Image helpers for export
+function ready(img){return img.complete&&img.naturalWidth>0?Promise.resolve():new Promise((res,rej)=>{img.onload=()=>res();img.onerror=()=>rej()})}
+function applyCanvasTransform(ctx,cfg){ctx.translate(BW/2+cfg.x,BH/2+cfg.y);ctx.rotate(cfg.rotate*Math.PI/180);ctx.scale(cfg.scale/100,cfg.scale/100);ctx.translate(-BW/2,-BH/2);ctx.globalAlpha*=cfg.opacity/100}
+function drawContain(ctx,img){const s=Math.min(BW/img.naturalWidth,BH/img.naturalHeight),w=img.naturalWidth*s,h=img.naturalHeight*s;ctx.drawImage(img,(BW-w)/2,(BH-h)/2,w,h)}
+function drawCover(ctx,img){const s=Math.max(BW/img.naturalWidth,BH/img.naturalHeight),w=img.naturalWidth*s,h=img.naturalHeight*s;ctx.drawImage(img,(BW-w)/2,(BH-h)/2,w,h)}
+function drawLayer(ctx,img,cfg,group=null,cover=false){ctx.save();if(group)applyCanvasTransform(ctx,group);applyCanvasTransform(ctx,cfg);cover?drawCover(ctx,img):drawContain(ctx,img);ctx.restore()}
+async function renderWallpaper(){
+ const imgs=[els.backgroundLayer,els.outfitLayer,els.backHairLayer,els.baseHeadLayer,els.frontHairLayer];if(state.selection.makeup!=='none')imgs.push(els.makeupLayer);if(state.selection.headpiece!=='none')imgs.push(els.headpieceLayer);if(state.selection.effect!=='none')imgs.push(els.effectLayer);await Promise.all(imgs.map(ready));
+ const c=document.createElement('canvas');c.width=2048;c.height=2732;const ctx=c.getContext('2d');ctx.scale(c.width/BW,c.height/BH);drawLayer(ctx,els.backgroundLayer,state.backgrounds[state.selection.background],null,true);
+ const hair=item(HAIR,state.selection.hair),hp=item(HEADPIECES,state.selection.headpiece),mk=item(MAKEUP,state.selection.makeup),fx=item(EFFECTS,state.selection.effect);
+ const render={outfit:()=>drawLayer(ctx,els.outfitLayer,state.outfits[state.selection.outfit]),backHair:()=>drawLayer(ctx,els.backHairLayer,hair.backCfg,state.headGroup),baseHead:()=>drawLayer(ctx,els.baseHeadLayer,{x:0,y:0,scale:100,rotate:0,opacity:100},state.headGroup),makeup:()=>{if(mk.id!=='none')drawLayer(ctx,els.makeupLayer,mk.cfg,state.headGroup)},frontHair:()=>drawLayer(ctx,els.frontHairLayer,hair.frontCfg,state.headGroup),headpiece:()=>{if(hp.id!=='none')drawLayer(ctx,els.headpieceLayer,hp.cfg,state.headGroup)},effect:()=>{if(fx.id!=='none')drawLayer(ctx,els.effectLayer,state.effects[fx.id])}};
+ state.layerOrder.forEach(k=>{if(state.visible[k]&&render[k])render[k]()});return c
+}
+$('saveBtn').onclick=async()=>{try{toast('Making wallpaper…');const c=await renderWallpaper();const blob=await new Promise(r=>c.toBlob(r,'image/png'));const file=new File([blob],'Megan_Magic_Wallpaper.png',{type:'image/png'});if(navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:"Megan's Magic Wallpaper"})}else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast('Wallpaper saved')} }catch(e){console.error(e);toast('Could not save wallpaper')}};
+const ro=new ResizeObserver(()=>updateView());ro.observe(els.stageViewport);
+renderAll();
+</script>
+</body>
+</html>
