@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Megan's Magic Dollmaker 2.0</title>
+<title>Megan's Magic Dollmaker 2.2</title>
 <style>
 :root{
   --ink:#4e3b78;--ink2:#796492;--line:#e6d9f3;--accent:#8867ef;--accent2:#f6d9ee;
@@ -23,27 +23,46 @@ button{color:var(--ink)}
 .title{min-width:0}.title h1{margin:0;font-size:clamp(1.2rem,2vw,1.75rem);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title small{display:block;color:var(--ink2);font-weight:700;margin-top:4px}
 .actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.btn{border:1px solid #ded2ef;background:linear-gradient(180deg,#fff,#f8f3ff);border-radius:13px;padding:9px 11px;font-weight:800;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.9)}.btn.primary{background:linear-gradient(135deg,#8e72f4,#735ce5);border-color:#735ce5;color:white}.btn.magic{background:linear-gradient(135deg,#ffe0ef,#eadcff)}
 .tabs{border-radius:18px;padding:6px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar,.chiprow::-webkit-scrollbar{display:none}.tab{flex:1 0 auto;min-width:110px;border:0;background:transparent;border-radius:12px;padding:9px 12px;font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(135deg,#eadcff,#ffe2f0);box-shadow:inset 0 0 0 1px #dac7ef}
-.workspace{min-height:0;display:grid;grid-template-columns:minmax(150px,175px) minmax(420px,1fr) minmax(180px,215px);gap:8px}
-.panel{border-radius:20px;min-height:0;overflow:auto}.left,.right{padding:12px}.panel h2{font-size:1rem;margin:0 0 10px}.subtle{font-size:.8rem;color:var(--ink2);line-height:1.35}
-.editTargets{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}.editBtn{border:1px solid #e0d4f2;background:#fff;border-radius:11px;padding:8px 5px;font-size:.82rem;font-weight:800}.editBtn.active{background:linear-gradient(135deg,#e8dcff,#ffe2ee);border-color:#bfa8eb}
-.controls{display:none}.control label{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:850;margin-bottom:5px}.controlGrid{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:6px;align-items:center}input[type=range]{width:100%;accent-color:var(--accent)}input[type=number]{width:56px;border:1px solid #e0d4f0;border-radius:9px;padding:6px 3px;text-align:center;color:var(--ink);font-weight:800;background:#fff}
-.smallActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.smallActions .btn{font-size:.78rem;padding:8px 5px}
-.stagePanel{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:6px;padding:8px;background:rgba(255,255,255,.62);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
-.stageTools{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.zoomControls{display:flex;align-items:center;gap:6px}.zoomVal{font-size:.8rem;font-weight:900;min-width:44px;text-align:center}.stageHint{font-size:.78rem;color:var(--ink2);font-weight:700}.stageViewport{min-height:0;overflow:auto;border-radius:16px;position:relative;background:linear-gradient(180deg,#f8f0fb,#f1f7ff);overscroll-behavior:contain}.stageInner{min-width:100%;min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:8px}.sceneShell{position:relative;flex:0 0 auto}.scene{position:absolute;left:0;top:0;width:1086px;height:1448px;transform-origin:top left;touch-action:none;user-select:none}.layerWrap{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%}.layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:50% 50%;pointer-events:none}.backgroundLayer{object-fit:cover}
-.layerList{display:grid;gap:6px}.layerRow{display:grid;grid-template-columns:32px minmax(0,1fr) 34px 34px;align-items:center;gap:5px;border:1px solid #e4daf2;background:rgba(255,255,255,.92);border-radius:11px;padding:6px}.layerName{font-size:.78rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.iconBtn{border:1px solid #e1d6f0;background:#fff;border-radius:9px;min-height:31px;font-weight:900}.iconBtn.off{opacity:.45}
-.sectionCard{border:1px solid #e7dcf3;border-radius:14px;padding:9px;background:rgba(255,255,255,.72);margin-bottom:9px}.quick{display:grid;grid-template-columns:1fr;gap:6px}.quick .btn{font-size:.8rem;padding:8px}
-.tray{border-radius:18px;padding:8px 10px;min-height:78px}.trayTitle{font-size:.8rem;font-weight:900;margin-bottom:6px;color:var(--ink2)}.chiprow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}.chip{flex:0 0 auto;border:1px solid #e1d6ef;background:#fff;border-radius:999px;padding:9px 13px;font-size:.82rem;font-weight:850;cursor:pointer;white-space:nowrap}.chip.active{background:linear-gradient(135deg,#8e72f4,#755ee7);border-color:#755ee7;color:#fff;box-shadow:0 5px 13px rgba(117,94,231,.2)}
-.toast{position:fixed;left:50%;bottom:calc(92px + var(--safeB));transform:translateX(-50%) translateY(20px);background:rgba(67,49,93,.92);color:#fff;padding:10px 14px;border-radius:13px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:9999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.workspace{min-height:0;position:relative}
+.panel{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(16px);border-radius:20px}
+.controls,.left,.right,.editTargets,.smallActions{display:none!important}
+.stagePanel{height:100%;min-height:0;position:relative;display:grid;grid-template-rows:auto minmax(0,1fr);gap:6px;padding:7px;background:rgba(255,255,255,.64);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.stageTools{min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 3px}
+.stageHint{font-size:.82rem;color:var(--ink2);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stageActions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.stageActions .btn{padding:8px 10px;font-size:.8rem;border-radius:11px}
+.stageViewport{min-height:0;overflow:hidden;border-radius:16px;position:relative;background:linear-gradient(180deg,#faf4fd,#f1f7ff);overscroll-behavior:contain}
+.stageInner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:6px}
+.sceneShell{position:relative;flex:0 0 auto}
+.scene{position:absolute;left:0;top:0;width:1086px;height:1448px;transform-origin:top left;touch-action:none;user-select:none}
+.layerWrap{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%}.layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:50% 50%;pointer-events:none}.backgroundLayer{object-fit:cover}
+.layerDrawer{position:absolute;z-index:80;top:51px;right:9px;bottom:9px;width:min(250px,42vw);padding:11px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:17px;box-shadow:0 16px 38px rgba(81,60,120,.22);backdrop-filter:blur(18px);overflow:auto;transform:translateX(calc(100% + 20px));opacity:0;pointer-events:none;transition:transform .2s ease,opacity .2s ease}
+.layerDrawer.open{transform:translateX(0);opacity:1;pointer-events:auto}
+.drawerHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.drawerHead h2{font-size:.95rem;margin:0}.drawerClose{width:34px;height:34px;padding:0;border-radius:10px}
+.layerList{display:grid;gap:5px}.layerRow{display:grid;grid-template-columns:30px minmax(0,1fr) 32px 32px;align-items:center;gap:4px;border:1px solid #e4daf2;background:rgba(255,255,255,.92);border-radius:10px;padding:5px}.layerName{font-size:.76rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.iconBtn{border:1px solid #e1d6f0;background:#fff;border-radius:8px;min-height:29px;font-weight:900}.iconBtn.off{opacity:.45}
+.sectionCard{border:1px solid #e7dcf3;border-radius:12px;padding:8px;background:rgba(255,255,255,.74);margin-top:9px}.quick{display:grid;grid-template-columns:1fr;gap:6px}.quick .btn{font-size:.78rem;padding:8px}.subtle{font-size:.76rem;color:var(--ink2);line-height:1.32}
+.tray{border-radius:16px;padding:6px 9px;min-height:54px;display:flex;align-items:center}.trayTitle{display:none}.chiprow{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:1px 0;scrollbar-width:none;width:100%}.chip{flex:0 0 auto;border:1px solid #e1d6ef;background:#fff;border-radius:999px;padding:8px 12px;font-size:.8rem;font-weight:850;cursor:pointer;white-space:nowrap}.chip.active{background:linear-gradient(135deg,#8e72f4,#755ee7);border-color:#755ee7;color:#fff;box-shadow:0 4px 11px rgba(117,94,231,.19)}
+.toast{position:fixed;left:50%;bottom:calc(70px + var(--safeB));transform:translateX(-50%) translateY(20px);background:rgba(67,49,93,.92);color:#fff;padding:10px 14px;border-radius:13px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:9999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .hidden{display:none!important}
-@media(max-width:1120px){.workspace{grid-template-columns:145px minmax(360px,1fr) 180px}.left,.right{padding:9px}.title small{display:none}.actions .btn{padding:8px 9px}.tab{min-width:100px;padding:8px 10px}}
-@media(max-width:900px) and (orientation:portrait){html,body{overflow:auto}.app{height:auto;min-height:100dvh;grid-template-rows:auto auto auto auto}.workspace{grid-template-columns:1fr;grid-template-areas:"stage" "left" "right"}.stagePanel{grid-area:stage;height:72dvh}.left{grid-area:left;max-height:none}.right{grid-area:right;max-height:none}.panel{overflow:visible}.editTargets{grid-template-columns:repeat(4,1fr)}.controls{display:none}.tray{position:sticky;bottom:0;z-index:30}}
-@media(max-width:650px){.actions .btn span.label{display:none}.logo{width:36px;height:36px}.topbar{min-height:50px}.controls{display:none}.editTargets{grid-template-columns:1fr 1fr}}
+/* iPad and landscape tablets: use the height for the doll, not sidebars. */
+@media(max-height:1050px) and (orientation:landscape){
+  .app{padding:calc(5px + var(--safeT)) calc(7px + var(--safeR)) calc(5px + var(--safeB)) calc(7px + var(--safeL));gap:5px;grid-template-rows:auto auto minmax(0,1fr) auto}
+  .topbar{min-height:50px;padding:6px 8px;border-radius:18px}.logo{width:38px;height:38px;border-radius:13px;font-size:20px}.title h1{font-size:clamp(1.05rem,2vw,1.5rem)}.title small{font-size:.72rem;margin-top:2px}
+  .actions{gap:5px}.actions .btn{padding:7px 9px;border-radius:11px;font-size:.8rem}
+  .tabs{border-radius:15px;padding:4px;gap:3px}.tab{min-width:0;padding:7px 8px;font-size:.82rem}
+  .tray{min-height:48px;padding:5px 8px}.chip{padding:7px 11px;font-size:.78rem}
+  .stageTools{min-height:34px}.stageActions .btn{padding:7px 9px}.stageHint{font-size:.78rem}
+}
+@media(max-width:900px) and (orientation:portrait){
+  html,body{overflow:hidden}.app{grid-template-rows:auto auto minmax(0,1fr) auto}.title small{display:none}.actions .btn span.label{display:none}.tabs{overflow-x:auto}.tab{flex:0 0 auto;min-width:105px}.layerDrawer{width:min(280px,76vw)}
+}
+@media(max-width:650px){.logo{width:34px;height:34px}.actions .btn span.label{display:none}.brand{gap:7px}.title h1{font-size:1rem}.layerDrawer{top:47px}}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.0</h1><small>Dress up, drag, pinch, rotate and make a wallpaper</small></div></div>
+    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.2</h1><small>Dress up, drag, pinch, twist and make a wallpaper</small></div></div>
     <div class="actions">
       <button class="btn magic" id="surpriseBtn">🎲 <span class="label">Surprise Me</span></button>
       <button class="btn" id="matchBtn">🪄 <span class="label">Match Look</span></button>
@@ -55,25 +74,12 @@ button{color:var(--ink)}
   <nav class="tabs" id="tabs"></nav>
 
   <main class="workspace">
-    <aside class="panel left">
-      <h2 id="editTitle">Move & Resize</h2>
-      <div class="editTargets" id="editTargets"></div>
-      <div class="controls" id="controls"></div>
-      <div class="smallActions">
-        <button class="btn" id="resetTargetBtn">↻ Reset Selected</button>
-        <button class="btn" id="centerTargetBtn">◎ Center</button>
-      </div>
-      <div class="sectionCard" style="margin-top:10px">
-        <h2 style="margin-bottom:7px">Touch Controls</h2>
-        <p class="subtle" style="margin:0"><b>One finger:</b> drag to reposition.<br><b>Two fingers:</b> pinch to resize.<br><b>Rotate:</b> keep one thumb down and move your other finger around it.</p>
-      </div>
-    </aside>
-
     <section class="stagePanel">
       <div class="stageTools">
-        <div class="stageHint" id="stageHint">Editing Outfit • drag or pinch on the stage</div>
-        <div class="zoomControls">
-          <button class="btn" id="zoomOutBtn">−</button><span class="zoomVal" id="zoomVal">Fit</span><button class="btn" id="zoomInBtn">+</button><button class="btn" id="fitBtn">Fit</button>
+        <div class="stageHint" id="stageHint">Outfit selected • drag to move · pinch to resize · twist to rotate</div>
+        <div class="stageActions">
+          <button class="btn" id="resetTargetBtn">↻ Reset Selected</button>
+          <button class="btn" id="layersBtn">☰ Layers</button>
         </div>
       </div>
       <div class="stageViewport" id="stageViewport"><div class="stageInner"><div class="sceneShell" id="sceneShell"><div class="scene" id="scene">
@@ -86,15 +92,14 @@ button{color:var(--ink)}
         <div class="layerWrap" id="headpieceWrap" data-layer="headpiece"><img class="layer" id="headpieceLayer" alt="Headpiece"></div>
         <div class="layerWrap" id="effectWrap" data-layer="effect"><img class="layer" id="effectLayer" alt="Magic effect"></div>
       </div></div></div></div>
+      <aside class="layerDrawer" id="layerDrawer">
+        <div class="drawerHead"><h2>Layer Order</h2><button class="btn drawerClose" id="closeLayersBtn">×</button></div>
+        <div class="subtle" style="margin-bottom:7px">Top item appears in front.</div>
+        <div class="layerList" id="layerList"></div>
+        <div class="sectionCard"><h2 style="font-size:.9rem;margin:0 0 6px">Current Look</h2><div class="subtle" id="lookSummary"></div></div>
+        <div class="sectionCard"><div class="quick"><button class="btn" id="resetLookBtn">↻ Reset Look</button></div></div>
+      </aside>
     </section>
-
-    <aside class="panel right">
-      <div class="sectionCard"><h2>Layer Order</h2><div class="subtle" style="margin-bottom:7px">Top item appears in front.</div><div class="layerList" id="layerList"></div></div>
-      <div class="sectionCard"><h2>Quick Actions</h2><div class="quick">
-        <button class="btn" id="resetLookBtn">↻ Reset Look</button>
-      </div></div>
-      <div class="sectionCard"><h2>Current Look</h2><div class="subtle" id="lookSummary"></div></div>
-    </aside>
   </main>
 
   <section class="tray"><div class="trayTitle" id="trayTitle">Outfit</div><div class="chiprow" id="chiprow"></div></section>
@@ -201,7 +206,7 @@ function normalizeState(s){
 }
 function saveState(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){}}
 const $=id=>document.getElementById(id);
-const els={tabs:$('tabs'),chiprow:$('chiprow'),trayTitle:$('trayTitle'),controls:$('controls'),editTargets:$('editTargets'),editTitle:$('editTitle'),stageHint:$('stageHint'),stageViewport:$('stageViewport'),scene:$('scene'),sceneShell:$('sceneShell'),zoomVal:$('zoomVal'),layerList:$('layerList'),lookSummary:$('lookSummary'),backgroundWrap:$('backgroundWrap'),backgroundLayer:$('backgroundLayer'),outfitWrap:$('outfitWrap'),outfitLayer:$('outfitLayer'),backHairWrap:$('backHairWrap'),backHairLayer:$('backHairLayer'),baseHeadWrap:$('baseHeadWrap'),baseHeadLayer:$('baseHeadLayer'),makeupWrap:$('makeupWrap'),makeupLayer:$('makeupLayer'),frontHairWrap:$('frontHairWrap'),frontHairLayer:$('frontHairLayer'),headpieceWrap:$('headpieceWrap'),headpieceLayer:$('headpieceLayer'),effectWrap:$('effectWrap'),effectLayer:$('effectLayer'),toast:$('toast')};
+const els={tabs:$('tabs'),chiprow:$('chiprow'),trayTitle:$('trayTitle'),stageHint:$('stageHint'),stageViewport:$('stageViewport'),scene:$('scene'),sceneShell:$('sceneShell'),layerList:$('layerList'),layerDrawer:$('layerDrawer'),layersBtn:$('layersBtn'),closeLayersBtn:$('closeLayersBtn'),lookSummary:$('lookSummary'),backgroundWrap:$('backgroundWrap'),backgroundLayer:$('backgroundLayer'),outfitWrap:$('outfitWrap'),outfitLayer:$('outfitLayer'),backHairWrap:$('backHairWrap'),backHairLayer:$('backHairLayer'),baseHeadWrap:$('baseHeadWrap'),baseHeadLayer:$('baseHeadLayer'),makeupWrap:$('makeupWrap'),makeupLayer:$('makeupLayer'),frontHairWrap:$('frontHairWrap'),frontHairLayer:$('frontHairLayer'),headpieceWrap:$('headpieceWrap'),headpieceLayer:$('headpieceLayer'),effectWrap:$('effectWrap'),effectLayer:$('effectLayer'),toast:$('toast')};
 const layerWraps={outfit:els.outfitWrap,backHair:els.backHairWrap,baseHead:els.baseHeadWrap,makeup:els.makeupWrap,frontHair:els.frontHairWrap,headpiece:els.headpieceWrap,effect:els.effectWrap};
 function item(arr,id){return arr.find(x=>x.id===id)}
 function transform(el,cfg){el.style.transform=`translate(${cfg.x}px,${cfg.y}px) scale(${cfg.scale/100}) rotate(${cfg.rotate}deg)`;el.style.opacity=cfg.opacity/100}
@@ -220,28 +225,34 @@ function applyScene(){
  if(state.selection.makeup==='none')els.makeupWrap.style.display='none';if(state.selection.headpiece==='none')els.headpieceWrap.style.display='none';if(state.selection.effect==='none')els.effectWrap.style.display='none';
  els.lookSummary.innerHTML=`<b>${out.label}</b><br>${hair.label} · ${hp.label} · ${mk.label}<br>${bg.label} · ${fx.label}`;
 }
-function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit')state.editTarget='outfit';if(key==='background')state.editTarget='background';if(key==='effect')state.editTarget='effect';if(['hair','headpiece','makeup'].includes(key))state.editTarget='head';renderAll();saveState()};els.tabs.appendChild(b)}}
-function renderTray(){const c=CATEGORIES[state.activeCategory];els.trayTitle.textContent=c.label;els.chiprow.innerHTML='';for(const it of c.items){const b=document.createElement('button');b.className='chip'+(state.selection[state.activeCategory]===it.id?' active':'');b.textContent=it.label;b.onclick=()=>{state.selection[state.activeCategory]=it.id;if(state.activeCategory==='effect'&&it.id==='none'&&state.editTarget==='effect')state.editTarget='outfit';applyScene();renderTray();renderControls();renderLayers();saveState()};els.chiprow.appendChild(b)}}
-function renderEditTargets(){const opts=[['outfit','Outfit'],['head','Head'],['background','Background'],['effect','Effect']];els.editTargets.innerHTML='';for(const [k,label] of opts){const b=document.createElement('button');b.className='editBtn'+(state.editTarget===k?' active':'');b.textContent=label;b.disabled=(k==='effect'&&state.selection.effect==='none');b.onclick=()=>{state.editTarget=k;renderControls();renderEditTargets();saveState()};els.editTargets.appendChild(b)}}
+function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit')state.editTarget='outfit';if(key==='background')state.editTarget='background';if(key==='effect')state.editTarget='effect';if(['hair','headpiece','makeup'].includes(key))state.editTarget='head';els.layerDrawer.classList.remove('open');renderAll();saveState()};els.tabs.appendChild(b)}}
+function renderTray(){const c=CATEGORIES[state.activeCategory];els.trayTitle.textContent=c.label;els.chiprow.innerHTML='';for(const it of c.items){const b=document.createElement('button');b.className='chip'+(state.selection[state.activeCategory]===it.id?' active':'');b.textContent=it.label;b.onclick=()=>{state.selection[state.activeCategory]=it.id;applyScene();renderTray();renderControls();renderLayers();saveState()};els.chiprow.appendChild(b)}}
 function renderControls(){
-  renderEditTargets();
   const names={outfit:'Outfit',head:'Head',background:'Background',effect:'Magic Effect'};
-  els.editTitle.textContent='Move & Resize — '+names[state.editTarget];
-  els.stageHint.textContent=`Editing ${names[state.editTarget]} • drag, pinch or rotate on the stage`;
-  els.controls.innerHTML='';
+  const n=names[state.editTarget];
+  els.stageHint.textContent=`${n} selected • drag to move · pinch to resize · twist to rotate`;
 }
 function renderLayers(){els.layerList.innerHTML='';const front=[...state.layerOrder].reverse();front.forEach((k,i)=>{const row=document.createElement('div');row.className='layerRow';const eye=document.createElement('button');eye.className='iconBtn'+(state.visible[k]?'':' off');eye.textContent=state.visible[k]?'👁':'○';eye.onclick=()=>{state.visible[k]=!state.visible[k];applyScene();renderLayers();saveState()};const name=document.createElement('div');name.className='layerName';name.textContent=LAYER_LABELS[k];const up=document.createElement('button');up.className='iconBtn';up.textContent='↑';up.disabled=i===0;up.onclick=()=>moveLayer(k,1);const down=document.createElement('button');down.className='iconBtn';down.textContent='↓';down.disabled=i===front.length-1;down.onclick=()=>moveLayer(k,-1);row.append(eye,name,up,down);els.layerList.appendChild(row)})}
 function moveLayer(k,dir){const i=state.layerOrder.indexOf(k),j=i+dir;if(j<0||j>=state.layerOrder.length)return;[state.layerOrder[i],state.layerOrder[j]]=[state.layerOrder[j],state.layerOrder[i]];applyScene();renderLayers();saveState()}
 let fitScale=1;
-function updateView(){const r=els.stageViewport.getBoundingClientRect();fitScale=Math.min(Math.max(100,r.width-18)/BW,Math.max(100,r.height-18)/BH);const s=fitScale*(state.viewZoom/100);els.scene.style.transform=`scale(${s})`;els.sceneShell.style.width=(BW*s)+'px';els.sceneShell.style.height=(BH*s)+'px';els.zoomVal.textContent=state.viewZoom===100?'Fit':state.viewZoom+'%'}
-function setViewZoom(z){state.viewZoom=Math.max(50,Math.min(180,Math.round(z/10)*10));updateView();saveState()}
+function updateView(){
+  const r=els.stageViewport.getBoundingClientRect();
+  fitScale=Math.min(Math.max(100,r.width-12)/BW,Math.max(100,r.height-12)/BH);
+  const s=fitScale;
+  els.scene.style.transform=`scale(${s})`;
+  els.sceneShell.style.width=(BW*s)+'px';
+  els.sceneShell.style.height=(BH*s)+'px';
+}
 function renderAll(){renderTabs();renderTray();renderControls();renderLayers();applyScene();requestAnimationFrame(updateView)}
 function toast(t){els.toast.textContent=t;els.toast.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>els.toast.classList.remove('show'),1800)}
-$('resetTargetBtn').onclick=()=>{resetCfg(state.editTarget);renderControls();applyScene();saveState()};$('centerTargetBtn').onclick=()=>{const c=currentCfg();if(!c)return;c.x=0;c.y=0;renderControls();applyScene();saveState()};$('zoomOutBtn').onclick=()=>setViewZoom(state.viewZoom-10);$('zoomInBtn').onclick=()=>setViewZoom(state.viewZoom+10);$('fitBtn').onclick=()=>setViewZoom(100);
+$('resetTargetBtn').onclick=()=>{resetCfg(state.editTarget);renderControls();applyScene();saveState();toast('Reset to starting position')};
+els.layersBtn.onclick=()=>els.layerDrawer.classList.toggle('open');
+els.closeLayersBtn.onclick=()=>els.layerDrawer.classList.remove('open');
 $('matchBtn').onclick=()=>{const m=MATCH[state.selection.outfit];if(m)Object.assign(state.selection,m);renderAll();saveState();toast('Look matched ✨')};
 $('surpriseBtn').onclick=()=>{const pick=a=>a[Math.floor(Math.random()*a.length)].id;state.selection={background:pick(BACKGROUNDS),outfit:pick(OUTFITS),hair:pick(HAIR),headpiece:pick(HEADPIECES.filter(x=>x.id!=='none')),makeup:pick(MAKEUP.filter(x=>x.id!=='none')),effect:pick(EFFECTS.filter(x=>x.id!=='none'))};renderAll();saveState();toast('Surprise! 🎲')};
 $('resetLookBtn').onclick=()=>{if(!confirm('Reset the whole dollmaker to its starting look and positions?'))return;state=newState();renderAll();saveState();toast('Look reset')};
 $('fullscreenBtn').onclick=async()=>{try{const el=document.documentElement;if(document.fullscreenElement)await document.exitFullscreen();else if(el.requestFullscreen)await el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();else toast('On iPad: Add to Home Screen for a full-screen app view.')}catch(e){toast('On iPad: Add to Home Screen for a full-screen app view.')}};
+els.stageViewport.addEventListener('pointerdown',()=>{if(els.layerDrawer.classList.contains('open'))els.layerDrawer.classList.remove('open')},{capture:true});
 // Direct touch/mouse manipulation: drag, pinch and two-finger twist.
 const pointers=new Map();let gesture=null;
 function pointerPair(){return [...pointers.values()].slice(0,2)}
