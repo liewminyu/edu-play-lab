@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Megan's Magic Dollmaker 2.2</title>
+<title>Megan's Magic Dollmaker 2.3</title>
 <style>
 :root{
   --ink:#4e3b78;--ink2:#796492;--line:#e6d9f3;--accent:#8867ef;--accent2:#f6d9ee;
@@ -39,7 +39,7 @@ button{color:var(--ink)}
 .layerDrawer{position:absolute;z-index:80;top:51px;right:9px;bottom:9px;width:min(250px,42vw);padding:11px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:17px;box-shadow:0 16px 38px rgba(81,60,120,.22);backdrop-filter:blur(18px);overflow:auto;transform:translateX(calc(100% + 20px));opacity:0;pointer-events:none;transition:transform .2s ease,opacity .2s ease}
 .layerDrawer.open{transform:translateX(0);opacity:1;pointer-events:auto}
 .drawerHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.drawerHead h2{font-size:.95rem;margin:0}.drawerClose{width:34px;height:34px;padding:0;border-radius:10px}
-.layerList{display:grid;gap:5px}.layerRow{display:grid;grid-template-columns:30px minmax(0,1fr) 32px 32px;align-items:center;gap:4px;border:1px solid #e4daf2;background:rgba(255,255,255,.92);border-radius:10px;padding:5px}.layerName{font-size:.76rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.iconBtn{border:1px solid #e1d6f0;background:#fff;border-radius:8px;min-height:29px;font-weight:900}.iconBtn.off{opacity:.45}
+.layerList{display:grid;gap:5px}.layerRow{display:grid;grid-template-columns:30px minmax(0,1fr) 32px 32px;align-items:center;gap:4px;border:1px solid #e4daf2;background:rgba(255,255,255,.92);border-radius:10px;padding:5px;cursor:pointer;transition:.15s}.layerRow:hover{background:#fbf8ff}.layerRow.selected{background:linear-gradient(135deg,#efe4ff,#ffe8f3);border-color:#9f87f1;box-shadow:inset 0 0 0 1px rgba(135,104,239,.16)}.layerName{font-size:.76rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layerName::after{content:''}.layerRow.selected .layerName::after{content:'  • selected';font-size:.66rem;color:#7c67c8}.iconBtn{border:1px solid #e1d6f0;background:#fff;border-radius:8px;min-height:29px;font-weight:900}.iconBtn.off{opacity:.45}
 .sectionCard{border:1px solid #e7dcf3;border-radius:12px;padding:8px;background:rgba(255,255,255,.74);margin-top:9px}.quick{display:grid;grid-template-columns:1fr;gap:6px}.quick .btn{font-size:.78rem;padding:8px}.subtle{font-size:.76rem;color:var(--ink2);line-height:1.32}
 .tray{border-radius:16px;padding:6px 9px;min-height:54px;display:flex;align-items:center}.trayTitle{display:none}.chiprow{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:1px 0;scrollbar-width:none;width:100%}.chip{flex:0 0 auto;border:1px solid #e1d6ef;background:#fff;border-radius:999px;padding:8px 12px;font-size:.8rem;font-weight:850;cursor:pointer;white-space:nowrap}.chip.active{background:linear-gradient(135deg,#8e72f4,#755ee7);border-color:#755ee7;color:#fff;box-shadow:0 4px 11px rgba(117,94,231,.19)}
 .toast{position:fixed;left:50%;bottom:calc(70px + var(--safeB));transform:translateX(-50%) translateY(20px);background:rgba(67,49,93,.92);color:#fff;padding:10px 14px;border-radius:13px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:9999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -53,16 +53,26 @@ button{color:var(--ink)}
   .tray{min-height:48px;padding:5px 8px}.chip{padding:7px 11px;font-size:.78rem}
   .stageTools{min-height:34px}.stageActions .btn{padding:7px 9px}.stageHint{font-size:.78rem}
 }
-@media(max-width:900px) and (orientation:portrait){
-  html,body{overflow:hidden}.app{grid-template-rows:auto auto minmax(0,1fr) auto}.title small{display:none}.actions .btn span.label{display:none}.tabs{overflow-x:auto}.tab{flex:0 0 auto;min-width:105px}.layerDrawer{width:min(280px,76vw)}
+@media(orientation:portrait){
+  html,body{overflow:hidden}
+  .app{padding:calc(5px + var(--safeT)) calc(6px + var(--safeR)) calc(5px + var(--safeB)) calc(6px + var(--safeL));gap:5px;grid-template-rows:auto auto minmax(0,1fr) auto}
+  .topbar{min-height:48px;padding:5px 7px;border-radius:17px}.logo{width:36px;height:36px;border-radius:12px;font-size:19px}.brand{gap:7px}.title h1{font-size:1.08rem}.title small{display:none}
+  .actions{gap:4px;flex-wrap:nowrap}.actions .btn{padding:7px 8px;border-radius:10px;font-size:.8rem}.actions .btn span.label{display:none}#saveBtn span.label{display:inline}
+  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:15px;overflow:visible}.tab{min-width:0;padding:7px 4px;font-size:.78rem;line-height:1.05}
+  .stagePanel{padding:5px;border-radius:17px;gap:4px}.stageTools{min-height:31px;padding:0 2px}.stageHint{font-size:.73rem}.stageActions{gap:4px}.stageActions .btn{padding:6px 8px;font-size:.72rem;border-radius:9px}
+  .stageViewport{border-radius:13px}.stageInner{padding:3px}
+  .layerDrawer{top:39px;right:5px;bottom:5px;width:min(310px,44vw);padding:9px;border-radius:14px}.drawerHead{margin-bottom:6px}.drawerHead h2{font-size:.9rem}.layerList{gap:4px}.layerRow{padding:4px;grid-template-columns:28px minmax(0,1fr) 30px 30px}.layerName{font-size:.72rem}.iconBtn{min-height:27px;padding:4px}
+  .sectionCard{padding:7px;margin-top:7px}.subtle{font-size:.7rem}.quick .btn{font-size:.72rem;padding:7px}
+  .tray{min-height:48px;padding:5px 7px;border-radius:14px}.chiprow{gap:5px}.chip{padding:7px 10px;font-size:.76rem}
+  .toast{bottom:calc(58px + var(--safeB));font-size:.82rem}
 }
-@media(max-width:650px){.logo{width:34px;height:34px}.actions .btn span.label{display:none}.brand{gap:7px}.title h1{font-size:1rem}.layerDrawer{top:47px}}
+@media(max-width:650px){.logo{width:32px;height:32px}.brand{gap:5px}.title h1{font-size:.95rem}#saveBtn span.label{display:none}.layerDrawer{width:min(300px,72vw)}}.actions .btn span.label{display:none}.brand{gap:7px}.title h1{font-size:1rem}.layerDrawer{top:47px}}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.2</h1><small>Dress up, drag, pinch, twist and make a wallpaper</small></div></div>
+    <div class="brand"><div class="logo">✨</div><div class="title"><h1>Megan's Magic Dollmaker 2.3</h1><small>Dress up, drag, pinch, twist and make a wallpaper</small></div></div>
     <div class="actions">
       <button class="btn magic" id="surpriseBtn">🎲 <span class="label">Surprise Me</span></button>
       <button class="btn" id="matchBtn">🪄 <span class="label">Match Look</span></button>
@@ -189,7 +199,7 @@ royalPrincess:{background:'galaStage',hair:'halfUp',headpiece:'sunCrown',makeup:
 const DEFAULT_SELECTION={background:'castleGarden',outfit:'flowerPrincess',hair:'longWaves',headpiece:'flowerCrown',makeup:'flowerFairy',effect:'sakura'};
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function mapDefaults(items,base){return Object.fromEntries(items.filter(x=>x.id!=='none').map(x=>[x.id,clone(base)]))}
-function newState(){return{selection:clone(DEFAULT_SELECTION),activeCategory:'outfit',editTarget:'outfit',headGroup:clone(DEFAULT_HEAD),outfits:mapDefaults(OUTFITS,DEFAULT_OUTFIT),backgrounds:mapDefaults(BACKGROUNDS,DEFAULT_BG),effects:mapDefaults(EFFECTS,DEFAULT_FX),layerOrder:DEFAULT_ORDER.slice(),visible:{outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},viewZoom:100}}
+function newState(){return{selection:clone(DEFAULT_SELECTION),activeCategory:'outfit',editTarget:'outfit',selectedLayer:'outfit',headGroup:clone(DEFAULT_HEAD),outfits:mapDefaults(OUTFITS,DEFAULT_OUTFIT),backgrounds:mapDefaults(BACKGROUNDS,DEFAULT_BG),effects:mapDefaults(EFFECTS,DEFAULT_FX),layerOrder:DEFAULT_ORDER.slice(),visible:{background:true,outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},viewZoom:100}}
 const STORAGE='megan-dollmaker-2-state-v1';
 let state=loadState();
 function loadState(){
@@ -202,7 +212,7 @@ function loadState(){
 function normalizeState(s){
   for(const key of DEFAULT_ORDER)if(!s.layerOrder.includes(key))s.layerOrder.push(key);
   s.layerOrder=s.layerOrder.filter((x,i,a)=>DEFAULT_ORDER.includes(x)&&a.indexOf(x)===i);
-  s.outfits=Object.assign(mapDefaults(OUTFITS,DEFAULT_OUTFIT),s.outfits||{});s.backgrounds=Object.assign(mapDefaults(BACKGROUNDS,DEFAULT_BG),s.backgrounds||{});s.effects=Object.assign(mapDefaults(EFFECTS,DEFAULT_FX),s.effects||{});s.visible=Object.assign({outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},s.visible||{});s.selection=Object.assign(clone(DEFAULT_SELECTION),s.selection||{});
+  s.outfits=Object.assign(mapDefaults(OUTFITS,DEFAULT_OUTFIT),s.outfits||{});s.backgrounds=Object.assign(mapDefaults(BACKGROUNDS,DEFAULT_BG),s.backgrounds||{});s.effects=Object.assign(mapDefaults(EFFECTS,DEFAULT_FX),s.effects||{});s.visible=Object.assign({background:true,outfit:true,backHair:true,baseHead:true,makeup:true,frontHair:true,headpiece:true,effect:true},s.visible||{});s.selection=Object.assign(clone(DEFAULT_SELECTION),s.selection||{});if(!s.selectedLayer)s.selectedLayer=s.editTarget==='background'?'background':s.editTarget==='effect'?'effect':s.editTarget==='head'?'frontHair':'outfit';
 }
 function saveState(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){}}
 const $=id=>document.getElementById(id);
@@ -221,18 +231,43 @@ function applyScene(){
  transform(els.backgroundLayer,state.backgrounds[state.selection.background]);transform(els.outfitLayer,state.outfits[state.selection.outfit]);transform(els.backHairLayer,hair.backCfg);transform(els.frontHairLayer,hair.frontCfg);if(hp&&hp.cfg)transform(els.headpieceLayer,hp.cfg);if(mk&&mk.cfg)transform(els.makeupLayer,mk.cfg);if(fx&&fx.img)transform(els.effectLayer,state.effects[state.selection.effect]);
  const hg=`translate(${state.headGroup.x}px,${state.headGroup.y}px) scale(${state.headGroup.scale/100}) rotate(${state.headGroup.rotate}deg)`;
  for(const key of ['backHair','baseHead','makeup','frontHair','headpiece']){layerWraps[key].style.transform=hg;layerWraps[key].style.opacity=state.headGroup.opacity/100}
- els.backgroundWrap.style.zIndex='0';state.layerOrder.forEach((k,i)=>{layerWraps[k].style.zIndex=String(i+1);layerWraps[k].style.display=state.visible[k]?'block':'none'});
+ els.backgroundWrap.style.zIndex='0';els.backgroundWrap.style.display=state.visible.background?'block':'none';state.layerOrder.forEach((k,i)=>{layerWraps[k].style.zIndex=String(i+1);layerWraps[k].style.display=state.visible[k]?'block':'none'});
  if(state.selection.makeup==='none')els.makeupWrap.style.display='none';if(state.selection.headpiece==='none')els.headpieceWrap.style.display='none';if(state.selection.effect==='none')els.effectWrap.style.display='none';
  els.lookSummary.innerHTML=`<b>${out.label}</b><br>${hair.label} · ${hp.label} · ${mk.label}<br>${bg.label} · ${fx.label}`;
 }
-function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit')state.editTarget='outfit';if(key==='background')state.editTarget='background';if(key==='effect')state.editTarget='effect';if(['hair','headpiece','makeup'].includes(key))state.editTarget='head';els.layerDrawer.classList.remove('open');renderAll();saveState()};els.tabs.appendChild(b)}}
+function renderTabs(){els.tabs.innerHTML='';for(const [key,c] of Object.entries(CATEGORIES)){const b=document.createElement('button');b.className='tab'+(state.activeCategory===key?' active':'');b.textContent=c.label;b.onclick=()=>{state.activeCategory=key;if(key==='outfit'){state.editTarget='outfit';state.selectedLayer='outfit'}if(key==='background'){state.editTarget='background';state.selectedLayer='background'}if(key==='effect'){state.editTarget='effect';state.selectedLayer='effect'}if(key==='hair'){state.editTarget='head';state.selectedLayer='frontHair'}if(key==='headpiece'){state.editTarget='head';state.selectedLayer='headpiece'}if(key==='makeup'){state.editTarget='head';state.selectedLayer='makeup'}els.layerDrawer.classList.remove('open');renderAll();saveState()};els.tabs.appendChild(b)}}
 function renderTray(){const c=CATEGORIES[state.activeCategory];els.trayTitle.textContent=c.label;els.chiprow.innerHTML='';for(const it of c.items){const b=document.createElement('button');b.className='chip'+(state.selection[state.activeCategory]===it.id?' active':'');b.textContent=it.label;b.onclick=()=>{state.selection[state.activeCategory]=it.id;applyScene();renderTray();renderControls();renderLayers();saveState()};els.chiprow.appendChild(b)}}
 function renderControls(){
   const names={outfit:'Outfit',head:'Head',background:'Background',effect:'Magic Effect'};
   const n=names[state.editTarget];
-  els.stageHint.textContent=`${n} selected • drag to move · pinch to resize · twist to rotate`;
+  els.stageHint.textContent=`${n} selected • drag · pinch · twist`;
 }
-function renderLayers(){els.layerList.innerHTML='';const front=[...state.layerOrder].reverse();front.forEach((k,i)=>{const row=document.createElement('div');row.className='layerRow';const eye=document.createElement('button');eye.className='iconBtn'+(state.visible[k]?'':' off');eye.textContent=state.visible[k]?'👁':'○';eye.onclick=()=>{state.visible[k]=!state.visible[k];applyScene();renderLayers();saveState()};const name=document.createElement('div');name.className='layerName';name.textContent=LAYER_LABELS[k];const up=document.createElement('button');up.className='iconBtn';up.textContent='↑';up.disabled=i===0;up.onclick=()=>moveLayer(k,1);const down=document.createElement('button');down.className='iconBtn';down.textContent='↓';down.disabled=i===front.length-1;down.onclick=()=>moveLayer(k,-1);row.append(eye,name,up,down);els.layerList.appendChild(row)})}
+function selectLayer(k){
+  state.selectedLayer=k;
+  if(k==='background'){state.activeCategory='background';state.editTarget='background'}
+  else if(k==='outfit'){state.activeCategory='outfit';state.editTarget='outfit'}
+  else if(k==='effect'){state.activeCategory='effect';state.editTarget='effect'}
+  else if(k==='makeup'){state.activeCategory='makeup';state.editTarget='head'}
+  else if(k==='headpiece'){state.activeCategory='headpiece';state.editTarget='head'}
+  else {state.activeCategory='hair';state.editTarget='head'}
+  renderTabs();renderTray();renderControls();renderLayers();saveState();
+  els.layerDrawer.classList.remove('open');
+  toast(`${LAYER_LABELS[k]||'Background'} selected`);
+}
+function renderLayers(){
+  els.layerList.innerHTML='';
+  const front=[...state.layerOrder].reverse();
+  const entries=[...front,'background'];
+  entries.forEach((k,i)=>{
+    const row=document.createElement('div');row.className='layerRow'+(state.selectedLayer===k?' selected':'');
+    row.onclick=()=>selectLayer(k);
+    const eye=document.createElement('button');eye.className='iconBtn'+(state.visible[k]?'':' off');eye.textContent=state.visible[k]?'👁':'○';eye.onclick=e=>{e.stopPropagation();state.visible[k]=!state.visible[k];applyScene();renderLayers();saveState()};
+    const name=document.createElement('div');name.className='layerName';name.textContent=k==='background'?'Background':LAYER_LABELS[k];
+    const up=document.createElement('button');up.className='iconBtn';up.textContent=k==='background'?'🔒':'↑';up.disabled=k==='background'||i===0;up.onclick=e=>{e.stopPropagation();moveLayer(k,1)};
+    const down=document.createElement('button');down.className='iconBtn';down.textContent=k==='background'?'':'↓';down.disabled=k==='background'||i===front.length-1;down.onclick=e=>{e.stopPropagation();moveLayer(k,-1)};
+    row.append(eye,name,up,down);els.layerList.appendChild(row)
+  })
+}
 function moveLayer(k,dir){const i=state.layerOrder.indexOf(k),j=i+dir;if(j<0||j>=state.layerOrder.length)return;[state.layerOrder[i],state.layerOrder[j]]=[state.layerOrder[j],state.layerOrder[i]];applyScene();renderLayers();saveState()}
 let fitScale=1;
 function updateView(){
