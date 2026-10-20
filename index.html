@@ -1,7 +1,125 @@
 ---
 ---
 {% capture base %}{% include index-source.html %}{% endcapture %}
-{% capture anchor %}      { title:"The Feast Spelling", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/The_Feast_Spelling.html", preview:"previews/the-feast-spelling.gif" },{% endcapture %}
-{% capture replacement %}      { title:"The Feast Spelling", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/The_Feast_Spelling.html", preview:"previews/the-feast-spelling.gif" },
+
+{%- comment -%} Keep the Postcards to David spelling card that is currently added from index.html. {%- endcomment -%}
+{% capture postcards_anchor %}      { title:"The Feast Spelling", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/The_Feast_Spelling.html", preview:"previews/the-feast-spelling.gif" },{% endcapture %}
+{% capture postcards_replacement %}      { title:"The Feast Spelling", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 11", unitName:"The Feast", type:"Competitive", file:"games/The_Feast_Spelling.html", preview:"previews/the-feast-spelling.gif" },
       { title:"Postcards to David Spelling", section:"Games", level:"P2", subject:"English", unitNumber:"Unit 13", unitName:"Postcards to David", type:"Competitive", file:"games/Postcards_to_David_Spelling.html", preview:"previews/postcards-to-david-spelling.gif" },{% endcapture %}
-{{ base | replace: anchor, replacement }}
+{% assign page = base | replace: postcards_anchor, postcards_replacement %}
+
+{%- comment -%} Add the two Money games to the Games gallery. {%- endcomment -%}
+{% capture money_games_anchor %}      { title:"Class vs the Tetris Bot", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Consolidation", type:"Cooperative", file:"games/fractions-class-vs-the-tetris-bot.html", preview:"previews/fractions-class-vs-the-tetris-bot.gif" },{% endcapture %}
+{% capture money_games_replacement %}      { title:"Class vs the Tetris Bot", section:"Games", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Consolidation", type:"Cooperative", file:"games/fractions-class-vs-the-tetris-bot.html", preview:"previews/fractions-class-vs-the-tetris-bot.gif" },
+
+      { title:"Money Recall Gachapon", section:"Games", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Counting and Writing Money", type:"Competitive", file:"games/money-recall-gachapon.html", preview:"previews/money-recall-gachapon.gif" },
+      { title:"Conversion Race", section:"Games", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Converting Money", type:"Competitive", file:"games/money-conversion-race.html", preview:"previews/money-conversion-race.gif" },{% endcapture %}
+{% assign page = page | replace: money_games_anchor, money_games_replacement %}
+
+{%- comment -%} Add the Money classroom tools to the Tools gallery. {%- endcomment -%}
+{% capture money_tools_anchor %}      { title:"Fraction Subtraction Builder", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Subtracting Fractions", type:"Tool", file:"tools/fractions-subtraction-builder.html", preview:"previews/fractions-subtraction-builder.gif" }{% endcapture %}
+{% capture money_tools_replacement %}      { title:"Fraction Subtraction Builder", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Fractions", unitName:"Subtracting Fractions", type:"Tool", file:"tools/fractions-subtraction-builder.html", preview:"previews/fractions-subtraction-builder.gif" },
+
+      { title:"Money Counter", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Counting and Writing Money", type:"Tool", file:"tools/money-counter.html", preview:"previews/money-counter.gif" },
+      { title:"Money Set Maker", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Counting and Writing Money", type:"Tool", file:"tools/money-set-maker.html", preview:"previews/money-set-maker.gif" },
+      { title:"Same Amount Maker", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Making Amounts and Giving Change", type:"Tool", file:"tools/money-same-amount-maker.html", preview:"previews/money-same-amount-maker.gif" },
+      { title:"Toy Shop", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Making Amounts and Giving Change", type:"Tool", file:"tools/money-toy-shop.html", preview:"previews/money-toy-shop.gif" },
+      { title:"Money Converter", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Converting Money", type:"Tool", file:"tools/money-converter.html", preview:"previews/money-converter.gif" },
+      { title:"Compare and Order Money", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Comparing and Ordering Money", type:"Tool", file:"tools/money-compare-and-order.html", preview:"previews/money-compare-and-order.gif" },
+      { title:"Money Model Builder", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Addition and Subtraction Money Problems", type:"Tool", file:"tools/money-model-builder.html", preview:"previews/money-model-builder.gif" },
+      { title:"Money Model Maker", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Addition and Subtraction Money Problems", type:"Tool", file:"tools/money-model-maker.html", preview:"previews/money-model-maker.gif" },
+      { title:"GET Money", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Multiplication and Division Money Problems", type:"Tool", file:"tools/money-get.html", preview:"previews/money-get.gif" },
+      { title:"GET Money Maker", section:"Tools", level:"P2", subject:"Maths", unitNumber:"Money", unitName:"Multiplication and Division Money Problems", type:"Tool", file:"tools/money-get-maker.html", preview:"previews/money-get-maker.gif" }{% endcapture %}
+{% assign page = page | replace: money_tools_anchor, money_tools_replacement %}
+
+{%- comment -%}
+Add the Money Unit Flow. The SLS package URL is intentionally blank until the
+Community Gallery package is ready. SLS-only challenges stay on SLS and are
+listed in the flow without GitHub download links.
+{%- endcomment -%}
+{% capture money_flow_anchor %}      Shapes: {{ '{' }}{% endcapture %}
+{% capture money_flow_replacement %}      Money: {
+        subtitle: "6 lessons · Primary 2 Mathematics",
+        slsPackage: "",
+        lessons: [
+          {
+            title: "Counting and Writing Money",
+            walt: "Count amounts of money in dollars and cents and write the amount correctly.",
+            items: [
+              { text:"Poll: Which Set Has More Money?", kind:"SLS" },
+              { text:"Money Counter", kind:"Tool", href:"tools/money-counter.html" },
+              { text:"Discussion Board: What’s My Amount? — using Money Set Maker", kind:"SLS", href:"tools/money-set-maker.html" },
+              { text:"Money Counting Challenge", kind:"SLS" },
+              { text:"Money Recall Gachapon", kind:"Game", href:"games/money-recall-gachapon.html" },
+              { text:"Complete workbook pages 37 and 38" }
+            ]
+          },
+          {
+            title: "Making Amounts and Giving Change",
+            walt: "Make the same amount of money in different ways and find simple change.",
+            items: [
+              { text:"Poll: Can These Both Be $1?", kind:"SLS" },
+              { text:"Same Amount Maker", kind:"Tool", href:"tools/money-same-amount-maker.html" },
+              { text:"Discussion Board: Same Amount, Another Way! — using Money Set Maker", kind:"SLS", href:"tools/money-set-maker.html" },
+              { text:"Discussion Board: My Shopping Trip — using Toy Shop shopper/cashier", kind:"SLS", href:"tools/money-toy-shop.html" },
+              { text:"Exact Change Challenge", kind:"SLS" },
+              { text:"Complete textbook page 36" },
+              { text:"Complete workbook pages 39 and 40" }
+            ]
+          },
+          {
+            title: "Converting Money",
+            walt: "Convert dollars and cents to cents only, and cents to dollars and cents.",
+            items: [
+              { text:"Poll: Same Amount or Different?", kind:"SLS" },
+              { text:"Money Converter", kind:"Tool", href:"tools/money-converter.html" },
+              { text:"Discussion Board: Challenge a Friend! using $___ = ___¢ or ___¢ = $___", kind:"SLS" },
+              { text:"Money Conversion Challenge", kind:"SLS" },
+              { text:"Conversion Race", kind:"Game", href:"games/money-conversion-race.html" },
+              { text:"Complete textbook page 38" },
+              { text:"Complete workbook pages 41 and 42" }
+            ]
+          },
+          {
+            title: "Comparing and Ordering Money",
+            walt: "Compare and order two or three amounts of money.",
+            items: [
+              { text:"Poll: Which costs more?", kind:"SLS" },
+              { text:"Compare and Order Money", kind:"Tool", href:"tools/money-compare-and-order.html" },
+              { text:"Poll: What Went Wrong?", kind:"SLS" },
+              { text:"Discussion Board: Price Challenge!", kind:"SLS" },
+              { text:"Compare and Order Money Challenge", kind:"SLS" },
+              { text:"Complete textbook page 41" },
+              { text:"Complete workbook pages 43 and 44" }
+            ]
+          },
+          {
+            title: "Addition and Subtraction Money Problems",
+            walt: "Solve one-step and two-step word problems involving addition and subtraction of money.",
+            items: [
+              { text:"Money Model Builder", kind:"Tool", href:"tools/money-model-builder.html" },
+              { text:"Discussion Board: Model Mystery! — using Money Model Maker", kind:"SLS", href:"tools/money-model-maker.html" },
+              { text:"Money Model Builder Challenge", kind:"SLS" },
+              { text:"Complete textbook page 44" },
+              { text:"Complete workbook pages 45 to 48" }
+            ]
+          },
+          {
+            title: "Multiplication and Division Money Problems",
+            walt: "Solve multiplication and division problems involving money in dollars.",
+            items: [
+              { text:"Sugar Rush Multiplication Race", kind:"Game", href:"games/Sugar_Rush_Multiplication.html" },
+              { text:"GET Money", kind:"Tool", href:"tools/money-get.html" },
+              { text:"Discussion Board: GET Mystery! — using GET Money Maker", kind:"SLS", href:"tools/money-get-maker.html" },
+              { text:"GET Money Challenge", kind:"SLS" },
+              { text:"Complete textbook page 47" },
+              { text:"Complete workbook pages 49 and 50" }
+            ]
+          }
+        ]
+      },
+
+      Shapes: {{ '{' }}{% endcapture %}
+{% assign page = page | replace: money_flow_anchor, money_flow_replacement %}
+
+{{ page }}
