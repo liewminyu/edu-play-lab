@@ -67,12 +67,12 @@ select{height:40px;border:2px solid #d8e4ec;background:#fff;border-radius:12px;p
 .hotspot.target:after{border-color:#efbd4d;background:rgba(255,235,157,.16);box-shadow:0 0 0 3px rgba(245,195,72,.11)}
 .hotspot.checked-wrong:after{border-color:#df7d88;background:rgba(255,240,242,.62);box-shadow:0 0 0 3px rgba(216,108,121,.08)}
 .hotspot.checked-correct:after{border-color:#77cf91;background:rgba(238,250,241,.55);box-shadow:0 0 0 3px rgba(119,207,145,.08)}
-.placed-pill{position:relative;z-index:5;max-width:96%;padding:5px 27px 5px 9px;border-radius:999px;background:rgba(255,255,255,.98);border:2px solid #79bfe7;font-size:clamp(10px,1.2vw,17px);font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 6px rgba(30,54,76,.10);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.placed-pill{position:relative;z-index:5;width:calc(100% - 6px);max-width:none;height:calc(100% - 6px);min-height:16px;padding:2px 28px 2px 8px;border-radius:999px;background:rgba(255,255,255,.98);border:2px solid #79bfe7;font-size:17px;font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;box-shadow:0 2px 6px rgba(30,54,76,.10);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center}.placed-pill .pill-text{display:block;white-space:nowrap;line-height:1;font-weight:900;max-width:100%;overflow:visible;text-overflow:clip;flex:0 0 auto}
 .hotspot[data-kind="name"] .placed-pill{border-color:#e497bc}
-.hotspot.checked-correct .placed-pill{border-color:#77cf91;cursor:default;background:#f7fcf8;padding-right:9px}
+.hotspot.checked-correct .placed-pill{border-color:#77cf91;cursor:default;background:#f7fcf8;padding-right:8px}
 .hotspot.checked-wrong .placed-pill{border-color:#df7d88;background:#fff8f9;cursor:grab}
 .placed-pill .pill-remove{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:18px;height:18px;border:0;border-radius:50%;display:grid;place-items:center;background:#bac8d3;color:#fff;font-size:13px;font-weight:900;line-height:1;padding:0;cursor:pointer}.hotspot.checked-wrong .placed-pill .pill-remove{background:#df7d88}.placed-pill.moving{outline:4px solid rgba(243,201,85,.45);outline-offset:2px;cursor:grabbing}.hotspot.move-target:after{border-color:#efbd4d;background:rgba(255,235,157,.16);box-shadow:0 0 0 3px rgba(245,195,72,.11)}
-.question-pane.return-hot{box-shadow:inset 0 0 0 4px rgba(216,108,121,.22);background:linear-gradient(180deg,#fff 0%,#fff8f9 100%)}.question-pane.has-ref{justify-content:flex-start;overflow:hidden}.question-pane.has-ref .question-text{font-size:clamp(20px,1.95vw,30px);line-height:1.42;max-height:none;overflow:visible;flex:0 0 auto}.reference-area{width:100%;display:flex;flex-direction:column;gap:6px;align-items:stretch;margin-top:6px;flex:0 0 auto;min-height:0}.ref-card{width:100%;max-width:none;border:2px solid #dce8ef;background:#fff;border-radius:18px;padding:7px 9px 8px;box-shadow:0 5px 16px rgba(33,73,105,.07);overflow:hidden}.ref-title{font-size:12px;font-weight:900;color:var(--muted);margin-bottom:0}.ref-model-wrap{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:12px;margin:-10px 0 -8px}.ref-inner{position:absolute;inset:0}.ref-inner>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}.ref-hotspot{position:absolute;display:flex;align-items:center;justify-content:center;padding:2px}.ref-pill{max-width:96%;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.98);border:2px solid #79bfe7;font-size:12px;font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 6px rgba(30,54,76,.10)}.ref-pill.kind-name{border-color:#e497bc}.ref-pill.kind-unknown{border-color:#8f72e6}
+.question-pane.return-hot{box-shadow:inset 0 0 0 4px rgba(216,108,121,.22);background:linear-gradient(180deg,#fff 0%,#fff8f9 100%)}.question-pane.has-ref{justify-content:flex-start;overflow:hidden}.question-pane.has-ref .question-text{font-size:clamp(20px,1.95vw,30px);line-height:1.42;max-height:none;overflow:visible;flex:0 0 auto}.reference-area{width:100%;display:flex;flex-direction:column;gap:6px;align-items:stretch;margin-top:6px;flex:0 0 auto;min-height:0}.ref-card{width:100%;max-width:none;border:2px solid #dce8ef;background:#fff;border-radius:18px;padding:7px 9px 8px;box-shadow:0 5px 16px rgba(33,73,105,.07);overflow:hidden}.ref-title{font-size:12px;font-weight:900;color:var(--muted);margin-bottom:0}.ref-model-wrap{position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:12px;margin:-10px 0 -8px}.ref-inner{position:absolute;inset:0}.ref-inner>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}.ref-hotspot{position:absolute;display:flex;align-items:center;justify-content:center;padding:2px}.ref-pill{width:calc(100% - 4px);max-width:none;height:calc(100% - 4px);min-height:10px;padding:1px 4px;border-radius:999px;background:rgba(255,255,255,.98);border:2px solid #79bfe7;font-size:12px;font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;box-shadow:0 2px 6px rgba(30,54,76,.10);display:flex;align-items:center;justify-content:center}.ref-pill.kind-name{border-color:#e497bc}.ref-pill.kind-unknown{border-color:#8f72e6}
 .builder-actions{height:52px;display:flex;justify-content:center;gap:8px;align-items:center;flex:0 0 auto}
 .success-note{font-size:15px;font-weight:900;color:#327a47;background:#eefaf1;border:2px solid #b7e5c3;border-radius:13px;padding:8px 12px;display:none}
 .success-note.show{display:block}
@@ -337,6 +337,7 @@ function fitModelStage(){
  const w=Math.min(930,maxW,maxH*4/3);
  modelStage.style.width=w+'px';
  modelStage.style.height=(w*3/4)+'px';
+ requestAnimationFrame(fitAllPlacedPills);
 }
 function pillDef(id){
  for(const p of q().parts){
@@ -395,6 +396,38 @@ function hotspotClick(slot){
  if(selectedPillId){attemptPlace(selectedPillId,slot);return;}
  if(placed[slot])selectPlaced(slot);
 }
+function fitTextToPill(pill,isReference=false){
+ const textEl=isReference?pill:pill.querySelector('.pill-text');
+ if(!textEl||pill.clientWidth<4||pill.clientHeight<4)return;
+ const removeBtn=isReference?null:pill.querySelector('.pill-remove');
+ const cs=getComputedStyle(pill);
+ const padL=parseFloat(cs.paddingLeft)||0,padR=parseFloat(cs.paddingRight)||0;
+ const borderL=parseFloat(cs.borderLeftWidth)||0,borderR=parseFloat(cs.borderRightWidth)||0;
+ const borderT=parseFloat(cs.borderTopWidth)||0,borderB=parseFloat(cs.borderBottomWidth)||0;
+ const reserved=removeBtn?(removeBtn.offsetWidth+8):0;
+ const availableW=Math.max(8,pill.clientWidth-padL-padR-borderL-borderR-reserved);
+ const availableH=Math.max(8,pill.clientHeight-borderT-borderB-4);
+ let low=isReference?6:8;
+ let high=Math.min(isReference?16:30,Math.max(low,availableH*.86));
+ // Measure the natural single-line text width while searching for the largest fit.
+ const oldMax=textEl.style.maxWidth,oldOverflow=textEl.style.overflow;
+ textEl.style.maxWidth='none';textEl.style.overflow='visible';
+ for(let i=0;i<12;i++){
+  const mid=(low+high)/2;
+  textEl.style.fontSize=mid+'px';
+  const r=textEl.getBoundingClientRect();
+  const measuredW=isReference?Math.max(0,pill.scrollWidth-padL-padR-borderL-borderR):r.width;
+  const measuredH=isReference?Math.max(r.height,pill.scrollHeight-borderT-borderB):r.height;
+  if(measuredW<=availableW+.5 && measuredH<=availableH+.5)low=mid;else high=mid;
+ }
+ textEl.style.fontSize=Math.floor(low*10)/10+'px';
+ textEl.style.maxWidth=availableW+'px';
+ textEl.style.overflow='hidden';
+}
+function fitAllPlacedPills(){
+ modelStage.querySelectorAll('.placed-pill').forEach(p=>fitTextToPill(p,false));
+ document.querySelectorAll('.ref-pill').forEach(p=>fitTextToPill(p,true));
+}
 function refreshPlaced(){
  if(stage<2)return;
  modelStage.classList.toggle('model-wrong',modelWrong);
@@ -408,7 +441,7 @@ function refreshPlaced(){
   if(p){
    const d=document.createElement('div');
    d.className='placed-pill'+(selectedPlacedSlot===slot?' moving':'');
-   const txt=document.createElement('span');txt.textContent=p.text;d.appendChild(txt);
+   const txt=document.createElement('span');txt.className='pill-text';txt.textContent=p.text;d.appendChild(txt);
    const movable=!lockedSlots.has(slot);
    d.title=lockedSlots.has(slot)?'Correct':'Drag to another field, tap to move, or × to remove';
    if(movable){
@@ -424,6 +457,7 @@ function refreshPlaced(){
     });
    }
    h.appendChild(d);
+   requestAnimationFrame(()=>fitTextToPill(d,false));
   }else if(selectedPillId&&!isUsed(selectedPillId)&&!lockedSlots.has(slot)){
    h.classList.add('target');
   }
@@ -496,12 +530,37 @@ function checkModel(){
   renderSteps();refreshPlaced();updateControls();
   return;
  }
- HOTSPOTS[currentModel].forEach(h=>{
-  const expected=expectedFor(h.slot);
-  if(!expected)return;
-  if(placed[h.slot] && placed[h.slot].id===expected)lockedSlots.add(h.slot);
-  else wrongSlots.add(h.slot);
- });
+ // The three parts are equal-sized, so their left-to-right order is interchangeable.
+ // A name and its matching value must stay together as a pair; the total remains fixed.
+ if(currentModel==='partWhole3'){
+  const pairSlots=[['part1Name','part1Value'],['part2Name','part2Value'],['part3Name','part3Value']];
+  const expectedPairs=pairSlots.map(([nameSlot,valueSlot])=>({
+   name:(step.slots||{})[nameSlot],value:(step.slots||{})[valueSlot]
+  }));
+  const usedExpected=new Set();
+  pairSlots.forEach(([nameSlot,valueSlot])=>{
+   const actualName=placed[nameSlot]?.id||null;
+   const actualValue=placed[valueSlot]?.id||null;
+   const matchIndex=expectedPairs.findIndex((pair,index)=>!usedExpected.has(index)&&actualName===pair.name&&actualValue===pair.value);
+   if(matchIndex>=0){
+    usedExpected.add(matchIndex);lockedSlots.add(nameSlot);lockedSlots.add(valueSlot);
+   }else{
+    if((step.slots||{})[nameSlot])wrongSlots.add(nameSlot);
+    if((step.slots||{})[valueSlot])wrongSlots.add(valueSlot);
+   }
+  });
+  const totalExpected=(step.slots||{}).total;
+  if(totalExpected){
+   if(placed.total&&placed.total.id===totalExpected)lockedSlots.add('total');else wrongSlots.add('total');
+  }
+ }else{
+  HOTSPOTS[currentModel].forEach(h=>{
+   const expected=expectedFor(h.slot);
+   if(!expected)return;
+   if(placed[h.slot] && placed[h.slot].id===expected)lockedSlots.add(h.slot);
+   else wrongSlots.add(h.slot);
+  });
+ }
  const required=HOTSPOTS[currentModel].map(h=>h.slot).filter(s=>step.slots[s]);
  complete=required.every(s=>lockedSlots.has(s));
  if(complete){
@@ -566,7 +625,7 @@ $('#clearModelBtn').addEventListener('click',clearModel);
 $('#chooseAgainBtn').addEventListener('click',chooseAgain);
 $('#checkBtn').addEventListener('click',checkModel);
 $('#nextQuestionBtn').addEventListener('click',goNextModelOrQuestion);
-window.addEventListener('resize',()=>requestAnimationFrame(fitModelStage));
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{fitModelStage();fitAllPlacedPills();}));
 upgradeQuestions();setupQuestionSelect();setQuestion(0);
 
 </script>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>Compare and Order Money</title>
-<!-- Merged responsive build: desktop/iTV layout + iPad touch handling -->
+<!-- Responsive build: desktop/iTV + hybrid touchscreen + iPad single-source drag -->
 <style>
 :root{
   --navy:#0c426f;--ink:#153b5d;--muted:#6f879c;--line:#d8e8f1;
@@ -90,7 +90,7 @@ button{font:inherit;touch-action:manipulation}
 .order-slot .toy-image{height:clamp(170px,25vh,235px)}
 .order-slot .toy-name{font-size:clamp(18px,1.55vw,23px)}
 .order-slot .price{font-size:clamp(27px,2.2vw,34px)}
-.draggable,.draggable *{touch-action:none;user-select:none;-webkit-user-select:none}.draggable{cursor:grab}
+.draggable,.draggable *{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.draggable{cursor:grab}
 .draggable:active{cursor:grabbing}
 .sticker-dock{width:100%;display:flex;align-items:center;justify-content:center;min-height:68px;margin-top:2px}
 .tag-sticker{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:10px 20px;border-radius:18px;border:3px solid;box-shadow:0 7px 16px rgba(40,79,111,.10);font-size:clamp(17px,1.6vw,23px);font-weight:900;letter-spacing:.2px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;background:#fff}
@@ -578,13 +578,19 @@ function resetOrderUIAfterDrag(){
   const wb=document.getElementById('workingBtn');if(wb){wb.disabled=true;wb.textContent='Show working'}
 }
 function bindDrags(){
-  const touchMode=window.matchMedia?.('(hover:none) and (pointer:coarse)').matches || ('ontouchstart' in window);
+  const supportsPointer='PointerEvent' in window;
 
   [...stage.querySelectorAll('.draggable')].forEach(card=>{
     const sourceId=card.dataset.dragId;
 
-    if(touchMode){
-      let touchId=null,startX=0,startY=0,dragging=false,dropTarget=null;
+    // One Pointer Events path for mouse, pen and touch. For touch/pen we move
+    // the ORIGINAL card instead of cloning it. iPad Safari can briefly paint
+    // both a cloned proxy and its grid source, which causes the "ghosting"
+    // seen during reorder drags. Mouse keeps the proxy because it feels better
+    // on a classroom display, while touchscreens get a single moving object.
+    if(supportsPointer){
+      let pid=null,startX=0,startY=0,dragging=false,rect=null,proxy=null,dropTarget=null;
+      let directTouch=false;
 
       const clearTarget=()=>{
         if(dropTarget)dropTarget.classList.remove('active-drop');
@@ -596,134 +602,144 @@ function bindDrags(){
         dropTarget=target;
         if(dropTarget)dropTarget.classList.add('active-drop');
       };
-      const resetCard=()=>{
-        card.classList.remove('touch-dragging');
-        card.style.transform='';
-        clearTarget();
-      };
-      const findTouch=(list,id)=>{
-        for(let i=0;i<list.length;i++)if(list[i].identifier===id)return list[i];
-        return null;
-      };
-
-      card.addEventListener('touchstart',e=>{
-        if(touchId!==null)return;
-        const t=e.changedTouches[0];
-        if(!t)return;
-        touchId=t.identifier;
-        startX=t.clientX;startY=t.clientY;
-        dragging=false;
-      },{passive:true});
-
-      card.addEventListener('touchmove',e=>{
-        if(touchId===null)return;
-        const t=findTouch(e.touches,touchId);
-        if(!t)return;
-        const dx=t.clientX-startX,dy=t.clientY-startY;
-        if(!dragging&&Math.hypot(dx,dy)>9){
-          dragging=true;
-          card.classList.add('touch-dragging');
+      const resetVisual=()=>{
+        if(directTouch){
+          card.classList.remove('touch-dragging');
+          card.style.transform='';
+        }else{
+          finishProxyDrag(card,proxy);
+          proxy=null;
         }
-        if(!dragging)return;
+      };
+
+      card.addEventListener('pointerdown',e=>{
+        if(pid!==null)return;
+        if(e.pointerType==='mouse'&&e.button!==0)return;
         e.preventDefault();
-        card.style.transform=`translate3d(${dx}px,${dy}px,0) scale(1.015)`;
-        markTarget(document.elementFromPoint(t.clientX,t.clientY)?.closest('.order-slot')||null);
-      },{passive:false});
+        pid=e.pointerId;
+        directTouch=e.pointerType!=='mouse';
+        startX=e.clientX;startY=e.clientY;
+        rect=card.getBoundingClientRect();
+        dragging=false;proxy=null;clearTarget();
+        try{card.setPointerCapture?.(pid)}catch(_){ }
 
-      const finishTouch=(e,cancelled=false)=>{
-        if(touchId===null)return;
-        const t=findTouch(e.changedTouches,touchId);
-        if(!t)return;
-        const wasDragging=dragging;
-        let target=null;
-        if(wasDragging&&!cancelled){
-          target=document.elementFromPoint(t.clientX,t.clientY)?.closest('.order-slot')||dropTarget;
-        }
-        resetCard();
-        touchId=null;
-        dragging=false;
-        if(!wasDragging)return;
-
-        if(target){
-          const from=sec().order.indexOf(sourceId),to=+target.dataset.slot;
-          if(from>=0&&to>=0&&from!==to){
-            [sec().order[from],sec().order[to]]=[sec().order[to],sec().order[from]];
+        const move=ev=>{
+          if(ev.pointerId!==pid)return;
+          const dx=ev.clientX-startX,dy=ev.clientY-startY;
+          if(!dragging&&Math.hypot(dx,dy)>8){
+            dragging=true;
+            if(directTouch){
+              card.classList.add('touch-dragging');
+            }else{
+              proxy=makeDragProxy(card,rect);
+            }
           }
-        }
-        sec().feedback='Ready.';
-        sec().orderResult=null;
-        sec().submitted=false;
-        sec().showWorking=false;
-        render();
-      };
-
-      card.addEventListener('touchend',e=>finishTouch(e,false),{passive:false});
-      card.addEventListener('touchcancel',e=>finishTouch(e,true),{passive:false});
+          if(!dragging)return;
+          ev.preventDefault();
+          if(directTouch){
+            card.style.transform=`translate3d(${dx}px,${dy}px,0) scale(1.015)`;
+          }else if(proxy){
+            proxy.style.transform=`translate3d(${dx}px,${dy}px,0)`;
+          }
+          // touch-dragging has pointer-events:none, so hit-testing sees the
+          // slot underneath the finger rather than the moving card itself.
+          markTarget(document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.order-slot')||null);
+        };
+        const cleanup=()=>{
+          window.removeEventListener('pointermove',move);
+          window.removeEventListener('pointerup',up);
+          window.removeEventListener('pointercancel',cancel);
+          clearTarget();
+          try{card.releasePointerCapture?.(pid)}catch(_){ }
+        };
+        const up=ev=>{
+          if(ev.pointerId!==pid)return;
+          const target=dragging?(document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.order-slot')||dropTarget||null):null;
+          const wasDragging=dragging;
+          cleanup();
+          resetVisual();
+          pid=null;dragging=false;
+          if(!wasDragging)return;
+          if(target){
+            const from=sec().order.indexOf(sourceId),to=+target.dataset.slot;
+            if(from>=0&&to>=0&&from!==to){
+              [sec().order[from],sec().order[to]]=[sec().order[to],sec().order[from]];
+            }
+          }
+          sec().feedback='Ready.';
+          sec().orderResult=null;
+          sec().submitted=false;
+          sec().showWorking=false;
+          render();
+        };
+        const cancel=ev=>{
+          if(ev.pointerId!==pid)return;
+          cleanup();
+          resetVisual();
+          pid=null;dragging=false;
+        };
+        window.addEventListener('pointermove',move,{passive:false});
+        window.addEventListener('pointerup',up);
+        window.addEventListener('pointercancel',cancel);
+      },{passive:false});
       return;
     }
 
-    let pid=null,startX=0,startY=0,dragging=false,rect=null,proxy=null,dropTarget=null;
-    card.addEventListener('pointerdown',e=>{
-      if(e.pointerType!=='mouse'||e.button!==0)return;
+    // Fallback for older Safari versions without Pointer Events. Move the
+    // original card here too so the visual behaviour matches current iPadOS.
+    let touchId=null,startX=0,startY=0,dragging=false,dropTarget=null;
+    const clearTarget=()=>{
+      if(dropTarget)dropTarget.classList.remove('active-drop');
+      dropTarget=null;
+    };
+    const markTarget=target=>{
+      if(target===dropTarget)return;
+      clearTarget();
+      dropTarget=target;
+      if(dropTarget)dropTarget.classList.add('active-drop');
+    };
+    const resetCard=()=>{
+      card.classList.remove('touch-dragging');
+      card.style.transform='';
+      clearTarget();
+    };
+    const findTouch=(list,id)=>{
+      for(let i=0;i<list.length;i++)if(list[i].identifier===id)return list[i];
+      return null;
+    };
+    card.addEventListener('touchstart',e=>{
+      if(touchId!==null)return;
+      const t=e.changedTouches[0];
+      if(!t)return;
       e.preventDefault();
-      pid=e.pointerId;
-      startX=e.clientX;startY=e.clientY;
-      rect=card.getBoundingClientRect();
-
-      const markTarget=target=>{
-        if(target===dropTarget)return;
-        if(dropTarget)dropTarget.classList.remove('active-drop');
-        dropTarget=target;
-        if(dropTarget)dropTarget.classList.add('active-drop');
-      };
-      const move=ev=>{
-        if(ev.pointerId!==pid)return;
-        const dx=ev.clientX-startX,dy=ev.clientY-startY;
-        if(!dragging&&Math.hypot(dx,dy)>8){
-          dragging=true;
-          proxy=makeDragProxy(card,rect);
-        }
-        if(!dragging)return;
-        ev.preventDefault();
-        proxy.style.transform=`translate3d(${dx}px,${dy}px,0)`;
-        markTarget(document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.order-slot')||null);
-      };
-      const cleanup=()=>{
-        window.removeEventListener('pointermove',move);
-        window.removeEventListener('pointerup',up);
-        window.removeEventListener('pointercancel',cancel);
-        if(dropTarget)dropTarget.classList.remove('active-drop');
-        dropTarget=null;
-      };
-      const up=ev=>{
-        if(ev.pointerId!==pid)return;
-        const target=dragging?(document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.order-slot')||null):null;
-        cleanup();
-        finishProxyDrag(card,proxy);
-        proxy=null;pid=null;
-        if(!dragging)return;
-        if(target){
-          const from=sec().order.indexOf(sourceId),to=+target.dataset.slot;
-          if(from>=0&&to>=0&&from!==to){
-            [sec().order[from],sec().order[to]]=[sec().order[to],sec().order[from]];
-          }
-        }
-        sec().feedback='Ready.';
-        sec().orderResult=null;
-        sec().submitted=false;
-        sec().showWorking=false;
-        render();
-      };
-      const cancel=ev=>{
-        if(ev.pointerId!==pid)return;
-        cleanup();
-        finishProxyDrag(card,proxy);
-        proxy=null;pid=null;
-      };
-      window.addEventListener('pointermove',move,{passive:false});
-      window.addEventListener('pointerup',up);
-      window.addEventListener('pointercancel',cancel);
+      touchId=t.identifier;startX=t.clientX;startY=t.clientY;dragging=false;
     },{passive:false});
+    card.addEventListener('touchmove',e=>{
+      if(touchId===null)return;
+      const t=findTouch(e.touches,touchId);if(!t)return;
+      const dx=t.clientX-startX,dy=t.clientY-startY;
+      if(!dragging&&Math.hypot(dx,dy)>9){dragging=true;card.classList.add('touch-dragging')}
+      if(!dragging)return;
+      e.preventDefault();
+      card.style.transform=`translate3d(${dx}px,${dy}px,0) scale(1.015)`;
+      markTarget(document.elementFromPoint(t.clientX,t.clientY)?.closest('.order-slot')||null);
+    },{passive:false});
+    const finishTouch=(e,cancelled=false)=>{
+      if(touchId===null)return;
+      const t=findTouch(e.changedTouches,touchId);if(!t)return;
+      const wasDragging=dragging;
+      let target=null;
+      if(wasDragging&&!cancelled)target=document.elementFromPoint(t.clientX,t.clientY)?.closest('.order-slot')||dropTarget;
+      resetCard();touchId=null;dragging=false;
+      if(!wasDragging)return;
+      if(target){
+        const from=sec().order.indexOf(sourceId),to=+target.dataset.slot;
+        if(from>=0&&to>=0&&from!==to)[sec().order[from],sec().order[to]]=[sec().order[to],sec().order[from]];
+      }
+      sec().feedback='Ready.';sec().orderResult=null;sec().submitted=false;sec().showWorking=false;render();
+    };
+    card.addEventListener('touchend',e=>finishTouch(e,false),{passive:false});
+    card.addEventListener('touchcancel',e=>finishTouch(e,true),{passive:false});
   });
 }
 function fitPractice(){

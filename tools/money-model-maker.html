@@ -98,11 +98,74 @@ function changeActive(){if(!models[activeIndex])return;models[activeIndex]=null;
 function addSecond(){if(models.length>=2)return;models.push(null);activeIndex=1;renderAll();toast('Choose a model for Model 2.')}
 function resetAll(){models=[null];activeIndex=0;activeInput=null;renderAll()}
 function insertText(txt){if(!activeInput||!document.body.contains(activeInput)){toast('Tap a box first.');return}const s=activeInput.selectionStart??activeInput.value.length,e=activeInput.selectionEnd??s;activeInput.value=activeInput.value.slice(0,s)+txt+activeInput.value.slice(e);activeInput.dispatchEvent(new Event('input',{bubbles:true}));activeInput.focus();const pos=s+txt.length;activeInput.setSelectionRange(pos,pos)}
+function normalizeUnknownLabel(value){return String(value||'').trim().replace(/\s+/g,'').toLowerCase()}
+function validateBeforeSave(){
+ // If a second model tab has been added, it must be completed too.
+ const unchosenIndex=models.findIndex(m=>!m);
+ if(unchosenIndex!==-1){
+  activeIndex=unchosenIndex;renderAll();
+  toast(`Choose a model for Model ${unchosenIndex+1} first.`);
+  return false;
+ }
+ // Every hotspot in every model must contain something.
+ for(let i=0;i<models.length;i++){
+  const model=models[i];
+  const empty=HOTSPOTS[model.type].find(h=>!(model.values[h.slot]||'').trim());
+  if(empty){
+   activeIndex=i;renderAll();
+   requestAnimationFrame(()=>{
+    const input=stage.querySelector(`input[data-slot="${empty.slot}"]`);
+    input?.focus();
+   });
+   toast(`Fill in all fields in Model ${i+1} first.`);
+   return false;
+  }
+ }
+ const labels=[];
+ models.forEach(model=>HOTSPOTS[model.type].forEach(h=>labels.push(normalizeUnknownLabel(model.values[h.slot]))));
+ const hasQ=labels.includes('?');
+ const hasA=labels.includes('?(a)');
+ const hasB=labels.includes('?(b)');
+ // Paired unknowns must always travel together.
+ if(hasA!==hasB){
+  toast('Use ?(a) and ?(b) together.');
+  return false;
+ }
+ // A challenge must contain at least one unknown label.
+ if(!hasQ&&!hasA&&!hasB){
+  toast('Add at least one ?, ?(a) or ?(b) label.');
+  return false;
+ }
+ return true;
+}
 function loadImage(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src})}
 function roundRect(ctx,x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
 function fitFont(ctx,text,maxW,base){let size=base;while(size>24){ctx.font=`900 ${size}px Trebuchet MS, Arial`;if(ctx.measureText(text).width<=maxW)break;size-=2}return size}
 async function drawModel(ctx,model,ox,oy,w,h){const img=await loadImage(MODEL_META[model.type].img);ctx.drawImage(img,ox,oy,w,h);HOTSPOTS[model.type].forEach(hs=>{const val=(model.values[hs.slot]||'').trim();if(!val)return;const x=ox+(hs.left+hs.width/2)/100*w,y=oy+(hs.top+hs.height/2)/100*h,maxW=hs.width/100*w*.84;const size=fitFont(ctx,val,maxW,hs.kind==='name'?42:48);ctx.font=`900 ${size}px Trebuchet MS, Arial`;ctx.fillStyle='#103f69';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(val,x,y,maxW)})}
-async function saveImage(){const filled=models.filter(Boolean);if(!filled.length)return;const W=1448,H=1086,gap=40,pad=24;const canvas=document.createElement('canvas');canvas.width=W;canvas.height=filled.length===1?H:H*2+gap;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);for(let i=0;i<filled.length;i++)await drawModel(ctx,filled[i],0,i*(H+gap),W,H);canvas.toBlob(blob=>{if(!blob){toast('Could not save image.');return}const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filled.length===1?'model-challenge.png':'model-challenge-2-models.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Image saved.')},'image/png')}
+async function saveImage(){
+ if(!validateBeforeSave())return;
+ const filled=models.filter(Boolean);
+ const W=1448,H=1086,gap=40;
+ const canvas=document.createElement('canvas');canvas.width=W;canvas.height=filled.length===1?H:H*2+gap;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ for(let i=0;i<filled.length;i++)await drawModel(ctx,filled[i],0,i*(H+gap),W,H);
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png',1));
+ if(!blob){toast('Could not save image.');return}
+ const filename=filled.length===1?'model-challenge.png':'model-challenge-2-models.png';
+ const file=new File([blob],filename,{type:'image/png'});
+ // Match Money Set Maker / Toy Shop: use the native share sheet first on iPad / supported browsers.
+ if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+  try{
+   await navigator.share({files:[file],title:'Money Model Maker'});
+   toast('Image ready to save or share.');
+   return;
+  }catch(error){
+   if(error&&error.name==='AbortError')return;
+  }
+ }
+ // Fallback for browsers that cannot share image files.
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);toast('Image saved.');
+}
 $('#clearBtn').onclick=clearActive;$('#changeBtn').onclick=changeActive;$('#addModelBtn').onclick=addSecond;$('#saveBtn').onclick=saveImage;$('#resetBtn').onclick=resetAll;$('#fullscreenBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};document.querySelectorAll('[data-insert]').forEach(b=>{b.addEventListener('pointerdown',e=>{if(activeInput&&document.body.contains(activeInput))e.preventDefault()});b.onclick=()=>insertText(b.dataset.insert)});window.addEventListener('resize',()=>requestAnimationFrame(fitStage));renderAll();
 </script>
 </body></html>

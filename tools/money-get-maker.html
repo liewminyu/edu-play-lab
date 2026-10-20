@@ -165,7 +165,7 @@ function drawInput(ctx,x,y,w,h,text,border){
   fillRound(ctx,x,y,w,h,28,'#fff',border,4);
   const fs=fitFont(ctx,text,w-48,58,28);ctx.font=`900 ${fs}px Trebuchet MS, Arial`;ctx.fillStyle='#103f69';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x+w/2,y+h/2+1,w-44);
 }
-function saveImage(){
+async function saveImage(){
   if(!validate())return;
   const vals={G:$('#inputG').value.trim(),E:$('#inputE').value.trim(),T:$('#inputT').value.trim()};
   const W=1200,H=900;
@@ -179,10 +179,22 @@ function saveImage(){
     {letter:'T',word:'Total',value:vals.T,color:'#7257e8',border:'#c8b8f6'}
   ];
   rows.forEach((r,i)=>{const y=235+i*180;drawLabel(ctx,165,y,180,130,r.color,r.letter,r.word);drawInput(ctx,380,y+13,655,104,r.value,r.border)});
-  canvas.toBlob(blob=>{
-    if(!blob){toast('Could not save image.');return}
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='GET-Mystery-card.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Image saved.');
-  },'image/png');
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png',1));
+  if(!blob){toast('Could not save image.');return}
+  const filename='GET-Mystery-card.png';
+  const file=new File([blob],filename,{type:'image/png'});
+  // Match Money Set Maker / Toy Shop: use the native share sheet first on iPad / supported browsers.
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file],title:'GET Mystery!'});
+      toast('Image ready to save or share.');
+      return;
+    }catch(error){
+      if(error&&error.name==='AbortError')return;
+    }
+  }
+  // Fallback for browsers that cannot share image files.
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);toast('Image saved.');
 }
 $('#clearBtn').onclick=clearCard;$('#resetBtn').onclick=resetAll;$('#saveBtn').onclick=saveImage;
 $('#fullscreenBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
