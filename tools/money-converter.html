@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Money Converter</title>
+<style>
+  :root{
+    --navy:#0c426f;
+    --navy-2:#173a5e;
+    --blue:#6faee8;
+    --blue-soft:#eaf6ff;
+    --purple:#7359e8;
+    --purple-soft:#eee9ff;
+    --pink:#f7dcea;
+    --pink-soft:#fff2f8;
+    --green:#45a97a;
+    --green-soft:#e7f8ef;
+    --red:#d55b6a;
+    --red-soft:#fff0f2;
+    --line:#d8e8f1;
+    --ink:#153b5d;
+    --muted:#6f879c;
+    --white:#ffffff;
+    --shadow:0 10px 26px rgba(40,79,111,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:"Trebuchet MS","Arial Rounded MT Bold",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 12% 10%, rgba(255,218,232,.95), transparent 30%),
+      radial-gradient(circle at 86% 20%, rgba(226,222,255,.95), transparent 34%),
+      linear-gradient(135deg,#fdf3f8 0%,#f4f0ff 50%,#edf8ff 100%);
+    overflow:hidden;
+  }
+  button,input{font:inherit}
+  button{touch-action:manipulation}
+  .app{height:100%;min-height:620px;padding:12px 16px 14px;display:grid;grid-template-rows:auto auto 1fr;gap:10px}
+  .app.no-step-row{grid-template-rows:auto 1fr}
+  .topbar{
+    min-height:66px;background:transparent;border:0;
+    border-radius:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:18px;
+    padding:0 4px;box-shadow:none
+  }
+  .brand{font-size:clamp(28px,2.8vw,42px);font-weight:900;color:var(--navy);letter-spacing:-1.2px;white-space:nowrap}
+  .top-spacer{display:none}
+  .teacher-controls{display:flex;gap:8px;align-items:center;justify-self:end}
+  .btn{border:0;border-radius:14px;padding:11px 16px;font-weight:900;color:var(--navy);background:#f2f7fb;box-shadow:inset 0 0 0 2px #dce9f1;cursor:pointer;min-height:44px}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:linear-gradient(135deg,#8067ed,#684ce2);color:white;box-shadow:none}
+  .btn.secondary{background:#edf7ff}
+  .btn.ghost{background:white}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+  .fs{width:46px;padding:0;font-size:23px}
+
+  /* Money Counter-style section switch beside the title. */
+  .section-tabs{
+    justify-self:center;display:flex;align-items:center;gap:3px;min-width:0;max-width:min(760px,100%);
+    background:rgba(247,250,253,.96);padding:4px;border-radius:14px;border:1.5px solid rgba(207,223,233,.95);
+    box-shadow:0 4px 12px rgba(30,74,106,.05)
+  }
+  .tab{
+    border:0;border-radius:10px;padding:0 12px;min-height:36px;background:transparent;color:#687d8e;font-weight:900;
+    cursor:pointer;line-height:1;white-space:nowrap;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,.95vw,14px);
+    transition:background .15s ease,color .15s ease,box-shadow .15s ease,transform .12s ease
+  }
+  .tab:hover{color:var(--navy)}
+  .tab:active{transform:translateY(1px)}
+  .tab.active{background:#fff;color:var(--navy);box-shadow:0 2px 7px rgba(30,74,106,.11)}
+
+
+  /* Money Counter-style teacher step controls */
+  .lesson-steps{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;background:#fff;border-radius:20px;padding:8px;
+    border:1px solid rgba(216,232,241,.95);box-shadow:0 7px 22px rgba(30,74,106,.06)
+  }
+  .lesson-steps[hidden]{display:none!important}
+  .teacher-step{
+    position:relative;min-width:0;height:58px;border-radius:15px;border:2px solid #d9e5ed;background:#fff;color:var(--navy);
+    font-weight:900;font-size:16px;display:flex;align-items:center;gap:10px;padding:7px 12px;text-align:left;cursor:pointer
+  }
+  .teacher-step .n{width:34px;height:34px;flex:0 0 34px;border-radius:10px;color:#fff;display:grid;place-items:center;font-size:19px;background:#a9b7c1}
+  .teacher-step.s1 .n{background:#aa92dc}.teacher-step.s2 .n{background:#eaa8c1}.teacher-step.s3 .n{background:#7ebfe7}
+  .teacher-step.active.s1{border-color:#aa92dc;background:#f7f3ff}.teacher-step.active.s2{border-color:#eaa8c1;background:#fff3f7}.teacher-step.active.s3{border-color:#7ebfe7;background:#f0f9ff}
+  .teacher-step.locked{background:#f4f6f8;color:#a4b1bb;border-color:#e2e7eb;cursor:not-allowed}
+  .teacher-step.locked .n{background:#c1cbd2}
+  .teacher-step.complete::after{content:"✓";margin-left:auto;color:#327a47;font-size:21px}
+  .teacher-step:not(.locked):hover{transform:translateY(-1px)}
+  .teacher-step:not(.locked):active{transform:translateY(1px)}
+
+  .stage{
+    min-height:0;overflow:auto;background:rgba(255,255,255,.86);border:2px solid rgba(216,232,241,.95);border-radius:26px;
+    box-shadow:var(--shadow);padding:14px 16px 16px;position:relative
+  }
+  .stage-inner{max-width:1320px;margin:0 auto;height:100%;min-height:520px;display:flex;flex-direction:column}
+  .howto-head{display:flex;align-items:center;justify-content:flex-start;gap:16px;margin-bottom:8px;min-height:28px}
+  .howto-kicker{font-size:17px;color:var(--muted);font-weight:900;padding-left:2px}
+  .practice-stage{padding-top:2px}
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+  .section-title{font-size:clamp(22px,2.1vw,32px);font-weight:900;color:var(--navy)}
+  .section-kicker{font-size:15px;color:var(--muted);font-weight:800}
+
+  .work-area{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,340px);gap:14px;min-height:0}
+  .main-card,.side-card{background:white;border:2px solid #e0ecf3;border-radius:24px;min-height:0}
+  .main-card{padding:18px 20px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;overflow:hidden}
+  .side-card{padding:16px;display:flex;flex-direction:column;gap:11px}
+  .side-title{font-size:16px;font-weight:900;color:var(--navy);display:flex;align-items:center;gap:8px}
+  .question-chip{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff0f7,#efeaff);border:2px solid #eaddec;border-radius:18px;padding:10px 20px;font-size:clamp(30px,4vw,52px);font-weight:900;color:var(--navy);min-width:220px;box-shadow:0 6px 15px rgba(91,74,160,.08)}
+  .instruction{font-size:clamp(24px,2.7vw,38px);font-weight:900;color:var(--navy);margin:13px 0 8px;text-align:center;line-height:1.05}
+  .subinstruction{font-size:17px;font-weight:800;color:var(--muted);margin-bottom:10px;text-align:center}
+
+  .amount-select{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:14px 0 18px}
+  .amount-static{font-size:clamp(44px,6vw,74px);font-weight:900;color:var(--navy);line-height:1}
+  .digit-button{width:clamp(56px,6vw,76px);height:clamp(68px,7vw,88px);border-radius:18px;border:3px solid #d8e6ef;background:white;color:var(--navy);font-size:clamp(34px,4.8vw,56px);font-weight:900;cursor:pointer;box-shadow:0 5px 12px rgba(35,67,97,.08);transition:.12s ease}
+  .digit-button:hover{transform:translateY(-2px)}
+  .digit-button.selected{background:var(--purple-soft);border-color:var(--purple);color:#4e38bd;transform:translateY(-2px) scale(1.04)}
+  .money-symbol,.decimal-symbol{font-size:clamp(38px,5vw,62px);font-weight:900;color:var(--navy)}
+
+  .anchor{background:#edf8ff;border:2px solid #cfe8f8;border-radius:18px;padding:10px 18px;font-size:clamp(25px,3vw,38px);font-weight:900;color:var(--navy);margin:4px 0 12px}
+  .hundred-grid{width:100%;max-width:760px;display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:9px;margin:8px auto 13px}
+  .hundred-card{border:3px solid #d9e8f0;background:#fff;border-radius:17px;min-height:68px;font-weight:900;color:var(--navy);font-size:23px;cursor:pointer;box-shadow:0 5px 12px rgba(36,76,111,.07)}
+  .hundred-card.selected{background:var(--blue-soft);border-color:var(--blue);transform:scale(1.025)}
+  .tap-count{font-weight:900;color:var(--muted);margin-top:2px}
+
+  .equation{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:12px 0;font-size:clamp(30px,4vw,54px);font-weight:900;color:var(--navy)}
+  .answer-box{min-width:150px;min-height:74px;border:3px dashed #9fcce8;background:#f8fcff;border-radius:18px;display:flex;align-items:center;justify-content:center;padding:8px 16px;color:#4030a1}
+  .answer-box.empty::after{content:"?";color:#9ab0c1}
+  .answer-box.small{min-width:120px;min-height:62px;font-size:40px}
+
+  /* Consistent response highlighting across all converter modes. */
+  .answer-correct{
+    border-color:var(--green)!important;
+    background:var(--green-soft)!important;
+    box-shadow:0 0 0 4px rgba(69,169,122,.15)!important;
+  }
+  .answer-wrong{
+    border-color:var(--red)!important;
+    background:var(--red-soft)!important;
+    box-shadow:0 0 0 4px rgba(213,91,106,.14)!important;
+  }
+
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}
+  .key{border:0;border-radius:14px;min-height:55px;background:#f2f7fb;color:var(--navy);font-size:23px;font-weight:900;cursor:pointer;box-shadow:inset 0 0 0 2px #dfebf2}
+  .key.action{background:#fff4f7;color:#9b5264}
+  .key.dot{background:#f0ecff;color:#5b43c4}
+  .submit-btn{width:100%;border:0;border-radius:15px;min-height:54px;background:linear-gradient(135deg,#8067ed,#684ce2);color:white;font-size:18px;font-weight:900;cursor:pointer}
+  .feedback{min-height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;font-weight:900;padding:8px 10px;background:#f6f9fb;color:var(--muted)}
+  .feedback.correct{background:var(--green-soft);color:#218055}
+  .feedback.wrong{background:var(--red-soft);color:#b94c5c;animation:shake .28s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  @keyframes pop{0%{transform:scale(.97)}60%{transform:scale(1.035)}100%{transform:scale(1)}}
+  .pop{animation:pop .28s ease}
+
+  .decomp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:#f8fbfd;border:2px solid #e2edf3;padding:12px 18px;border-radius:18px;font-size:clamp(24px,3vw,38px);font-weight:900;color:var(--navy);margin-top:6px}
+  .decomp .purple{color:#6248ce}
+
+  .hto-wrap{width:min(880px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px auto 12px}
+  .hto-cell{border:3px dashed #b9d7e8;background:#f9fdff;border-radius:20px;min-height:135px;padding:7px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px;position:relative;transition:.12s ease}
+  .hto-cell::before{content:attr(data-label);position:absolute;top:8px;left:0;right:0;text-align:center;font-size:23px;font-weight:900;color:#6489a4}
+  .hto-cell.active-drop{border-color:var(--purple);background:var(--purple-soft)}
+  .hto-cell.correct-zone{border-style:solid;border-color:#89cfad;background:#f2fbf6}
+  .digit-tray{min-height:84px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 10px;width:min(700px,100%)}
+  .drag-digit{width:64px;height:68px;border-radius:17px;border:3px solid #d7e7f0;background:white;color:var(--navy);font-size:38px;font-weight:900;display:grid;place-items:center;cursor:grab;touch-action:none;box-shadow:0 5px 11px rgba(35,67,97,.08);user-select:none}
+  .drag-digit.selected{outline:4px solid rgba(115,89,232,.24);border-color:var(--purple)}
+  .drag-digit.dragging{opacity:.35}
+  .hto-cell .drag-digit{margin-top:20px}
+  .reset-small{border:0;background:transparent;color:#718ca2;font-weight:900;cursor:pointer;text-decoration:underline;padding:6px 10px}
+
+  .conversion-layout{width:min(930px,100%);display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;margin-top:30px;margin-bottom:8px}
+  .mini-hto{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0;min-height:150px}
+  .mini-col{border-radius:17px;background:#f9fcfe;border:2px solid #dbe9f1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:100px}
+  .mini-col .lab{font-weight:900;color:#7490a6;font-size:18px}
+  .mini-col .val{font-size:38px;font-weight:900;color:var(--navy);min-height:48px;display:flex;align-items:center;justify-content:center;gap:4px}
+  .mini-col.highlight{background:var(--purple-soft);border-color:#c7baf7}
+  .arrow{font-size:42px;color:#9ab1c2;font-weight:900}
+  .dollar-target{min-height:150px;border:3px dashed #b9d7e8;border-radius:20px;background:#f9fdff;display:flex;align-items:center;justify-content:center;font-size:50px;font-weight:900;color:var(--navy);padding:15px;min-width:240px}
+  .dollar-target.active-drop{border-color:var(--purple);background:var(--purple-soft)}
+  .hundreds-chip{padding:11px 18px;border-radius:15px;background:white;border:3px solid var(--purple);color:#543dc0;font-size:36px;font-weight:900;cursor:grab;touch-action:none;user-select:none;box-shadow:0 5px 12px rgba(91,69,182,.12)}
+  .hundreds-chip.dragging{opacity:.35}
+  .cents-build{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:26px 0 12px;font-size:clamp(40px,5vw,62px);font-weight:900;color:var(--navy)}
+  .cent-slot{width:78px;height:84px;border:3px dashed #9fcce8;border-radius:18px;background:#f8fcff;display:flex;align-items:center;justify-content:center}
+  .cent-slot.active-drop{border-color:var(--purple);background:var(--purple-soft)}
+  .cent-slot .drag-digit{width:66px;height:70px}
+
+  .practice-card{width:min(940px,100%);margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:8px 0 4px}
+  .practice-card{transform-origin:top center}
+  .practice-card.pc2d-card{transition:zoom .14s ease}
+  .practice-card.pc2d-card.working-visible{gap:10px;padding-top:2px;padding-bottom:0}
+  .practice-card.pc2d-card.working-visible .practice-question{font-size:clamp(42px,5.6vw,68px);line-height:1}
+  .practice-card.pc2d-card.working-visible .practice-answer{font-size:clamp(34px,4.2vw,50px);min-height:76px;padding:6px 18px}
+  .practice-card.pc2d-card.working-visible .practice-actions .btn{min-height:38px;padding:8px 14px}
+  .practice-card.pc2d-card.working-visible .working-card{padding:10px 16px;font-size:clamp(20px,2.35vw,29px)}
+  .practice-card.pc2d-card.working-visible .working-card .mini-hto{min-height:112px;gap:8px}
+  .practice-card.pc2d-card.working-visible .working-card .mini-col .val{font-size:32px;min-height:40px}
+  .practice-card.pc2d-card.working-visible .final-banner{margin-top:4px;padding:10px 20px;font-size:clamp(28px,3.5vw,43px)}
+  .whiteboard-cue{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:900;font-size:18px;background:#f6f9fb;border:2px solid #e2edf3;border-radius:16px;padding:8px 14px}
+  .whiteboard-icon{width:34px;height:28px;border:3px solid #89a8bc;border-radius:5px;background:white;position:relative}
+  .whiteboard-icon::after{content:"";position:absolute;width:13px;height:3px;background:#89a8bc;bottom:-7px;left:8px;border-radius:2px}
+  .practice-question{font-size:clamp(48px,7vw,84px);font-weight:900;color:var(--navy);letter-spacing:-1px;text-align:center}
+  .practice-answer{font-size:clamp(40px,5vw,62px);font-weight:900;min-width:330px;min-height:92px;border:3px dashed #9fcce8;border-radius:20px;background:#f8fcff;display:flex;align-items:center;justify-content:center;color:#4936ac;padding:8px 20px}
+  .practice-keypad{width:min(370px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .practice-keypad .key{min-height:58px}
+  .practice-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .working-card{width:min(760px,100%);background:#f7fbfd;border:0;border-radius:18px;padding:16px 22px;text-align:center;font-size:clamp(22px,2.8vw,34px);font-weight:900;color:var(--navy);display:none}
+  .working-card.show{display:block;animation:pop .25s ease}
+  .working-line+ .working-line{margin-top:6px}
+
+  .final-banner{margin-top:14px;background:var(--green-soft);border:3px solid #99d9b8;border-radius:20px;padding:14px 24px;font-size:clamp(32px,4vw,50px);font-weight:900;color:#1e8053;text-align:center;display:none}
+  .final-banner.show{display:block;animation:pop .3s ease}
+
+
+  .submit-btn.done-submit{background:#edf3f7;color:#8ba0b1;cursor:default}
+  .sc2d-step2{width:100%;display:flex;flex-direction:column;align-items:center;padding-top:8px}
+  .sc2d-step3{width:100%;display:flex;flex-direction:column;align-items:center;padding-top:2px}
+  .cent-source-row{min-height:86px;display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;margin-bottom:4px}
+  .practice-card .practice-question{margin-top:6px}
+
+  .drag-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%) scale(1.06);filter:drop-shadow(0 10px 13px rgba(34,54,76,.22));opacity:.96}
+  .spark{position:fixed;width:9px;height:9px;border-radius:50%;background:#ffd75e;pointer-events:none;z-index:9998;animation:spark .7s ease-out forwards}
+  @keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+
+  @media (max-width:900px){
+    .teacher-step{font-size:14px;padding:6px 8px}.teacher-step .n{width:31px;height:31px;flex-basis:31px}
+    body{overflow:auto}.app{height:auto;min-height:100vh}.work-area{grid-template-columns:1fr}.side-card{min-height:250px}
+    .topbar{grid-template-columns:auto 1fr auto;column-gap:10px}.section-tabs{max-width:100%;overflow:hidden}.tab{font-size:11px;padding:0 8px}.brand{font-size:30px}
+    .conversion-layout{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.dollar-target{min-height:110px}.stage{overflow:visible}
+  }
+  @media (max-width:620px){
+    .lesson-steps{grid-template-columns:1fr}.teacher-step{height:50px}
+    .app{padding:8px}.topbar{grid-template-columns:1fr auto}.brand{font-size:28px}.teacher-controls{justify-self:end}.section-tabs{grid-column:1 / -1;grid-row:2;width:100%;max-width:none;justify-self:stretch;margin-top:2px}.tab{flex:1 1 25%;font-size:10.5px;padding:0 4px;white-space:normal;line-height:1.12;min-height:40px}.btn{padding:9px 11px}.main-card{padding:14px 10px}.hto-cell{min-height:116px}.hto-cell::before{font-size:18px}.drag-digit{width:54px;height:58px;font-size:32px}.mini-col{min-width:70px}.practice-answer{min-width:250px}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">Money Converter</div>
+    <nav class="section-tabs" aria-label="Money conversion sections">
+      <button class="tab active" data-section="sd2c" type="button">Structured ($ → ¢)</button>
+      <button class="tab" data-section="pd2c" type="button">Practice ($ → ¢)</button>
+      <button class="tab" data-section="sc2d" type="button">Structured (¢ → $)</button>
+      <button class="tab" data-section="pc2d" type="button">Practice (¢ → $)</button>
+    </nav>
+    <div class="top-spacer"></div>
+    <div class="teacher-controls">
+      <button class="btn secondary" id="newQuestionBtn" type="button">↻ New question</button>
+      <button class="btn fs" id="fsBtn" type="button" title="Full screen" aria-label="Full screen">⛶</button>
+    </div>
+  </header>
+
+  <nav class="lesson-steps" id="lessonSteps" aria-label="Teacher step controls" hidden></nav>
+
+  <main class="stage">
+    <div class="stage-inner" id="stageInner"></div>
+  </main>
+</div>
+<script>
+(() => {
+  'use strict';
+
+  const banks = {
+    sd2c: [3.45, 5.20, 4.05, 7.50, 9.09, 6.28, 8.70, 2.06, 5.99, 1.40],
+    pd2c: [6.28, 12.35, 20.04, 8.70, 15.09, 31.50, 42.06, 9.99, 27.25, 50.08, 64.40, 75.03],
+    sc2d: [345, 305, 350, 728, 1245, 1205, 1250, 907, 2004, 3090, 4826, 1005],
+    pc2d: [628, 305, 1245, 1205, 350, 907, 2004, 3090, 4826, 5050, 704, 9999]
+  };
+
+  const state = {
+    section: 'sd2c',
+    indices: {sd2c:0,pd2c:0,sc2d:0,pc2d:0},
+    step: 1,
+    answer: '',
+    correct: false,
+    selectedDollarDigits: new Set(),
+    selectedHundreds: new Set(),
+    htoAssignments: {},
+    selectedDragId: null,
+    dollarsDropped: false,
+    centsSlots: {t:null,o:null},
+    completedSteps: new Set()
+  };
+
+  const stage = document.getElementById('stageInner');
+  const newBtn = document.getElementById('newQuestionBtn');
+  const fsBtn = document.getElementById('fsBtn');
+  const tabs = [...document.querySelectorAll('.tab')];
+  const lessonSteps = document.getElementById('lessonSteps');
+  const appRoot = document.getElementById('app');
+
+  const moneyString = n => '$' + Number(n).toFixed(2);
+  const centsFromDollars = n => Math.round(Number(n) * 100);
+  const dollarParts = n => {
+    const s = Number(n).toFixed(2);
+    const [d,c] = s.split('.');
+    return {dollars: Number(d), cents: Number(c), dStr:d, cStr:c};
+  };
+  const centsParts = n => {
+    const s = String(Math.trunc(n));
+    const padded = s.padStart(3,'0');
+    const h = padded.slice(0,-2).replace(/^0+(?=\d)/,'') || '0';
+    const t = padded.slice(-2,-1);
+    const o = padded.slice(-1);
+    return {h, t, o, dollar:Number(h), cents:Number(t+o), padded};
+  };
+  const currentQuestion = () => banks[state.section][state.indices[state.section] % banks[state.section].length];
+
+  function setSection(sec){
+    state.section = sec;
+    tabs.forEach(t=>t.classList.toggle('active',t.dataset.section===sec));
+    resetInteraction();
+    render();
+  }
+  function nextQuestion(){
+    state.indices[state.section] = (state.indices[state.section] + 1) % banks[state.section].length;
+    resetInteraction();
+    render();
+  }
+  function resetInteraction(){
+    state.step=1;state.answer='';state.correct=false;
+    state.selectedDollarDigits=new Set();state.selectedHundreds=new Set();state.htoAssignments={};state.selectedDragId=null;state.dollarsDropped=false;state.centsSlots={t:null,o:null};state.completedSteps=new Set();
+  }
+  function sparkle(el){
+    if(!el) return;
+    const r=el.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    for(let i=0;i<12;i++){
+      const s=document.createElement('span');s.className='spark';
+      s.style.left=cx+'px';s.style.top=cy+'px';
+      const a=(Math.PI*2*i/12)+(Math.random()*.25);
+      const d=35+Math.random()*40;
+      s.style.setProperty('--dx',Math.cos(a)*d+'px');
+      s.style.setProperty('--dy',Math.sin(a)*d+'px');
+      document.body.appendChild(s);setTimeout(()=>s.remove(),800);
+    }
+  }
+  function setFeedback(text,type=''){
+    const f=document.getElementById('feedback'); if(!f) return;
+    f.textContent=text;f.className='feedback'+(type?' '+type:'');
+  }
+  function correctFeedback(text='Correct!'){
+    setFeedback(text,'correct');
+    const s=document.querySelector('.submit-btn'); sparkle(s);
+  }
+  function answerHighlightTargets(){
+    if(state.section==='sd2c'){
+      if(state.step===1) return [...document.querySelectorAll('.digit-button.selected')];
+      const a=document.getElementById('answerDisplay'); return a?[a]:[];
+    }
+    if(state.section==='pd2c' || state.section==='pc2d'){
+      const a=document.getElementById('answerDisplay'); return a?[a]:[];
+    }
+    if(state.section==='sc2d'){
+      if(state.step===1) return [...document.querySelectorAll('.hto-cell')];
+      if(state.step===2){const a=document.getElementById('dollarTarget');return a?[a]:[];}
+      return [...document.querySelectorAll('.cent-slot')];
+    }
+    return [];
+  }
+  function clearAnswerHighlight(){
+    document.querySelectorAll('.answer-correct,.answer-wrong').forEach(el=>el.classList.remove('answer-correct','answer-wrong'));
+  }
+  function setAnswerHighlight(type){
+    clearAnswerHighlight();
+    const cls=type==='correct'?'answer-correct':type==='wrong'?'answer-wrong':'';
+    if(!cls)return;
+    answerHighlightTargets().forEach(el=>el.classList.add(cls));
+  }
+  function wrongFeedback(){ setFeedback('Try again.','wrong'); setAnswerHighlight('wrong'); }
+
+  function howToHeader(kicker){
+    return `<div class="howto-head"><div class="howto-kicker">${kicker}</div></div>`;
+  }
+
+  function structuredStepLabels(){
+    if(state.section==='sd2c') return ['How many dollars?','Change dollars to cents.','Add the cents.'];
+    if(state.section==='sc2d') return ['Use HTO chart','Change hundreds to dollars.','Write the cents.'];
+    return null;
+  }
+  function stepUnlocked(n){
+    return n===1 || state.completedSteps.has(n-1);
+  }
+  function restoredAnswerForStep(n){
+    if(!state.completedSteps.has(n)) return '';
+    const q=currentQuestion();
+    if(state.section==='sd2c'){
+      const p=dollarParts(q);
+      if(n===2) return String(p.dollars*100);
+      if(n===3) return String(centsFromDollars(q));
+    }
+    return '';
+  }
+  function goTeacherStep(n){
+    if(!stepUnlocked(n)) return;
+    state.step=n;
+    state.correct=state.completedSteps.has(n);
+    state.answer=restoredAnswerForStep(n);
+    state.selectedDragId=null;
+    render();
+    if(state.correct) requestAnimationFrame(()=>setAnswerHighlight('correct'));
+  }
+  function renderTeacherSteps(){
+    const labels=structuredStepLabels();
+    if(!labels){lessonSteps.hidden=true;lessonSteps.innerHTML='';appRoot.classList.add('no-step-row');return;}
+    appRoot.classList.remove('no-step-row');
+    lessonSteps.hidden=false;
+    lessonSteps.innerHTML=labels.map((label,i)=>{
+      const n=i+1;
+      const complete=state.completedSteps.has(n);
+      const locked=!stepUnlocked(n);
+      const cls=[`s${n}`,state.step===n?'active':'',complete?'complete':'',locked?'locked':''].filter(Boolean).join(' ');
+      return `<button type="button" class="teacher-step ${cls}" data-teacher-step="${n}" ${locked?'aria-disabled="true"':''}><span class="n">${n}</span><span>${label}</span></button>`;
+    }).join('');
+    lessonSteps.querySelectorAll('[data-teacher-step]').forEach(b=>b.addEventListener('click',()=>goTeacherStep(Number(b.dataset.teacherStep))));
+  }
+  function completeStructuredStep(message='Correct!'){
+    state.correct=true;
+    state.completedSteps.add(state.step);
+    render();
+    const f=document.getElementById('feedback');
+    if(f){f.textContent=message;f.className='feedback correct';}
+    setAnswerHighlight('correct');
+    const next=lessonSteps.querySelector(`[data-teacher-step="${state.step+1}"]`);
+    sparkle(next || document.getElementById('finalBanner') || f);
+  }
+
+  function sidePanel({title='Your answer', keypad='digits', submitText='Submit', extra='' }={}){
+    const keys = keypad==='money'
+      ? ['1','2','3','4','5','6','7','8','9','.','0','⌫']
+      : ['1','2','3','4','5','6','7','8','9','C','0','⌫'];
+    return `<aside class="side-card">
+      <div class="side-title">✏️ ${title}</div>
+      ${extra}
+      <div class="keypad" id="keypad">${keys.map(k=>`<button type="button" class="key ${k==='.'?'dot':''} ${k==='C'||k==='⌫'?'action':''}" data-key="${k}" ${state.correct?'disabled':''}>${k}</button>`).join('')}</div>
+      <button type="button" class="submit-btn ${state.correct?'done-submit':''}" id="submitBtn" ${state.correct?'disabled':''}>${state.correct?'Correct ✓':submitText}</button>
+      <div class="feedback ${state.correct?'correct':''}" id="feedback">${state.correct?'Correct!':'Ready.'}</div>
+    </aside>`;
+  }
+
+  function simpleStructuredSide({title='Selected student',prompt=''}={}){
+    return `<aside class="side-card">
+      <div class="side-title">✋ ${title}</div>
+      ${prompt?`<div style="font-size:18px;font-weight:900;color:var(--muted);line-height:1.35">${prompt}</div>`:''}
+      <div style="flex:1"></div>
+      <button type="button" class="submit-btn ${state.correct?'done-submit':''}" id="submitBtn" ${state.correct?'disabled':''}>${state.correct?'Correct ✓':'Submit'}</button>
+      <div class="feedback ${state.correct?'correct':''}" id="feedback">${state.correct?'Correct!':'Ready.'}</div>
+    </aside>`;
+  }
+
+  function render(){
+    window.onkeydown=null;
+    renderTeacherSteps();
+    if(state.section==='sd2c') renderStructuredD2C();
+    else if(state.section==='pd2c') renderPracticeD2C();
+    else if(state.section==='sc2d') renderStructuredC2D();
+    else renderPracticeC2D();
+  }
+
+  function renderStructuredD2C(){
+    const q=currentQuestion(); const p=dollarParts(q);
+    stage.innerHTML = howToHeader('Change dollars and cents to cents.') +
+      `<div class="work-area"><section class="main-card" id="mainCard">${renderSD2CStep(q,p)}</section>${sidePanelForSD2C(q,p)}</div>`;
+    bindSD2C(q,p);
+  }
+
+  function renderSD2CStep(q,p){
+    if(state.step===1){
+      const amt = p.dStr + '.' + p.cStr;
+      let html='<div class="instruction">How many dollars?</div><div class="subinstruction">Tap the dollar digit(s).</div><div class="amount-select"><span class="money-symbol">$</span>';
+      [...amt].forEach((ch,i)=>{
+        if(ch==='.') html += `<span class="decimal-symbol">.</span>`;
+        else html += `<button type="button" class="digit-button ${state.selectedDollarDigits.has(i)?'selected':''}" data-digit-index="${i}">${ch}</button>`;
+      });
+      html += `</div><div class="decomp" id="decomp" style="visibility:${state.correct?'visible':'hidden'}"><span>${moneyString(q)}</span><span>→</span><span class="purple">$${p.dStr} + ${p.cents}¢</span></div>`;
+      return html;
+    }
+    if(state.step===2){
+      return `<div class="instruction">Change dollars to cents.</div><div class="anchor">$1 = 100¢</div>
+        <div class="question-chip">$${p.dStr} = ?¢</div>
+        <div class="hundred-grid">${Array.from({length:p.dollars},(_,i)=>`<button type="button" class="hundred-card ${state.selectedHundreds.has(i)?'selected':''}" data-hundred="${i}">100¢</button>`).join('')}</div>
+        <div class="tap-count">${state.selectedHundreds.size} / ${p.dollars}</div>
+        <div class="equation">$${p.dStr}<span>=</span><div class="answer-box small ${state.answer?'':'empty'}" id="answerDisplay">${state.answer||''}</div><span>¢</span></div>`;
+    }
+    return `<div class="instruction">Add the cents.</div><div class="equation"><span>${p.dollars*100}¢</span><span>+</span><span>${p.cents}¢</span><span>=</span><div class="answer-box ${state.answer?'':'empty'}" id="answerDisplay">${state.answer||''}</div><span>¢</span></div>
+      <div class="final-banner ${state.correct?'show':''}" id="finalBanner">${moneyString(q)} = ${centsFromDollars(q)}¢</div>`;
+  }
+
+  function sidePanelForSD2C(q,p){
+    if(state.step===1){
+      return simpleStructuredSide({title:'Selected student',prompt:'Tap the dollar digit(s), then submit.'});
+    }
+    return sidePanel({title:state.step===2?'Write the cents':'Write the total',keypad:'digits'});
+  }
+
+  function bindSD2C(q,p){
+    if(state.correct) return;
+    if(state.step===1){
+      document.querySelectorAll('.digit-button').forEach(b=>b.addEventListener('click',()=>{
+        clearAnswerHighlight();
+        const i=Number(b.dataset.digitIndex); if(state.selectedDollarDigits.has(i))state.selectedDollarDigits.delete(i); else state.selectedDollarDigits.add(i); b.classList.toggle('selected');
+      }));
+      document.getElementById('submitBtn').onclick=()=>{
+        const dotIndex=p.dStr.length;
+        const expected=new Set(Array.from({length:p.dStr.length},(_,i)=>i));
+        const ok=state.selectedDollarDigits.size===expected.size && [...expected].every(i=>state.selectedDollarDigits.has(i));
+        if(ok){ completeStructuredStep(`${p.dollars} dollars ✓`); }
+        else wrongFeedback();
+      };
+    } else if(state.step===2){
+      document.querySelectorAll('.hundred-card').forEach(b=>b.addEventListener('click',()=>{
+        clearAnswerHighlight();
+        const i=Number(b.dataset.hundred);if(state.selectedHundreds.has(i))state.selectedHundreds.delete(i);else state.selectedHundreds.add(i);b.classList.toggle('selected');
+        const c=document.querySelector('.tap-count');if(c)c.textContent=`${state.selectedHundreds.size} / ${p.dollars}`;
+      }));
+      bindKeypad(false, ()=>{
+        const ok=state.selectedHundreds.size===p.dollars && Number(state.answer)===p.dollars*100;
+        if(ok){completeStructuredStep(`$${p.dStr} = ${p.dollars*100}¢ ✓`);} else wrongFeedback();
+      });
+    } else {
+      bindKeypad(false, ()=>{
+        if(Number(state.answer)===centsFromDollars(q)){completeStructuredStep('Correct!');}
+        else wrongFeedback();
+      });
+    }
+  }
+
+  function renderPracticeD2C(){
+    const q=currentQuestion(); const p=dollarParts(q); const target=centsFromDollars(q);
+    stage.innerHTML = `<div class="work-area practice-stage"><section class="main-card"><div class="practice-card">
+        <div class="practice-question">${moneyString(q)} = ?¢</div>
+        <div class="practice-answer" id="answerDisplay">${state.answer || '___'}¢</div>
+        <div class="practice-actions"><button class="btn ghost" id="showWorkingBtn" type="button" ${state.correct?'':'disabled'}>Show working</button></div>
+        <div class="working-card" id="workingCard"><div class="working-line">$${p.dStr} = ${p.dollars*100}¢</div><div class="working-line">${p.dollars*100}¢ + ${p.cents}¢ = ${target}¢</div></div>
+        <div class="final-banner ${state.correct?'show':''}" id="finalBanner">${moneyString(q)} = ${target}¢</div>
+      </div></section>${sidePanel({title:'Selected student',keypad:'digits'})}</div>`;
+    bindKeypad(false,()=>{
+      if(Number(state.answer)===target){state.correct=true;render();setAnswerHighlight('correct');const b=document.getElementById('showWorkingBtn');if(b)b.disabled=false;sparkle(document.getElementById('finalBanner'));}
+      else wrongFeedback();
+    });
+    const show=document.getElementById('showWorkingBtn');
+    if(show) show.onclick=()=>{
+      const working=document.getElementById('workingCard');
+      const card=document.querySelector('.practice-card');
+      const visible=working.classList.toggle('show');
+      card?.classList.toggle('working-visible',visible);
+      requestAnimationFrame(()=>fitPracticeCard());
+    };
+    requestAnimationFrame(()=>fitPracticeCard());
+  }
+
+  function renderStructuredC2D(){
+    const q=currentQuestion(); const p=centsParts(q);
+    stage.innerHTML = howToHeader('Change cents to dollars and cents.') +
+      `<div class="work-area"><section class="main-card">${renderSC2DStep(q,p)}</section>${sidePanelForSC2D()}</div>`;
+    bindSC2D(q,p);
+  }
+
+  function digitObjectsForCents(q){
+    return String(q).split('').map((v,i)=>({id:'d'+i,value:v,index:i}));
+  }
+  function expectedZoneForIndex(i,len){
+    if(i < len-2) return 'h';
+    if(i===len-2) return 't';
+    return 'o';
+  }
+  function renderDragDigit(d){return `<div class="drag-digit ${state.selectedDragId===d.id?'selected':''}" data-drag-id="${d.id}" data-drag-kind="digit">${d.value}</div>`;}
+
+  function renderSC2DStep(q,p){
+    const digits=digitObjectsForCents(q);
+    if(state.step===1){
+      const tray=digits.filter(d=>!state.htoAssignments[d.id]);
+      const inZone=z=>digits.filter(d=>state.htoAssignments[d.id]===z).sort((a,b)=>a.index-b.index);
+      return `<div class="instruction">Use HTO chart</div><div class="question-chip">${q}¢</div><div class="subinstruction">Drag the digits.</div>
+        <div class="digit-tray" id="digitTray">${tray.map(renderDragDigit).join('')}</div>
+        <div class="hto-wrap">
+          <div class="hto-cell" data-zone="h" data-label="H">${inZone('h').map(renderDragDigit).join('')}</div>
+          <div class="hto-cell" data-zone="t" data-label="T">${inZone('t').map(renderDragDigit).join('')}</div>
+          <div class="hto-cell" data-zone="o" data-label="O">${inZone('o').map(renderDragDigit).join('')}</div>
+        </div><button class="reset-small" type="button" id="resetHtoBtn">Reset</button>`;
+    }
+    if(state.step===2){
+      return `<div class="sc2d-step2"><div class="instruction">Change hundreds to dollars.</div><div class="anchor">100¢ = $1</div>
+        <div class="conversion-layout">
+          <div class="mini-hto"><div class="mini-col highlight"><div class="lab">H</div><div class="val">${state.dollarsDropped?'':`<div class="hundreds-chip" data-drag-kind="hundreds" id="hundredsChip">${p.h}</div>`}</div></div><div class="mini-col"><div class="lab">T</div><div class="val">${p.t}</div></div><div class="mini-col"><div class="lab">O</div><div class="val">${p.o}</div></div></div>
+          <div class="arrow">→</div>
+          <div class="dollar-target" data-drop-kind="dollars" id="dollarTarget">${state.dollarsDropped?'$'+p.h:'$ ___'}</div>
+        </div>
+        <div class="decomp" style="visibility:${state.correct?'visible':'hidden'}">${Number(p.h)*100}¢ = $${p.h}</div></div>`;
+    }
+    const tObj={id:'tcent',value:p.t}, oObj={id:'ocent',value:p.o};
+    return `<div class="sc2d-step3"><div class="instruction">Write the cents.</div><div class="question-chip">${q}¢</div>
+      <div class="cent-source-row">${state.centsSlots.t?'':`<div class="drag-digit" data-drag-id="tcent" data-drag-kind="centdigit">${p.t}</div>`}${state.centsSlots.o?'':`<div class="drag-digit" data-drag-id="ocent" data-drag-kind="centdigit">${p.o}</div>`}</div>
+      <div class="cents-build"><span>$${p.h}.</span><div class="cent-slot" data-cent-slot="t">${state.centsSlots.t?`<div class="drag-digit" data-drag-id="${state.centsSlots.t}" data-drag-kind="centdigit">${p.t}</div>`:''}</div><div class="cent-slot" data-cent-slot="o">${state.centsSlots.o?`<div class="drag-digit" data-drag-id="${state.centsSlots.o}" data-drag-kind="centdigit">${p.o}</div>`:''}</div></div>
+      <div class="final-banner ${state.correct?'show':''}" id="finalBanner">${q}¢ = $${p.h}.${p.t}${p.o}</div></div>`;
+  }
+
+  function sidePanelForSC2D(){
+    return simpleStructuredSide({title:'Selected student',prompt:'Drag, then submit.'});
+  }
+
+  function bindSC2D(q,p){
+    if(state.correct) return;
+    if(state.step===1){
+      bindPointerDrags({
+        sourceSelector:'[data-drag-kind="digit"]',
+        dropSelector:'.hto-cell',
+        onDrop:(src,target)=>{
+          clearAnswerHighlight();
+          const id=src.dataset.dragId; const z=target.dataset.zone;
+          if((z==='t'||z==='o') && Object.values(state.htoAssignments).includes(z) && state.htoAssignments[id]!==z) return false;
+          state.htoAssignments[id]=z; render(); return true;
+        },
+        onTap:(src)=>{clearAnswerHighlight();state.selectedDragId=state.selectedDragId===src.dataset.dragId?null:src.dataset.dragId;render();}
+      });
+      document.querySelectorAll('.hto-cell').forEach(cell=>cell.addEventListener('click',()=>{
+        clearAnswerHighlight();
+        if(!state.selectedDragId) return;
+        const z=cell.dataset.zone;
+        if((z==='t'||z==='o') && Object.values(state.htoAssignments).includes(z) && state.htoAssignments[state.selectedDragId]!==z) return;
+        state.htoAssignments[state.selectedDragId]=z;state.selectedDragId=null;render();
+      }));
+      document.getElementById('resetHtoBtn').onclick=()=>{state.htoAssignments={};state.selectedDragId=null;render();};
+      document.getElementById('submitBtn').onclick=()=>{
+        const ds=digitObjectsForCents(q); const len=ds.length;
+        const ok=ds.every(d=>state.htoAssignments[d.id]===expectedZoneForIndex(d.index,len));
+        if(ok){completeStructuredStep('Correct!');}else wrongFeedback();
+      };
+    } else if(state.step===2){
+      bindPointerDrags({
+        sourceSelector:'[data-drag-kind="hundreds"]',dropSelector:'[data-drop-kind="dollars"]',
+        onDrop:()=>{clearAnswerHighlight();state.dollarsDropped=true;render();return true;},onTap:()=>{clearAnswerHighlight();state.selectedDragId='hundreds';document.getElementById('hundredsChip').classList.toggle('selected');}
+      });
+      document.getElementById('dollarTarget').onclick=()=>{clearAnswerHighlight();if(state.selectedDragId==='hundreds'){state.dollarsDropped=true;state.selectedDragId=null;render();}};
+      document.getElementById('submitBtn').onclick=()=>{
+        if(state.dollarsDropped){completeStructuredStep(`${Number(p.h)*100}¢ = $${p.h} ✓`);} else wrongFeedback();
+      };
+    } else {
+      bindPointerDrags({
+        sourceSelector:'[data-drag-kind="centdigit"]',dropSelector:'.cent-slot',
+        onDrop:(src,target)=>{
+          clearAnswerHighlight();
+          const id=src.dataset.dragId, slot=target.dataset.centSlot;
+          if(slot==='t' && id!=='tcent') return false;
+          if(slot==='o' && id!=='ocent') return false;
+          if(id==='tcent') state.centsSlots.t='tcent';
+          if(id==='ocent') state.centsSlots.o='ocent';
+          render(); return true;
+        },
+        onTap:(src)=>{clearAnswerHighlight();state.selectedDragId=state.selectedDragId===src.dataset.dragId?null:src.dataset.dragId;render();}
+      });
+      document.querySelectorAll('.cent-slot').forEach(slot=>slot.addEventListener('click',()=>{
+        clearAnswerHighlight();
+        if(!state.selectedDragId) return; const sl=slot.dataset.centSlot;
+        if(sl==='t'&&state.selectedDragId==='tcent')state.centsSlots.t='tcent';
+        if(sl==='o'&&state.selectedDragId==='ocent')state.centsSlots.o='ocent';
+        state.selectedDragId=null;render();
+      }));
+      document.getElementById('submitBtn').onclick=()=>{
+        if(state.centsSlots.t==='tcent'&&state.centsSlots.o==='ocent'){completeStructuredStep('Correct!');}else wrongFeedback();
+      };
+    }
+  }
+
+  function renderPracticeC2D(){
+    const q=currentQuestion(); const p=centsParts(q); const canonical=`${Number(p.h)}.${p.t}${p.o}`;
+    stage.innerHTML = `<div class="work-area practice-stage"><section class="main-card"><div class="practice-card pc2d-card">
+        <div class="practice-question">${q}¢ = $?</div>
+        <div class="practice-answer" id="answerDisplay">$${state.answer || '__.__'}</div>
+        <div class="practice-actions"><button class="btn ghost" id="showWorkingBtn" type="button" ${state.correct?'':'disabled'}>Show working</button></div>
+        <div class="working-card" id="workingCard"><div class="mini-hto" style="max-width:520px;margin:0 auto"><div class="mini-col"><div class="lab">H</div><div class="val">${p.h}</div></div><div class="mini-col"><div class="lab">T</div><div class="val">${p.t}</div></div><div class="mini-col"><div class="lab">O</div><div class="val">${p.o}</div></div></div><div class="working-line" style="margin-top:12px">${q}¢ = $${canonical}</div></div>
+        <div class="final-banner ${state.correct?'show':''}" id="finalBanner">${q}¢ = $${canonical}</div>
+      </div></section>${sidePanel({title:'Selected student',keypad:'money'})}</div>`;
+    bindKeypad(true,()=>{
+      const ok = state.answer===canonical;
+      if(ok){state.correct=true;render();setAnswerHighlight('correct');const b=document.getElementById('showWorkingBtn');if(b)b.disabled=false;sparkle(document.getElementById('finalBanner'));}
+      else wrongFeedback();
+    });
+    const show=document.getElementById('showWorkingBtn');
+    if(show) show.onclick=()=>{
+      const working=document.getElementById('workingCard');
+      const card=document.querySelector('.practice-card.pc2d-card');
+      const visible=working.classList.toggle('show');
+      card?.classList.toggle('working-visible',visible);
+      requestAnimationFrame(()=>fitPracticeCard());
+    };
+    requestAnimationFrame(()=>fitPracticeCard());
+  }
+
+  function fitPracticeCard(){
+    const card=document.querySelector('.practice-card.pc2d-card');
+    const host=card?.closest('.main-card');
+    if(!card || !host) return;
+    card.style.zoom='1';
+    const cs=getComputedStyle(host);
+    const availableH=host.clientHeight-parseFloat(cs.paddingTop||0)-parseFloat(cs.paddingBottom||0)-4;
+    const availableW=host.clientWidth-parseFloat(cs.paddingLeft||0)-parseFloat(cs.paddingRight||0)-4;
+    const neededH=card.scrollHeight;
+    const neededW=card.scrollWidth;
+    if(!neededH || !neededW) return;
+    let scale=Math.min(1, availableH/neededH, availableW/neededW);
+    scale=Math.max(.72, Math.floor(scale*100)/100);
+    card.style.zoom=String(scale);
+  }
+
+  function bindKeypad(allowDot,onSubmit){
+    const display=document.getElementById('answerDisplay');
+    function update(){if(display){
+      if(state.section==='pc2d')display.textContent='$'+(state.answer||'__.__');
+      else if(state.section==='pd2c')display.textContent=(state.answer||'___')+'¢';
+      else display.textContent=state.answer||'';
+      display.classList.toggle('empty',!state.answer);
+    }}
+    document.querySelectorAll('[data-key]').forEach(k=>k.addEventListener('click',()=>{
+      const key=k.dataset.key;
+      clearAnswerHighlight();
+      if(key==='⌫') state.answer=state.answer.slice(0,-1);
+      else if(key==='C') state.answer='';
+      else if(key==='.') {if(allowDot&&!state.answer.includes('.')&&state.answer.length>0) state.answer+='.';}
+      else if(/^\d$/.test(key)){
+        if(state.answer.length<7) state.answer+=key;
+      }
+      update();
+    }));
+    const submit=document.getElementById('submitBtn'); if(submit)submit.onclick=onSubmit;
+    window.onkeydown=(e)=>{
+      if((e.key>='0'&&e.key<='9') || e.key==='.' || e.key==='Backspace') clearAnswerHighlight();
+      if(e.key>='0'&&e.key<='9'){if(state.answer.length<7){state.answer+=e.key;update();}}
+      else if(e.key==='.'&&allowDot&&!state.answer.includes('.')&&state.answer.length>0){state.answer+='.';update();}
+      else if(e.key==='Backspace'){state.answer=state.answer.slice(0,-1);update();}
+      else if(e.key==='Enter'){e.preventDefault();onSubmit();}
+    };
+  }
+
+  function bindPointerDrags({sourceSelector,dropSelector,onDrop,onTap}){
+    const sources=[...document.querySelectorAll(sourceSelector)];
+    sources.forEach(src=>{
+      let startX=0,startY=0,dragging=false,ghost=null,pid=null;
+      const moveGhost=(x,y)=>{if(ghost){ghost.style.left=x+'px';ghost.style.top=y+'px';}};
+      src.addEventListener('pointerdown',e=>{
+        if(e.button!==undefined&&e.button!==0) return;
+        pid=e.pointerId;startX=e.clientX;startY=e.clientY;dragging=false;
+        src.setPointerCapture?.(pid);
+        const move=ev=>{
+          if(pid!==ev.pointerId)return;
+          const dist=Math.hypot(ev.clientX-startX,ev.clientY-startY);
+          if(!dragging&&dist>7){
+            dragging=true;ghost=src.cloneNode(true);ghost.classList.add('drag-ghost');ghost.classList.remove('dragging');document.body.appendChild(ghost);src.classList.add('dragging');
+          }
+          if(dragging){ev.preventDefault();moveGhost(ev.clientX,ev.clientY);document.querySelectorAll(dropSelector).forEach(d=>d.classList.remove('active-drop'));const el=document.elementFromPoint(ev.clientX,ev.clientY);const target=el&&el.closest(dropSelector);if(target)target.classList.add('active-drop');}
+        };
+        const up=ev=>{
+          if(pid!==ev.pointerId)return;
+          window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);
+          document.querySelectorAll(dropSelector).forEach(d=>d.classList.remove('active-drop'));
+          if(dragging){
+            const el=document.elementFromPoint(ev.clientX,ev.clientY);const target=el&&el.closest(dropSelector);if(target)onDrop(src,target);
+          } else if(onTap){onTap(src);}
+          if(ghost)ghost.remove();src.classList.remove('dragging');pid=null;
+        };
+        window.addEventListener('pointermove',move,{passive:false});window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+      });
+    });
+  }
+
+
+  tabs.forEach(t=>t.addEventListener('click',()=>setSection(t.dataset.section)));
+  newBtn.addEventListener('click',nextQuestion);
+  fsBtn.addEventListener('click',async()=>{
+    try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}catch(e){}
+  });
+  document.addEventListener('fullscreenchange',()=>{fsBtn.textContent=document.fullscreenElement?'✕':'⛶';});
+
+  window.addEventListener('resize',()=>requestAnimationFrame(fitPracticeCard));
+  render();
+})();
+</script>
+</body>
+</html>

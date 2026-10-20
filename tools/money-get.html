@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>GET Money</title>
+<style>
+:root{
+ --navy:#103f69;--muted:#71899d;--line:#d8e6ee;--purple:#7257e8;--purple2:#f4efff;
+ --pink:#eaa8c1;--pink2:#fff3f7;--blue:#65b9e9;--blue2:#eef9ff;--green:#77cf91;
+ --green2:#eefaf1;--red:#d86c79;--red2:#fff1f3;--yellow:#ffe79a;--shadow:0 9px 24px rgba(32,73,104,.10)
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;color:var(--navy);background:linear-gradient(135deg,#ffeef4 0%,#f1edff 52%,#edf9ff 100%)}
+button,select{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+.app{height:100%;display:grid;grid-template-rows:64px 58px minmax(0,1fr);gap:9px;padding:9px 14px 12px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.brand{font-size:38px;font-weight:900;letter-spacing:.1px}
+.top-actions{display:flex;align-items:center;gap:8px}
+.toolbtn{height:42px;border:2px solid #d7e4eb;background:#fff;border-radius:13px;padding:0 14px;font-weight:900;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 3px 10px rgba(33,73,105,.04)}
+.toolbtn:hover:not(:disabled){background:#f9fbfd}
+.toolbtn.primary{background:var(--purple);border-color:var(--purple);color:#fff}
+.toolbtn.primary:hover:not(:disabled),.toolbtn.primary:focus,.toolbtn.primary:focus-visible,.toolbtn.primary:active{background:var(--purple)!important;border-color:var(--purple)!important;color:#fff!important;opacity:1!important;outline:none;box-shadow:0 0 0 4px rgba(114,87,232,.14),0 3px 10px rgba(33,73,105,.04)}
+.toolbtn.success{background:var(--green);border-color:var(--green);color:#173f26}
+.toolbtn.icon{width:44px;min-width:44px;padding:0;font-size:21px}
+.toolbtn:disabled{opacity:.42;cursor:default}
+.teacherbar{background:rgba(255,255,255,.96);border:2px solid #dce7ee;border-radius:20px;box-shadow:0 5px 15px rgba(33,73,105,.06);display:flex;align-items:center;gap:8px;padding:7px 10px;min-width:0}
+.label{font-size:14px;font-weight:900;color:var(--muted);white-space:nowrap}
+select{height:40px;border:2px solid #d8e4ec;background:#fff;border-radius:12px;padding:0 26px 0 11px;font-weight:900;outline:none}
+#questionSelect{width:92px;min-width:92px;max-width:92px}
+.navbtn{height:40px;width:44px;border:2px solid #d8e4ec;background:#fff;border-radius:12px;font-weight:900;font-size:18px}
+.main{min-height:0;background:rgba(255,255,255,.97);border-radius:26px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(260px,28%) minmax(0,72%);overflow:hidden}
+.sidebar{min-width:0;min-height:0;border-right:1px solid #e7eef3;padding:22px 18px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;background:linear-gradient(180deg,#fff 0%,#fffefe 100%)}
+.sidebar-title{font-size:26px;font-weight:900;line-height:1.05;text-align:center;width:100%}
+.palette{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:8px;width:100%}
+.label-card{width:108px;height:108px;border:0;border-radius:24px;padding:10px 8px 11px;box-shadow:0 7px 16px rgba(33,73,105,.14),inset 0 -6px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;transition:.14s;color:#fff}
+.label-card:hover{transform:translateY(-2px);filter:brightness(1.02)}
+.label-card:active{cursor:grabbing;transform:scale(.97)}
+.label-card .icon{display:flex;align-items:center;justify-content:center;width:100%;font-size:42px;line-height:.95;font-weight:900;color:inherit;background:transparent!important}
+.label-card .descriptor{display:block;width:100%;font-size:14px;line-height:1.05;font-weight:900;color:inherit;text-align:center;white-space:nowrap}
+.label-card.g{background:var(--blue)}
+.label-card.e{background:var(--pink)}
+.label-card.t{background:var(--purple)}
+.label-card.q{background:#f1bf39;color:#6b4d00}
+.label-card.used{background:#dfe5ea!important;color:#8b98a4!important;box-shadow:0 4px 10px rgba(33,73,105,.08),inset 0 -4px 0 rgba(0,0,0,.05);cursor:default;filter:none!important;transform:none!important;opacity:.82}
+.label-card.used .icon,.label-card.used .descriptor{color:#8b98a4!important}
+.workspace{min-width:0;min-height:0;padding:18px 20px 16px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.workspace-title{font-size:28px;font-weight:900;line-height:1.1;margin:8px 4px 0}.problem-card{flex:0 0 auto;min-height:330px;max-height:52vh;border:2px solid #dce8ef;background:linear-gradient(180deg,#ffffff 0%,#fcfdff 100%);border-radius:24px;padding:22px 24px;box-shadow:0 5px 16px rgba(33,73,105,.05);display:flex;flex-direction:column;overflow:auto}
+.problem-body{min-height:0;padding-right:2px}
+.problem-line{font-size:clamp(26px,2.1vw,38px);line-height:1.7;font-weight:900;color:#153b61;margin:12px 0;word-wrap:break-word}
+.inline-target{display:inline-flex;align-items:center;gap:8px;vertical-align:middle;min-height:56px;padding:6px 10px;border-radius:18px;border:2px dashed #bfd4e0;background:#fbfdff;position:relative;transition:.14s;flex-wrap:wrap;margin:0 2px}
+.inline-target .target-text{display:inline-block}
+.inline-target.drop-hover{border-color:#efbd4d;background:#fff9e9;box-shadow:0 0 0 4px rgba(245,195,72,.14)}
+.inline-target.state-correct{border-style:solid;border-color:#8ed4a0;background:#f2fbf4}
+.inline-target.state-wrong{border-style:solid;border-color:#e4a2ab;background:#fff5f7}
+.inline-target.state-missing{border-style:solid;border-color:#d7e4eb;background:#f8fbfd}
+.badges{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.badge-btn{width:34px;height:34px;border:0;border-radius:12px;color:#fff;font-size:19px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(30,54,76,.12)}
+.badge-btn.g{background:var(--blue)} .badge-btn.e{background:var(--pink)} .badge-btn.t{background:var(--purple)} .badge-btn.q{background:#f1bf39;color:#724e00}
+.target-clear{position:absolute;right:-9px;top:-9px;z-index:6;width:25px;height:25px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#aebdca;color:#fff;font-size:17px;font-weight:900;line-height:1;padding:0;box-shadow:0 2px 7px rgba(30,54,76,.18)}
+.target-clear:hover{background:#8fa3b4}
+.target-clear:active{transform:scale(.94)}
+.controls{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:2px}
+.drag-ghost{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(30,54,76,.22);opacity:.94}
+.drag-ghost .gicon{width:68px;height:68px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:900;box-shadow:inset 0 -5px 0 rgba(0,0,0,.08)}
+.drag-ghost.g .gicon{background:var(--blue)} .drag-ghost.e .gicon{background:var(--pink)} .drag-ghost.t .gicon{background:var(--purple)} .drag-ghost.q .gicon{background:#f1bf39;color:#724e00}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(14px);background:#143f64;color:#fff;padding:10px 15px;border-radius:14px;font-weight:900;opacity:0;pointer-events:none;transition:.18s;z-index:9999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+@media(max-width:1180px){
+  .brand{font-size:32px}
+  .main{grid-template-columns:minmax(220px,30%) minmax(0,70%)}
+  .sidebar{padding:18px 14px 14px}
+  .sidebar-title{font-size:24px}
+  .palette{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:210px;margin:8px auto 0}
+  .label-card{width:96px;height:96px;border-radius:21px;padding:8px 6px}
+  .label-card .icon{font-size:36px}
+  .label-card .descriptor{font-size:12px}
+  .problem-line{font-size:clamp(22px,2.35vw,32px)}
+}
+@media(max-height:820px){
+  .app{grid-template-rows:54px 52px minmax(0,1fr);gap:7px;padding:7px 10px 9px}
+  .brand{font-size:30px}
+  .toolbtn{height:38px}
+  .teacherbar{padding:5px 8px}
+  .navbtn,select{height:38px}
+  .sidebar{padding:14px 12px 12px}
+  .workspace{padding:12px 12px 10px}
+  .workspace-title{font-size:24px;margin-top:2px}
+  .problem-card{min-height:270px;max-height:52vh;padding:16px 18px}
+  .problem-line{font-size:clamp(21px,2.15vw,29px)}
+  .label-card{width:82px;height:82px;border-radius:19px;padding:6px 5px}
+  .label-card .icon{font-size:31px}
+  .label-card .descriptor{font-size:11px}
+  .palette{max-width:180px;gap:9px}
+}
+@media(max-width:700px){
+  .main{grid-template-columns:1fr}
+  .sidebar{border-right:0;border-bottom:1px solid #e7eef3;padding:12px}
+  .sidebar-title{text-align:center;font-size:22px}
+  .palette{display:flex;flex-direction:row;justify-content:center;flex-wrap:nowrap;max-width:none;gap:9px;margin-top:2px}
+  .label-card{width:74px;height:74px;border-radius:17px}
+  .label-card .icon{font-size:28px}
+  .label-card .descriptor{font-size:10px}
+  .workspace-title{font-size:23px}
+  .problem-card{min-height:250px;max-height:none}
+  .problem-line{font-size:clamp(19px,4.8vw,27px)}
+  #questionSelect{width:78px;min-width:78px;max-width:78px}
+}
+
+/* Dynamic vertical centering: keep each teaching area visually balanced on large screens and iPad. */
+.sidebar{justify-content:center}
+.workspace{justify-content:center}
+.problem-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+/* On shallow screens, fall back to top alignment so nothing can be clipped. */
+@media(max-height:640px){
+  .sidebar,.workspace{justify-content:flex-start}
+  .problem-body{justify-content:flex-start}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">GET Money</div>
+    <div class="top-actions">
+      <button class="toolbtn" id="resetBtn" type="button">↺ Reset</button>
+      <button class="toolbtn icon" id="fullscreenBtn" type="button" aria-label="Fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </header>
+  <section class="teacherbar">
+    <span class="label">Question</span>
+    <select id="questionSelect" aria-label="Question"></select>
+    <button class="navbtn" id="prevBtn" type="button" title="Previous">◀</button>
+    <button class="navbtn" id="randomBtn" type="button" title="Random">🎲</button>
+    <button class="navbtn" id="nextNavBtn" type="button" title="Next">▶</button>
+  </section>
+  <main class="main">
+    <aside class="sidebar">
+      <div class="sidebar-title">Choose a label</div>
+      <div class="palette" id="palette"></div>
+    </aside>
+    <section class="workspace">
+      <div class="workspace-title">Annotate the word problem</div>
+      <div class="problem-card">
+        <div class="problem-body" id="problemBody"></div>
+      </div>
+      <div class="controls">
+        <button class="toolbtn" id="clearBtn" type="button">Clear labels</button>
+        <button class="toolbtn primary" id="checkBtn" type="button">Check</button>
+        <button class="toolbtn success hidden" id="nextBtn" type="button">Next question ▶</button>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const LABEL_META={
+  G:{name:'Group',cardClass:'g',icon:'G',badgeClass:'g'},
+  E:{name:'Each',cardClass:'e',icon:'E',badgeClass:'e'},
+  T:{name:'Total',cardClass:'t',icon:'T',badgeClass:'t'},
+  '?':{name:'Unknown',cardClass:'q',icon:'?',badgeClass:'q'}
+};
+const QUESTIONS=[
+  {id:1,title:'Storybooks',lines:[
+    ['There are ',{id:'g',text:'6 storybooks',answer:['G']},'.'],
+    ['Each storybook costs ',{id:'e',text:'$5',answer:['E']},'.'],
+    [{id:'u',text:'How much do they cost altogether?',answer:['T','?']}]
+  ]},
+  {id:2,title:'Grandchildren',lines:[
+    ['Mrs Lim gives ',{id:'e',text:'$8',answer:['E']},' to each grandchild.'],
+    ['She has ',{id:'g',text:'4 grandchildren',answer:['G']},'.'],
+    [{id:'u',text:'How much money does she give altogether?',answer:['T','?']}]
+  ]},
+  {id:3,title:'Pocket money',lines:[
+    ['Ryan receives ',{id:'e',text:'$3',answer:['E']},' as pocket money each day.'],
+    ['He receives it for ',{id:'g',text:'7 days',answer:['G']},'.'],
+    [{id:'u',text:'How much does he receive altogether?',answer:['T','?']}]
+  ]},
+  {id:4,title:'Movie tickets',lines:[
+    ['One movie ticket costs ',{id:'e',text:'$9',answer:['E']},'.'],
+    ['Mr Tan buys ',{id:'g',text:'5 movie tickets',answer:['G']},'.'],
+    [{id:'u',text:'How much does he pay altogether?',answer:['T','?']}]
+  ]},
+  {id:5,title:'Pencil cases',lines:[
+    ['Each pencil case costs ',{id:'e',text:'$6',answer:['E']},'.'],
+    ['Mei buys ',{id:'g',text:'8 pencil cases',answer:['G']},'.'],
+    [{id:'u',text:'How much does she pay altogether?',answer:['T','?']}]
+  ]},
+  {id:6,title:'Weekly savings',lines:[
+    ['Aisha saves ',{id:'e',text:'$4',answer:['E']},' each week.'],
+    ['She saves for ',{id:'g',text:'9 weeks',answer:['G']},'.'],
+    [{id:'u',text:'How much does she save altogether?',answer:['T','?']}]
+  ]},
+  {id:7,title:'Lunch boxes',lines:[
+    ['Each lunch box costs ',{id:'e',text:'$7',answer:['E']},'.'],
+    ['There are ',{id:'g',text:'3 lunch boxes',answer:['G']},'.'],
+    [{id:'u',text:'How much do they cost altogether?',answer:['T','?']}]
+  ]},
+  {id:8,title:'Children',lines:[
+    ['Mr Tan gives ',{id:'e',text:'$10',answer:['E']},' to each child.'],
+    ['He gives money to ',{id:'g',text:'6 children',answer:['G']},'.'],
+    [{id:'u',text:'How much money does he give altogether?',answer:['T','?']}]
+  ]},
+  {id:9,title:'Notebooks',lines:[
+    ['One notebook costs ',{id:'e',text:'$4',answer:['E']},'.'],
+    ['Sara buys ',{id:'g',text:'7 notebooks',answer:['G']},'.'],
+    [{id:'u',text:'How much does she pay altogether?',answer:['T','?']}]
+  ]},
+  {id:10,title:'Toy cars',lines:[
+    ['Each toy car costs ',{id:'e',text:'$8',answer:['E']},'.'],
+    ['Ben buys ',{id:'g',text:'5 toy cars',answer:['G']},'.'],
+    [{id:'u',text:'How much does he pay altogether?',answer:['T','?']}]
+  ]},
+  {id:11,title:'Ticket price',lines:[
+    ['There are ',{id:'g',text:'4 movie tickets',answer:['G']},'.'],
+    ['They cost ',{id:'t',text:'$36 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much does each movie ticket cost?',answer:['E','?']}]
+  ]},
+  {id:12,title:'Water bottles',lines:[
+    ['Sara bought ',{id:'g',text:'5 water bottles',answer:['G']},'.'],
+    ['She spent ',{id:'t',text:'$30 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much did each water bottle cost?',answer:['E','?']}]
+  ]},
+  {id:13,title:'Equal weekly savings',lines:[
+    ['Amir saved money for ',{id:'g',text:'7 weeks',answer:['G']},'.'],
+    ['He saved ',{id:'t',text:'$42 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much did he save each week?',answer:['E','?']}]
+  ]},
+  {id:14,title:'Shared equally',lines:[
+    ['The money was shared among ',{id:'g',text:'6 children',answer:['G']},'.'],
+    ['There was ',{id:'t',text:'$48 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much money did each child receive?',answer:['E','?']}]
+  ]},
+  {id:15,title:'T-shirts',lines:[
+    ['Mdm Lee bought ',{id:'g',text:'5 T-shirts',answer:['G']},'.'],
+    ['She spent ',{id:'t',text:'$45 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much did each T-shirt cost?',answer:['E','?']}]
+  ]},
+  {id:16,title:'Books',lines:[
+    ['There are ',{id:'g',text:'8 books',answer:['G']},'.'],
+    ['They cost ',{id:'t',text:'$40 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much does each book cost?',answer:['E','?']}]
+  ]},
+  {id:17,title:'Charities',lines:[
+    ['Tim donated to ',{id:'g',text:'3 charities',answer:['G']},'.'],
+    ['He donated ',{id:'t',text:'$24 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much did he donate to each charity?',answer:['E','?']}]
+  ]},
+  {id:18,title:'Crayons',lines:[
+    ['Lina bought ',{id:'g',text:'4 boxes of crayons',answer:['G']},'.'],
+    ['She paid ',{id:'t',text:'$28 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much did each box cost?',answer:['E','?']}]
+  ]},
+  {id:19,title:'Daily amount',lines:[
+    ['Kai received money for ',{id:'g',text:'5 days',answer:['G']},'.'],
+    ['He received ',{id:'t',text:'$50 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much did he receive each day?',answer:['E','?']}]
+  ]},
+  {id:20,title:'Keychains',lines:[
+    ['There are ',{id:'g',text:'9 keychains',answer:['G']},'.'],
+    ['They cost ',{id:'t',text:'$54 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How much does each keychain cost?',answer:['E','?']}]
+  ]},
+  {id:21,title:'Weeks needed',lines:[
+    ['Priya wants to save ',{id:'t',text:'$35',answer:['T']},'.'],
+    ['She saves ',{id:'e',text:'$5 each week',answer:['E']},'.'],
+    [{id:'u',text:'How many weeks will she take?',answer:['G','?']}]
+  ]},
+  {id:22,title:'Comic books',lines:[
+    ['Adam spent ',{id:'t',text:'$36 altogether',answer:['T']},'.'],
+    ['Each comic book costs ',{id:'e',text:'$6',answer:['E']},'.'],
+    [{id:'u',text:'How many comic books did he buy?',answer:['G','?']}]
+  ]},
+  {id:23,title:'Grandchildren count',lines:[
+    ['Mr Lee gives ',{id:'e',text:'$8 to each grandchild',answer:['E']},'.'],
+    ['He gives ',{id:'t',text:'$40 altogether',answer:['T']},'.'],
+    [{id:'u',text:'How many grandchildren does he give money to?',answer:['G','?']}]
+  ]},
+  {id:24,title:'Saving weeks',lines:[
+    ['Nora saved ',{id:'t',text:'$42 altogether',answer:['T']},'.'],
+    ['She saves ',{id:'e',text:'$7 each week',answer:['E']},'.'],
+    [{id:'u',text:'How many weeks did she save for?',answer:['G','?']}]
+  ]},
+  {id:25,title:'Number of toys',lines:[
+    ['Jay spent ',{id:'t',text:'$32 altogether',answer:['T']},'.'],
+    ['Each toy costs ',{id:'e',text:'$4',answer:['E']},'.'],
+    [{id:'u',text:'How many toys did he buy?',answer:['G','?']}]
+  ]},
+  {id:26,title:'Number of tickets',lines:[
+    ['A family spent ',{id:'t',text:'$27 altogether',answer:['T']},'.'],
+    ['Each ticket costs ',{id:'e',text:'$9',answer:['E']},'.'],
+    [{id:'u',text:'How many tickets did they buy?',answer:['G','?']}]
+  ]},
+  {id:27,title:'Pocket money days',lines:[
+    ['Mia received ',{id:'t',text:'$70 altogether',answer:['T']},'.'],
+    ['She receives ',{id:'e',text:'$10 each day',answer:['E']},'.'],
+    [{id:'u',text:'For how many days did she receive pocket money?',answer:['G','?']}]
+  ]},
+  {id:28,title:'Number of notebooks',lines:[
+    ['Mrs Ong paid ',{id:'t',text:'$45 altogether',answer:['T']},'.'],
+    ['Each notebook costs ',{id:'e',text:'$5',answer:['E']},'.'],
+    [{id:'u',text:'How many notebooks did she buy?',answer:['G','?']}]
+  ]},
+  {id:29,title:'Children receiving money',lines:[
+    ['A total of ',{id:'t',text:'$48',answer:['T']},' was given out.'],
+    ['Each child receives ',{id:'e',text:'$6',answer:['E']},'.'],
+    [{id:'u',text:'How many children receive the money?',answer:['G','?']}]
+  ]},
+  {id:30,title:'Saving duration',lines:[
+    ['Daniel saved ',{id:'t',text:'$18 altogether',answer:['T']},'.'],
+    ['He saves ',{id:'e',text:'$3 each week',answer:['E']},'.'],
+    [{id:'u',text:'How many weeks did he save for?',answer:['G','?']}]
+  ]}
+];
+
+let currentIndex=0;
+let annotations={};
+let solved=new Set();
+let dragState=null;
+let toastTimer=null;
+
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+
+function toast(msg){
+  const el=$('#toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),1400);
+}
+
+function initAnnotations(){
+  const q=QUESTIONS[currentIndex];
+  annotations={};
+  q.lines.flat().forEach(part=>{
+    if(part && typeof part==='object' && part.id){annotations[part.id]=[]} 
+  });
+}
+
+function renderPalette(){
+  const palette=$('#palette');
+  palette.innerHTML='';
+  ['G','E','T','?'].forEach(label=>{
+    const meta=LABEL_META[label];
+    const card=document.createElement('div');
+    card.className=`label-card ${meta.cardClass}`;
+    card.dataset.label=label;
+    card.innerHTML=`<div class="icon">${meta.icon}</div><div class="descriptor">${meta.name}</div>`;
+    card.addEventListener('pointerdown',startDragFromPalette);
+    palette.appendChild(card);
+  });
+  updatePaletteState();
+}
+
+function isLabelUsed(label){
+  return Object.values(annotations).some(labels=>(labels||[]).includes(label));
+}
+
+function updatePaletteState(){
+  $$('.label-card').forEach(card=>{
+    const used=isLabelUsed(card.dataset.label);
+    card.classList.toggle('used',used);
+    card.setAttribute('aria-disabled',used?'true':'false');
+  });
+}
+
+function populateSelect(){
+  const select=$('#questionSelect');
+  select.innerHTML='';
+  QUESTIONS.forEach((q,idx)=>{
+    const opt=document.createElement('option');
+    opt.value=idx;
+    opt.textContent=`Q${q.id}`;
+    select.appendChild(opt);
+  });
+  select.value=String(currentIndex);
+}
+
+function renderQuestion(){
+  const q=QUESTIONS[currentIndex];
+  $('#questionSelect').value=String(currentIndex);
+  const body=$('#problemBody');
+  body.innerHTML='';
+  q.lines.forEach(line=>{
+    const p=document.createElement('p');
+    p.className='problem-line';
+    line.forEach(part=>{
+      if(typeof part==='string'){
+        p.appendChild(document.createTextNode(part));
+      }else{
+        const span=document.createElement('span');
+        span.className='inline-target state-missing';
+        span.dataset.targetId=part.id;
+        span.innerHTML=`<span class="target-text">${part.text}</span><span class="badges"></span>`;
+        p.appendChild(span);
+      }
+    });
+    body.appendChild(p);
+  });
+  updateTargetUI();
+  $('#nextBtn').classList.add('hidden');
+}
+
+function updateTargetUI(){
+  $$('.inline-target').forEach(target=>{
+    const id=target.dataset.targetId;
+    const badges=target.querySelector('.badges');
+    badges.innerHTML='';
+    const labels=annotations[id]||[];
+    labels.forEach(label=>{
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className=`badge-btn ${LABEL_META[label].badgeClass}`;
+      btn.textContent=label;
+      btn.title='Tap to remove this label';
+      btn.dataset.label=label;
+      btn.addEventListener('click',e=>{e.stopPropagation();removeLabel(id,label);});
+      badges.appendChild(btn);
+    });
+    const oldClear=target.querySelector('.target-clear');
+    if(oldClear) oldClear.remove();
+    if(labels.length){
+      const clear=document.createElement('button');
+      clear.type='button';
+      clear.className='target-clear';
+      clear.textContent='×';
+      clear.title='Tap to clear this field';
+      clear.setAttribute('aria-label','Clear labels from this field');
+      clear.addEventListener('click',e=>{e.stopPropagation();clearTarget(id);});
+      target.appendChild(clear);
+    }
+    target.classList.remove('state-correct','state-wrong','state-missing');
+    if(!labels.length) target.classList.add('state-missing');
+  });
+  updatePaletteState();
+}
+
+function removeLabelEverywhere(label){
+  Object.keys(annotations).forEach(id=>{
+    annotations[id]=(annotations[id]||[]).filter(x=>x!==label);
+  });
+}
+
+function removeGetFromTarget(id){
+  annotations[id]=(annotations[id]||[]).filter(x=>!['G','E','T'].includes(x));
+}
+
+function applyLabelToTarget(targetId,label){
+  if(!(targetId in annotations))return;
+  removeLabelEverywhere(label);
+  if(label==='?'){
+    if(!annotations[targetId].includes('?')) annotations[targetId].push('?');
+  }else{
+    removeGetFromTarget(targetId);
+    annotations[targetId].unshift(label);
+  }
+  annotations[targetId]=Array.from(new Set(annotations[targetId]));
+  annotations[targetId].sort((a,b)=>{
+    const order={'G':0,'E':0,'T':0,'?':1};
+    return order[a]-order[b];
+  });
+  updateTargetUI();
+}
+
+function clearTarget(targetId){
+  annotations[targetId]=[];
+  updateTargetUI();
+}
+
+function removeLabel(targetId,label){
+  annotations[targetId]=(annotations[targetId]||[]).filter(x=>x!==label);
+  updateTargetUI();
+}
+
+function checkAnswers(){
+  const checkBtn=$('#checkBtn');
+  checkBtn.disabled=false;
+  const q=QUESTIONS[currentIndex];
+  let allCorrect=true;
+  const expectedById={};
+  q.lines.flat().forEach(part=>{
+    if(part && typeof part==='object' && part.id) expectedById[part.id]=part.answer.slice().sort().join('|');
+  });
+  $$('.inline-target').forEach(target=>{
+    const id=target.dataset.targetId;
+    const actual=(annotations[id]||[]).slice().sort().join('|');
+    const expected=expectedById[id];
+    target.classList.remove('state-correct','state-wrong','state-missing');
+    if(actual===expected){
+      target.classList.add('state-correct');
+    }else{
+      allCorrect=false;
+      target.classList.add('state-wrong');
+    }
+  });
+  if(allCorrect){
+    toast('✓ Correct!');
+    $('#nextBtn').classList.remove('hidden');
+    solved.add(currentIndex);
+  }else{
+    toast('Not quite yet. Try again.');
+    $('#nextBtn').classList.add('hidden');
+  }
+}
+
+function loadQuestion(index){
+  currentIndex=(index+QUESTIONS.length)%QUESTIONS.length;
+  $('#checkBtn').disabled=false;
+  initAnnotations();
+  renderQuestion();
+}
+
+function clearCurrent(){
+  cleanupDrag();
+  initAnnotations();
+  renderQuestion();
+  toast('Labels cleared.');
+}
+
+function nextQuestion(){loadQuestion(currentIndex+1)}
+function prevQuestion(){loadQuestion(currentIndex-1)}
+function randomQuestion(){
+  let idx=currentIndex;
+  if(QUESTIONS.length>1){
+    while(idx===currentIndex) idx=Math.floor(Math.random()*QUESTIONS.length);
+  }
+  loadQuestion(idx);
+}
+
+function cleanupDrag(){
+  document.querySelectorAll('.drag-ghost').forEach(el=>el.remove());
+  document.querySelectorAll('.inline-target.drop-hover').forEach(el=>el.classList.remove('drop-hover'));
+  dragState=null;
+  document.body.classList.remove('dragging');
+  document.removeEventListener('pointermove',onDragMove,true);
+  document.removeEventListener('pointerup',endDrag,true);
+  document.removeEventListener('pointercancel',cancelDrag,true);
+}
+
+function startDragFromPalette(ev){
+  if(ev.isPrimary===false)return;
+  if(ev.pointerType==='mouse' && ev.button!==0)return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  cleanupDrag();
+  const card=ev.currentTarget;
+  const label=card.dataset.label;
+  if(isLabelUsed(label)) return;
+  const meta=LABEL_META[label];
+  const ghost=document.createElement('div');
+  ghost.className=`drag-ghost ${meta.cardClass}`;
+  ghost.innerHTML=`<div class="gicon">${label}</div>`;
+  document.body.appendChild(ghost);
+  dragState={label,ghost,hoverEl:null,pointerId:ev.pointerId,source:card};
+  document.body.classList.add('dragging');
+  moveGhost(ev.clientX,ev.clientY);
+  document.addEventListener('pointermove',onDragMove,true);
+  document.addEventListener('pointerup',endDrag,true);
+  document.addEventListener('pointercancel',cancelDrag,true);
+}
+
+function moveGhost(x,y){
+  if(!dragState)return;
+  dragState.ghost.style.left=x+'px';
+  dragState.ghost.style.top=y+'px';
+  const el=document.elementFromPoint(x,y);
+  const target=el && el.closest ? el.closest('.inline-target') : null;
+  if(dragState.hoverEl && dragState.hoverEl!==target) dragState.hoverEl.classList.remove('drop-hover');
+  dragState.hoverEl=target;
+  if(target) target.classList.add('drop-hover');
+}
+
+function onDragMove(ev){
+  if(!dragState || ev.pointerId!==dragState.pointerId)return;
+  ev.preventDefault();
+  moveGhost(ev.clientX,ev.clientY);
+}
+
+function endDrag(ev){
+  if(!dragState || ev.pointerId!==dragState.pointerId)return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  const label=dragState.label;
+  const atPoint=document.elementFromPoint(ev.clientX,ev.clientY);
+  const dropTarget=(atPoint && atPoint.closest) ? atPoint.closest('.inline-target') : dragState.hoverEl;
+  const targetId=dropTarget?.dataset?.targetId || null;
+  cleanupDrag();
+  if(targetId) applyLabelToTarget(targetId,label);
+}
+
+function cancelDrag(ev){
+  if(dragState && ev.pointerId===dragState.pointerId) cleanupDrag();
+}
+
+window.addEventListener('blur',cleanupDrag);
+document.addEventListener('visibilitychange',()=>{if(document.hidden) cleanupDrag();});
+document.addEventListener('contextmenu',e=>{if(dragState)e.preventDefault();});
+
+$('#resetBtn').onclick=clearCurrent;
+$('#clearBtn').onclick=clearCurrent;
+$('#checkBtn').onclick=checkAnswers;
+$('#nextBtn').onclick=nextQuestion;
+$('#prevBtn').onclick=prevQuestion;
+$('#nextNavBtn').onclick=nextQuestion;
+$('#randomBtn').onclick=randomQuestion;
+$('#questionSelect').onchange=e=>loadQuestion(parseInt(e.target.value,10)||0);
+$('#fullscreenBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+
+renderPalette();
+populateSelect();
+loadQuestion(0);
+</script>
+</body>
+</html>
