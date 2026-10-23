@@ -33,14 +33,13 @@
 {% assign page = page | replace: money_tools_anchor, money_tools_replacement %}
 
 {%- comment -%}
-Add the Money Unit Flow. The SLS package URL is intentionally blank until the
-Community Gallery package is ready. SLS-only challenges stay on SLS and are
-listed in the flow without GitHub download links.
+Add the Money Unit Flow and link its SLS package to the Community Gallery.
+SLS-only challenges stay on SLS and are listed in the flow without GitHub download links.
 {%- endcomment -%}
 {% capture money_flow_anchor %}      Shapes: {{ '{' }}{% endcapture %}
 {% capture money_flow_replacement %}      Money: {
         subtitle: "6 lessons · Primary 2 Mathematics",
-        slsPackage: "",
+        slsPackage: "https://vle.learning.moe.edu.sg/community-gallery/module/view/7b83b33f-7447-41c1-a4e6-0b0334fcd600",
         lessons: [
           {
             title: "Counting and Writing Money",
